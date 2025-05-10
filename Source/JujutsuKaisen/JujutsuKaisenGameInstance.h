@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "JujutsuKaisenCharacterDataAsset.h"
 #include "JujutsuKaisenGameInstance.generated.h"
 
 /**
@@ -13,6 +14,18 @@ UCLASS()
 class JUJUTSUKAISEN_API UJujutsuKaisenGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
+
+	// my player data asset store as text 
+
+	// enemy player data asset store as text
+
+public:
+	UPROPERTY(BlueprintReadOnly)
+	UJujutsuKaisenCharacterDataAsset* MyCharacterDataAsset;
+
+	UPROPERTY(BlueprintReadOnly)
+	UJujutsuKaisenCharacterDataAsset* EnemyCharacterDataAsset;
+
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "JujutsuKaisen")

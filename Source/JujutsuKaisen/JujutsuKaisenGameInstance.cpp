@@ -19,8 +19,10 @@ void UJujutsuKaisenGameInstance::StartSingle()
 
             WorldSettings->DefaultGameMode = ASinglePlayGameMode::StaticClass();
             UGameplayStatics::OpenLevel(world, "CityMap", true);
+            
         }
     }
+
 }
 
 void UJujutsuKaisenGameInstance::LeaveGame()
