@@ -35,5 +35,11 @@ public:
 	void LeaveGame();
 
 	virtual void Init() override;
+
+	UFUNCTION(BlueprintCallable)
+	void SetMyCharacterByPath(const FString& AssetPath);
+
+	UFUNCTION(BlueprintCallable)
+	void SetEnemyCharacterByPath(const FString& AssetPath);
 	
 };

@@ -45,5 +45,39 @@ void UJujutsuKaisenGameInstance::LeaveGame()
 void UJujutsuKaisenGameInstance::Init()
 {
     Super::Init();
+    MyCharacterDataAsset = nullptr;
+    EnemyCharacterDataAsset = nullptr;
 }
 
+
+void UJujutsuKaisenGameInstance::SetMyCharacterByPath(const FString& AssetPath)
+{
+    FSoftObjectPath DataAssetPath(AssetPath);
+    UJujutsuKaisenCharacterDataAsset* LoadedAsset = Cast<UJujutsuKaisenCharacterDataAsset>(DataAssetPath.TryLoad());
+
+    if (LoadedAsset)
+    {
+        MyCharacterDataAsset = LoadedAsset;
+        UE_LOG(LogTemp, Log, TEXT("MyCharacterDataAsset set to %s"), *LoadedAsset->GetName());
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load MyCharacterDataAsset from path: %s"), *AssetPath);
+    }
+}
+
+void UJujutsuKaisenGameInstance::SetEnemyCharacterByPath(const FString& AssetPath)
+{
+    FSoftObjectPath DataAssetPath(AssetPath);
+    UJujutsuKaisenCharacterDataAsset* LoadedAsset = Cast<UJujutsuKaisenCharacterDataAsset>(DataAssetPath.TryLoad());
+
+    if (LoadedAsset)
+    {
+        EnemyCharacterDataAsset = LoadedAsset;
+        UE_LOG(LogTemp, Log, TEXT("EnemyCharacterDataAsset set to %s"), *LoadedAsset->GetName());
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load EnemyCharacterDataAsset from path: %s"), *AssetPath);
+    }
+}
