@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "JujutsuKaisenCharacter.h"
+#include "JujutsuKaisenAnimInstance.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -10,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "JujutsuKaisenCharacterDataAsset.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -20,7 +22,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-		
+
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -75,7 +77,7 @@ void AJujutsuKaisenCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 {
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
+
 		// Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -92,6 +94,60 @@ void AJujutsuKaisenCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 	}
 }
 
+// void AJujutsuKaisenCharacter::SetAnimBP(const FString& AnimBPPath)
+// {
+// 	UClass* AnimBPClass = StaticLoadClass(UAnimInstance::StaticClass(), nullptr, *AnimBPPath);
+// 	if (AnimBPClass)
+// 	{
+// 		GetMesh()->SetAnimInstanceClass(AnimBPClass);
+// 		_AnimInstance = Cast<UJujutsuKaisenAnimInstance>(GetMesh()->GetAnimInstance());
+// 	}	
+
+// 	else
+// 	{
+// 		UE_LOG(LogTemp, Warning, TEXT("Failed to load AnimBP at path: %s"), *AnimBPPath);
+// 	}
+// }
+
+
+
+void AJujutsuKaisenCharacter::InitFromDataAsset(UJujutsuKaisenCharacterDataAsset* InDataAsset)
+{
+	if (!InDataAsset) return;
+
+	// 스켈레탈 메시
+	GetMesh()->SetSkeletalMesh(InDataAsset->Mesh);
+
+	// 메시 스케일
+	GetMesh()->SetWorldScale3D(FVector(InDataAsset->MeshScale));
+
+	// ABP
+	if (InDataAsset->AnimBP)
+	{
+		GetMesh()->SetAnimInstanceClass(InDataAsset->AnimBP);
+	}
+
+}
+
+
+
+void AJujutsuKaisenCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	Health = MaxHealth;
+
+
+	// if (GEngine)
+	// {
+	// 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Some debug message!"));	
+	// }
+}
+
+void AJujutsuKaisenCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
@@ -105,7 +161,7 @@ void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
 
 		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
+
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
@@ -126,4 +182,31 @@ void AJujutsuKaisenCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+
+void AJujutsuKaisenCharacter::Hit()
+{
+
+}
+
+
+void AJujutsuKaisenCharacter::Die()
+{
+
+}
+
+void AJujutsuKaisenCharacter::Skill_1()
+{
+
+}
+
+void AJujutsuKaisenCharacter::Skill_2()
+{
+
+}
+
+void AJujutsuKaisenCharacter::Skill_3()
+{
+
 }

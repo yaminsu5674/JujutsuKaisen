@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "JujutsuKaisenCharacterDataAsset.h"
 #include "JujutsuKaisenCharacter.generated.h"
 
 class USpringArmComponent;
@@ -15,7 +16,7 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
-UCLASS(config=Game)
+UCLASS(Blueprintable)
 class AJujutsuKaisenCharacter : public ACharacter
 {
 	GENERATED_BODY()
@@ -27,7 +28,7 @@ class AJujutsuKaisenCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
-	
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
@@ -44,9 +45,20 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	UPROPERTY(EditAnywhere, Category = "Character params")
+	float MaxHealth = 100;
+
+	UPROPERTY(VisibleAnywhere)
+	float Health;
+
+protected:
+	class UJujutsuKaisenAnimInstance* _AnimInstance;
+
 public:
 	AJujutsuKaisenCharacter();
-	
+
+	virtual void Tick(float DeltaTime) override;
+
 
 protected:
 
@@ -55,18 +67,34 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-			
-
-protected:
 
 	virtual void NotifyControllerChanged() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual void BeginPlay() override;
+
+private:
+	// // init functions 
+	// void SetAnimBP(const FString& AnimBPPath);
+
 
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	// call this function when game mode makes character instance;
+	void InitFromDataAsset(UJujutsuKaisenCharacterDataAsset* InDataAsset);
+
+	void Hit();
+
+	void Die();
+
+	virtual void Skill_1();
+
+	virtual void Skill_2();
+	
+	virtual void Skill_3();
 };
 
