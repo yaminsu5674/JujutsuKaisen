@@ -35,7 +35,7 @@ public:
 
 	// 메시 스케일
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData")
-	float MeshScale = 1.0f;
+	double MeshScale = 1.0f;
 
 	// 애니메이션 블루프린트 클래스
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData")

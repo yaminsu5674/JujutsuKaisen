@@ -6,6 +6,8 @@
 #include "JujutsuKaisenCharacter.h"
 #include "JujutsuKaisenCharacterDataAsset.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
+
 
 void ASinglePlayGameMode::BeginPlay()
 {
@@ -28,11 +30,14 @@ void ASinglePlayGameMode::BeginPlay()
         return;
     }
 
-    FVector PlayerSpawnLocation(0.f, -200.f, 300.f);
-    FVector EnemySpawnLocation(0.f, 200.f, 300.f);
+    FVector PlayerSpawnLocation(0.f, -200.f, 0.f);
+    FVector EnemySpawnLocation(0.f, 200.f, 0.f);
 
     SpawnCharacterFromData(GameInstance->MyCharacterDataAsset, PlayerSpawnLocation, FRotator::ZeroRotator, true);
     SpawnCharacterFromData(GameInstance->EnemyCharacterDataAsset, EnemySpawnLocation, FRotator::ZeroRotator, false);
+
+    InitCharacterFromData(GameInstance->MyCharacterDataAsset, true);
+    InitCharacterFromData(GameInstance->EnemyCharacterDataAsset, false);
 }
 
 void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsset* DataAsset, const FVector& SpawnLocation, const FRotator& SpawnRotation, bool bIsPlayerCharacter)
@@ -62,11 +67,13 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
 
         if (bIsPlayerCharacter)
         {
+            PlayerCharacter = SpawnedCharacter;
             SpawnedCharacter->AutoPossessPlayer = EAutoReceiveInput::Player0;
             UE_LOG(LogTemp, Log, TEXT("Player Character %s Spawn Complete"), *SpawnedCharacter->GetName());
         }
         else
         {
+            EnemyCharacter = SpawnedCharacter;
             SpawnedCharacter->AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
             UE_LOG(LogTemp, Log, TEXT("AI Character %s spawn complete"), *SpawnedCharacter->GetName());
         }
@@ -75,4 +82,35 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
     {
         UE_LOG(LogTemp, Log, TEXT("Character spawn failed."));
     }
+}
+
+void ASinglePlayGameMode::InitCharacterFromData(UJujutsuKaisenCharacterDataAsset* DataAsset, bool bIsPlayerCharacter)
+{
+    if (!DataAsset) return;
+
+    AJujutsuKaisenCharacter* TargetCharacter = bIsPlayerCharacter ? PlayerCharacter : EnemyCharacter;
+
+    if (!TargetCharacter || !TargetCharacter->GetMesh()) return;
+
+    USkeletalMeshComponent* Mesh = TargetCharacter->GetMesh();
+
+    // Skeletal Mesh 설정
+    if (DataAsset->Mesh)
+    {
+        Mesh->SetSkeletalMesh(DataAsset->Mesh);
+    }
+
+    // AnimBP 설정
+    if (DataAsset->AnimBP && DataAsset->AnimBP)
+    {
+        Mesh->SetAnimInstanceClass(DataAsset->AnimBP);
+    }
+
+    // Mesh 스케일 설정
+    Mesh->SetRelativeScale3D(FVector(DataAsset->MeshScale));
+
+    // Mesh 위치를 캡슐 아래로 내리기
+    float HalfHeight = TargetCharacter->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+    Mesh->SetRelativeLocation(FVector(0.f, 0.f, -HalfHeight));
+
 }
