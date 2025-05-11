@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "GameFramework/Character.h"
 #include "JujutsuKaisenCharacterDataAsset.generated.h"
 
 // 미리 선언 (헤더 간 순환 참조 방지)

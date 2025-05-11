@@ -18,7 +18,7 @@ void UJujutsuKaisenGameInstance::StartSingle()
         {
 
             WorldSettings->DefaultGameMode = ASinglePlayGameMode::StaticClass();
-            UGameplayStatics::OpenLevel(world, "CityMap", true);
+            UGameplayStatics::OpenLevel(world, "CityMap", true, TEXT("?game=/Script/JujutsuKaisen.SinglePlayGameMode"));
             
         }
     }
