@@ -20,6 +20,9 @@ class JUJUTSUKAISEN_API ASinglePlayGameMode : public AJujutsuKaisenGameMode
 
 	AJujutsuKaisenCharacter* EnemyCharacter = NULL;
 
+public:
+	ASinglePlayGameMode();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -27,4 +30,7 @@ protected:
 	
 	void InitCharacterFromData(UJujutsuKaisenCharacterDataAsset* DataAsset, bool bIsPlayerCharacter);
 
+	void PossessPlayer();
+
+	void PossessAI();
 };

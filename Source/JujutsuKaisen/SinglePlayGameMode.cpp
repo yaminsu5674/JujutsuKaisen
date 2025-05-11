@@ -5,8 +5,17 @@
 #include "JujutsuKaisenGameInstance.h"
 #include "JujutsuKaisenCharacter.h"
 #include "JujutsuKaisenCharacterDataAsset.h"
+#include "JujutsuKaisenPlayerController.h"
+#include "JujutsuKaisenAIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
+
+
+ASinglePlayGameMode::ASinglePlayGameMode()
+{
+    DefaultPawnClass = nullptr; // 자동 스폰 막기
+    PlayerControllerClass = AJujutsuKaisenPlayerController::StaticClass();
+}
 
 
 void ASinglePlayGameMode::BeginPlay()
@@ -34,6 +43,9 @@ void ASinglePlayGameMode::BeginPlay()
 
     InitCharacterFromData(GameInstance->MyCharacterDataAsset, true);
     InitCharacterFromData(GameInstance->EnemyCharacterDataAsset, false);
+
+    PossessPlayer();
+    PossessAI();
 }
 
 void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsset* DataAsset, const FVector& SpawnLocation, const FRotator& SpawnRotation, bool bIsPlayerCharacter)
@@ -64,13 +76,13 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
         if (bIsPlayerCharacter)
         {
             PlayerCharacter = SpawnedCharacter;
-            SpawnedCharacter->AutoPossessPlayer = EAutoReceiveInput::Player0;
+            /*SpawnedCharacter->AutoPossessPlayer = EAutoReceiveInput::Player0;*/
             UE_LOG(LogTemp, Log, TEXT("Player Character %s Spawn Complete"), *SpawnedCharacter->GetName());
         }
         else
         {
             EnemyCharacter = SpawnedCharacter;
-            SpawnedCharacter->AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+            /*SpawnedCharacter->AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;*/
             UE_LOG(LogTemp, Log, TEXT("AI Character %s spawn complete"), *SpawnedCharacter->GetName());
         }
     }
@@ -109,4 +121,48 @@ void ASinglePlayGameMode::InitCharacterFromData(UJujutsuKaisenCharacterDataAsset
     float HalfHeight = TargetCharacter->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
     Mesh->SetRelativeLocation(FVector(0.f, 0.f, -HalfHeight));
 
+    Mesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+
+}
+
+void ASinglePlayGameMode::PossessPlayer()
+{
+    UWorld* World = GetWorld();
+
+    if (!World) return;
+
+    AJujutsuKaisenPlayerController* PC = Cast<AJujutsuKaisenPlayerController>(UGameplayStatics::GetPlayerController(World, 0));
+    if (PC)
+    {
+        PC->Possess(PlayerCharacter);
+        UE_LOG(LogTemp, Log, TEXT("Player Character Possessed"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("PlayerController not found"));
+    }
+}
+
+void ASinglePlayGameMode::PossessAI()
+{
+    if (!EnemyCharacter) return;
+
+    AJujutsuKaisenAIController* AIController = Cast<AJujutsuKaisenAIController>(EnemyCharacter->GetController());
+
+    if (!AIController)
+    {
+        UWorld* World = GetWorld();
+        if (!World) return;
+
+        AIController = World->SpawnActor<AJujutsuKaisenAIController>(AJujutsuKaisenAIController::StaticClass());
+        if (AIController)
+        {
+            AIController->Possess(EnemyCharacter);
+            UE_LOG(LogTemp, Log, TEXT("AI Possession Successful"));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("AIController spawn failed"));
+        }
+    }
 }
