@@ -12,21 +12,17 @@
 void ASinglePlayGameMode::BeginPlay()
 {
     Super::BeginPlay();
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Skill 1   !"));
-    }
 
     UJujutsuKaisenGameInstance* GameInstance = Cast<UJujutsuKaisenGameInstance>(GetGameInstance());
     if (!GameInstance)
     {
-        UE_LOG(LogTemp, Log, TEXT("GameInstance Casting failed"));
+        UE_LOG(LogTemp, Error, TEXT("GameInstance Casting failed"));
         return;
     }
 
     if (!GameInstance->MyCharacterDataAsset || !GameInstance->EnemyCharacterDataAsset)
     {
-        UE_LOG(LogTemp, Log, TEXT("Character Data asset is empty"));
+        UE_LOG(LogTemp, Error, TEXT("Character Data asset is empty"));
         return;
     }
 
@@ -44,14 +40,14 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
 {
     if (!DataAsset || !DataAsset->CharacterClass)
     {
-        UE_LOG(LogTemp, Log, TEXT("Character Class or DataAsset is not valid"));
+        UE_LOG(LogTemp, Error, TEXT("Character Class or DataAsset is not valid"));
         return;
     }
 
     UWorld* World = GetWorld();
     if (!World)
     {
-        UE_LOG(LogTemp, Log, TEXT("No World"));
+        UE_LOG(LogTemp, Error, TEXT("No World"));
         return;
     }
 
@@ -80,7 +76,7 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
     }
     else
     {
-        UE_LOG(LogTemp, Log, TEXT("Character spawn failed."));
+        UE_LOG(LogTemp, Error, TEXT("Character spawn failed."));
     }
 }
 
