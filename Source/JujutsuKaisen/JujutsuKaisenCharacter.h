@@ -87,7 +87,7 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	// call this function when game mode makes character instance;
-	void InitFromDataAsset(UJujutsuKaisenCharacterDataAsset* InDataAsset);
+	void InitCharacterWithData(UJujutsuKaisenCharacterDataAsset* InDataAsset);
 
 	void Hit();
 

@@ -42,8 +42,8 @@ void ASinglePlayGameMode::BeginPlay()
     SpawnCharacterFromData(GameInstance->MyCharacterDataAsset, PlayerSpawnLocation, FRotator::ZeroRotator, true);
     SpawnCharacterFromData(GameInstance->EnemyCharacterDataAsset, EnemySpawnLocation, FRotator::ZeroRotator, false);
 
-    InitCharacterFromData(GameInstance->MyCharacterDataAsset, true);
-    InitCharacterFromData(GameInstance->EnemyCharacterDataAsset, false);
+    /*InitCharacterFromData(GameInstance->MyCharacterDataAsset, true);
+    InitCharacterFromData(GameInstance->EnemyCharacterDataAsset, false);*/
 
     PossessPlayer();
     PossessAI();
@@ -68,22 +68,38 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
     // 캐릭터 스폰
-    AJujutsuKaisenCharacter* SpawnedCharacter = World->SpawnActor<AJujutsuKaisenCharacter>(DataAsset->CharacterClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+    // Legacy code 기능 문제없으면 레거시 삭제.
+    // AJujutsuKaisenCharacter* SpawnedCharacter = World->SpawnActor<AJujutsuKaisenCharacter>(DataAsset->CharacterClass, SpawnLocation, SpawnRotation, SpawnParams);
+    FTransform SpawnTransform(SpawnRotation, SpawnLocation);
+
+    AJujutsuKaisenCharacter* SpawnedCharacter = Cast<AJujutsuKaisenCharacter>(
+        UGameplayStatics::BeginDeferredActorSpawnFromClass(
+            World,
+            DataAsset->CharacterClass,
+            SpawnTransform,
+            ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn,
+            nullptr
+        )
+    );
 
     if (SpawnedCharacter)
     {
-       
+        // 메시, 데이터셋 등 초기화
+        SpawnedCharacter->InitCharacterWithData(DataAsset);
+
+        // 실제 BeginPlay() 호출됨
+        UGameplayStatics::FinishSpawningActor(SpawnedCharacter, SpawnTransform);
 
         if (bIsPlayerCharacter)
         {
             PlayerCharacter = SpawnedCharacter;
-            /*SpawnedCharacter->AutoPossessPlayer = EAutoReceiveInput::Player0;*/
             UE_LOG(LogTemp, Log, TEXT("Player Character %s Spawn Complete"), *SpawnedCharacter->GetName());
         }
         else
         {
             EnemyCharacter = SpawnedCharacter;
-            /*SpawnedCharacter->AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;*/
+
             UE_LOG(LogTemp, Log, TEXT("AI Character %s spawn complete"), *SpawnedCharacter->GetName());
         }
     }
@@ -111,7 +127,7 @@ void ASinglePlayGameMode::InitCharacterFromData(UJujutsuKaisenCharacterDataAsset
     }
 
     // AnimBP 설정
-    if (DataAsset->AnimBP && DataAsset->AnimBP)
+    if (DataAsset->AnimBP )
     {
         Mesh->SetAnimInstanceClass(DataAsset->AnimBP);
         

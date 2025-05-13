@@ -128,21 +128,31 @@ void AJujutsuKaisenCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 
 
 
-void AJujutsuKaisenCharacter::InitFromDataAsset(UJujutsuKaisenCharacterDataAsset* InDataAsset)
+void AJujutsuKaisenCharacter::InitCharacterWithData(UJujutsuKaisenCharacterDataAsset* InDataAsset)
 {
 	if (!InDataAsset) return;
 
-	// 스켈레탈 메시
-	GetMesh()->SetSkeletalMesh(InDataAsset->Mesh);
+	// Skeletal Mesh 설정
+	if (InDataAsset->Mesh)
+	{
+		GetMesh()->SetSkeletalMesh(InDataAsset->Mesh);
+	}
 
-	// 메시 스케일
-	GetMesh()->SetWorldScale3D(FVector(InDataAsset->MeshScale));
-
-	// ABP
+	// AnimBP 설정
 	if (InDataAsset->AnimBP)
 	{
 		GetMesh()->SetAnimInstanceClass(InDataAsset->AnimBP);
+
 	}
+
+	// Mesh 스케일 설정
+	GetMesh()->SetRelativeScale3D(FVector(InDataAsset->MeshScale));
+
+	// Mesh 위치를 캡슐 아래로 내리기
+	float HalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -HalfHeight));
+
+	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
 }
 
@@ -152,8 +162,11 @@ void AJujutsuKaisenCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	Health = MaxHealth;
-
-
+	_AnimInstance = Cast<UJujutsuKaisenAnimInstance>(GetMesh()->GetAnimInstance());
+	if (_AnimInstance)
+	{
+		UE_LOG(LogTemp, Error, TEXT("_AnimInstance init!!!"));
+	}
 	// if (GEngine)
 	// {
 	// 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Some debug message!"));	
@@ -163,7 +176,11 @@ void AJujutsuKaisenCharacter::BeginPlay()
 void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	_AnimInstance->Speed = GetCharacterMovement()->Velocity.Size2D();
+	if (_AnimInstance)
+	{
+		_AnimInstance->Speed = GetCharacterMovement()->Velocity.Size2D();
+	}
+
 }
 
 void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
