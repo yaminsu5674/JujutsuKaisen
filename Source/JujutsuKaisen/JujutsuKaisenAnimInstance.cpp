@@ -12,6 +12,6 @@ void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
     }
     else
     {
-        State = ECharacterState::Idle;
+        State = ECharacterState::Locomotion;
     }
 }

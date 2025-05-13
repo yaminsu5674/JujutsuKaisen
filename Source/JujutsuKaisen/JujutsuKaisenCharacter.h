@@ -51,7 +51,7 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere)
 	float Health;
 
-protected:
+public:
 	class UJujutsuKaisenAnimInstance* _AnimInstance;
 
 public:
@@ -67,6 +67,8 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	void JumpCustom(const FInputActionValue& Value);
 
 	virtual void NotifyControllerChanged() override;
 

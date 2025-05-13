@@ -4,6 +4,7 @@
 #include "SinglePlayGameMode.h"
 #include "JujutsuKaisenGameInstance.h"
 #include "JujutsuKaisenCharacter.h"
+#include "JujutsuKaisenAnimInstance.h"
 #include "JujutsuKaisenCharacterDataAsset.h"
 #include "JujutsuKaisenPlayerController.h"
 #include "JujutsuKaisenAIController.h"
@@ -102,6 +103,7 @@ void ASinglePlayGameMode::InitCharacterFromData(UJujutsuKaisenCharacterDataAsset
 
     USkeletalMeshComponent* Mesh = TargetCharacter->GetMesh();
 
+
     // Skeletal Mesh 설정
     if (DataAsset->Mesh)
     {
@@ -112,6 +114,8 @@ void ASinglePlayGameMode::InitCharacterFromData(UJujutsuKaisenCharacterDataAsset
     if (DataAsset->AnimBP && DataAsset->AnimBP)
     {
         Mesh->SetAnimInstanceClass(DataAsset->AnimBP);
+        
+
     }
 
     // Mesh 스케일 설정

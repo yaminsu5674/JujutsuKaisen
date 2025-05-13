@@ -96,7 +96,7 @@ void AJujutsuKaisenCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::JumpCustom);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
@@ -163,10 +163,12 @@ void AJujutsuKaisenCharacter::BeginPlay()
 void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	_AnimInstance->Speed = GetCharacterMovement()->Velocity.Size2D();
 }
 
 void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
 {
+
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -201,29 +203,54 @@ void AJujutsuKaisenCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
+{
+	Super::Jump(); // 기본 동작 수행
+	if (_AnimInstance)
+	{
+		_AnimInstance->State = ECharacterState::Jump;
+	}
+}
+
+
 
 void AJujutsuKaisenCharacter::Hit()
 {
-
+	if (_AnimInstance)
+	{
+		_AnimInstance->State = ECharacterState::Hit;
+	}
 }
 
 
 void AJujutsuKaisenCharacter::Die()
 {
-
+	if (_AnimInstance)
+	{
+		_AnimInstance->State = ECharacterState::Dead;
+	}
 }
 
 void AJujutsuKaisenCharacter::Skill_1()
 {
-
+	if (_AnimInstance)
+	{
+		_AnimInstance->State = ECharacterState::Skill_1;
+	}
 }
 
 void AJujutsuKaisenCharacter::Skill_2()
 {
-
+	if (_AnimInstance)
+	{
+		_AnimInstance->State = ECharacterState::Skill_2;
+	}
 }
 
 void AJujutsuKaisenCharacter::Skill_3()
 {
-
+	if (_AnimInstance)
+	{
+		_AnimInstance->State = ECharacterState::Skill_3;
+	}
 }

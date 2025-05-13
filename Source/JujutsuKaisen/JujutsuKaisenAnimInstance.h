@@ -10,8 +10,7 @@
 UENUM(BlueprintType)
 enum class ECharacterState : uint8
 {
-	Idle,
-	Move,
+	Locomotion,
 	Jump,
 	Hit,
 	Dead,
@@ -33,6 +32,9 @@ class JUJUTSUKAISEN_API UJujutsuKaisenAnimInstance : public UAnimInstance
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params")
 	ECharacterState State;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params")
+	float Speed;
 
 public:
 	UFUNCTION(BlueprintCallable)
