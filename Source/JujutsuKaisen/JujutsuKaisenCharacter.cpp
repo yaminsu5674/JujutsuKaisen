@@ -21,8 +21,12 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 {
+
+	// My Customize settings
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	AutoPossessAI = EAutoPossessAI::Disabled;
+	this->JumpMaxCount = 2;
+
 
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -180,6 +184,7 @@ void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 	{
 		_AnimInstance->Speed = GetCharacterMovement()->Velocity.Size2D();
 	}
+	
 
 }
 
