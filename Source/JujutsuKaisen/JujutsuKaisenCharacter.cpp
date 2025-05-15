@@ -25,7 +25,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	// My Customize settings
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	AutoPossessAI = EAutoPossessAI::Disabled;
-	this->JumpMaxCount = 2;
+	/*this->JumpMaxCount = 2;*/
 
 
 	// Set size for collision capsule
@@ -232,6 +232,10 @@ void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 	{
 		_AnimInstance->State = ECharacterState::Jump;
 	}
+	 /*if (GEngine)
+	 {
+	 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Jumping!"));	
+	 }*/
 }
 
 
