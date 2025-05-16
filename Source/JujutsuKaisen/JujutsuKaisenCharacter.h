@@ -45,6 +45,10 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	// Sub Mesh.
+	UPROPERTY(EditAnywhere,  Category = "Character params")
+	USkeletalMeshComponent* SubMesh;
+
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	float MaxHealth = 100;
 

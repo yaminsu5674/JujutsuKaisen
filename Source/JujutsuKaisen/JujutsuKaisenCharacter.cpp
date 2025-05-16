@@ -25,6 +25,25 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	// My Customize settings
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	AutoPossessAI = EAutoPossessAI::Disabled;
+
+	SubMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SubMesh"));
+	SubMesh->SetupAttachment(GetMesh());
+	SubMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+
+	GetMesh()->SetVisibility(false);
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+	
+	FSoftObjectPath DataAssetPath(TEXT("/Game/Dynamic/DataAsset/Mixamo.Mixamo"));
+	UJujutsuKaisenCharacterDataAsset* MixamoAsset = Cast<UJujutsuKaisenCharacterDataAsset>(DataAssetPath.TryLoad());
+	if (MixamoAsset)
+	{
+		GetMesh()->SetSkeletalMesh(MixamoAsset->Mesh);
+		GetMesh()->SetAnimInstanceClass(MixamoAsset->AnimBP);
+	}
+
+
+
+
 	/*this->JumpMaxCount = 2;*/
 
 
@@ -115,20 +134,6 @@ void AJujutsuKaisenCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 	}
 }
 
-// void AJujutsuKaisenCharacter::SetAnimBP(const FString& AnimBPPath)
-// {
-// 	UClass* AnimBPClass = StaticLoadClass(UAnimInstance::StaticClass(), nullptr, *AnimBPPath);
-// 	if (AnimBPClass)
-// 	{
-// 		GetMesh()->SetAnimInstanceClass(AnimBPClass);
-// 		_AnimInstance = Cast<UJujutsuKaisenAnimInstance>(GetMesh()->GetAnimInstance());
-// 	}	
-
-// 	else
-// 	{
-// 		UE_LOG(LogTemp, Warning, TEXT("Failed to load AnimBP at path: %s"), *AnimBPPath);
-// 	}
-// }
 
 
 
@@ -139,24 +144,24 @@ void AJujutsuKaisenCharacter::InitCharacterWithData(UJujutsuKaisenCharacterDataA
 	// Skeletal Mesh 설정
 	if (InDataAsset->Mesh)
 	{
-		GetMesh()->SetSkeletalMesh(InDataAsset->Mesh);
+		SubMesh->SetSkeletalMesh(InDataAsset->Mesh);
 	}
 
 	// AnimBP 설정
 	if (InDataAsset->AnimBP)
 	{
-		GetMesh()->SetAnimInstanceClass(InDataAsset->AnimBP);
+		SubMesh->SetAnimInstanceClass(InDataAsset->AnimBP);
 
 	}
 
 	// Mesh 스케일 설정
-	GetMesh()->SetRelativeScale3D(FVector(InDataAsset->MeshScale));
+	SubMesh->SetRelativeScale3D(FVector(InDataAsset->MeshScale));
 
 	// Mesh 위치를 캡슐 아래로 내리기
 	float HalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
-	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -HalfHeight));
+	SubMesh->SetRelativeLocation(FVector(0.f, 0.f, -HalfHeight));
 
-	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	SubMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
 }
 

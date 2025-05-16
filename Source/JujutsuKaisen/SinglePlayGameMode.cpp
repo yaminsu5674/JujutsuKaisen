@@ -37,7 +37,7 @@ void ASinglePlayGameMode::BeginPlay()
     }
 
     FVector PlayerSpawnLocation(0.f, -200.f, 0.f);
-    FVector EnemySpawnLocation(0.f, 200.f, 0.f);
+    FVector EnemySpawnLocation(0.f, 1000.f, 0.f);
 
     SpawnCharacterFromData(GameInstance->MyCharacterDataAsset, PlayerSpawnLocation, FRotator::ZeroRotator, true);
     SpawnCharacterFromData(GameInstance->EnemyCharacterDataAsset, EnemySpawnLocation, FRotator::ZeroRotator, false);
@@ -99,7 +99,6 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
         else
         {
             EnemyCharacter = SpawnedCharacter;
-
             UE_LOG(LogTemp, Log, TEXT("AI Character %s spawn complete"), *SpawnedCharacter->GetName());
         }
     }
