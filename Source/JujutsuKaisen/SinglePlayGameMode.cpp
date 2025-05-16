@@ -36,14 +36,9 @@ void ASinglePlayGameMode::BeginPlay()
         return;
     }
 
-    FVector PlayerSpawnLocation(0.f, -200.f, 0.f);
-    FVector EnemySpawnLocation(0.f, 1000.f, 0.f);
 
-    SpawnCharacterFromData(GameInstance->MyCharacterDataAsset, PlayerSpawnLocation, FRotator::ZeroRotator, true);
-    SpawnCharacterFromData(GameInstance->EnemyCharacterDataAsset, EnemySpawnLocation, FRotator::ZeroRotator, false);
-
-    /*InitCharacterFromData(GameInstance->MyCharacterDataAsset, true);
-    InitCharacterFromData(GameInstance->EnemyCharacterDataAsset, false);*/
+    SpawnCharacterFromData(GameInstance->MyCharacterDataAsset, PlayerSpawnLocation, PlayerSpawnRotation, true);
+    SpawnCharacterFromData(GameInstance->EnemyCharacterDataAsset, EnemySpawnLocation, EnemySpawnRotation, false);
 
     PossessPlayer();
     PossessAI();

@@ -20,6 +20,20 @@ class JUJUTSUKAISEN_API ASinglePlayGameMode : public AJujutsuKaisenGameMode
 
 	AJujutsuKaisenCharacter* EnemyCharacter = NULL;
 
+	UPROPERTY(EditAnywhere, Category = "Character params")
+	FVector PlayerSpawnLocation = FVector(0.f, -200.f, 0.f);
+
+	UPROPERTY(EditAnywhere, Category = "Character params")
+	FVector EnemySpawnLocation = FVector(1000.f, -200.f, 0.f);
+
+	UPROPERTY(EditAnywhere, Category = "Character params")
+	FRotator PlayerSpawnRotation = FRotator(0.f, 0.f, 0.f);
+
+	UPROPERTY(EditAnywhere, Category = "Character params")
+	FRotator EnemySpawnRotation = FRotator(0.f, 180.f, 0.f);
+
+	
+
 public:
 	ASinglePlayGameMode();
 
