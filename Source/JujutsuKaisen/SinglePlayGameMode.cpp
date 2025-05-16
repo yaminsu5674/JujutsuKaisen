@@ -109,41 +109,6 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
     }
 }
 
-void ASinglePlayGameMode::InitCharacterFromData(UJujutsuKaisenCharacterDataAsset* DataAsset, bool bIsPlayerCharacter)
-{
-    if (!DataAsset) return;
-
-    AJujutsuKaisenCharacter* TargetCharacter = bIsPlayerCharacter ? PlayerCharacter : EnemyCharacter;
-
-    if (!TargetCharacter || !TargetCharacter->GetMesh()) return;
-
-    USkeletalMeshComponent* Mesh = TargetCharacter->GetMesh();
-
-
-    // Skeletal Mesh 설정
-    if (DataAsset->Mesh)
-    {
-        Mesh->SetSkeletalMesh(DataAsset->Mesh);
-    }
-
-    // AnimBP 설정
-    if (DataAsset->AnimBP )
-    {
-        Mesh->SetAnimInstanceClass(DataAsset->AnimBP);
-        
-
-    }
-
-    // Mesh 스케일 설정
-    Mesh->SetRelativeScale3D(FVector(DataAsset->MeshScale));
-
-    // Mesh 위치를 캡슐 아래로 내리기
-    float HalfHeight = TargetCharacter->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
-    Mesh->SetRelativeLocation(FVector(0.f, 0.f, -HalfHeight));
-
-    Mesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-
-}
 
 void ASinglePlayGameMode::PossessPlayer()
 {

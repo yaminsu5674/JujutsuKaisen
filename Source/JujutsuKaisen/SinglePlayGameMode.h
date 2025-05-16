@@ -27,8 +27,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	void SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsset* DataAsset, const FVector& SpawnLocation, const FRotator& SpawnRotation, bool bIsPlayerCharacter);
-	
-	void InitCharacterFromData(UJujutsuKaisenCharacterDataAsset* DataAsset, bool bIsPlayerCharacter);
 
 	void PossessPlayer();
 
