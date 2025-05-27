@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "JujutsuKaisenCharacter.h"
-#include "JujutsuKaisenAnimInstance.h"
+#include "Characters/JujutsuKaisenCharacter.h"
+#include "Animations/JujutsuKaisenAnimInstance.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -11,7 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "JujutsuKaisenCharacterDataAsset.h"
+#include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
 #include "InputMappingContext.h"    
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);

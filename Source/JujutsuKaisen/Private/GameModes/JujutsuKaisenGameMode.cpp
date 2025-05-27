@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "JujutsuKaisenGameMode.h"
-#include "JujutsuKaisenCharacter.h"
+#include "GameModes/JujutsuKaisenGameMode.h"
+#include "Characters/JujutsuKaisenCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 AJujutsuKaisenGameMode::AJujutsuKaisenGameMode()

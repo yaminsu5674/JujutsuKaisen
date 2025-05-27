@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "JujutsuKaisenAIController.h"
+#include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
 

@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "JujutsuKaisenGameMode.h"
-#include "JujutsuKaisenCharacter.h"
-#include "JujutsuKaisenCharacterDataAsset.h"
+#include "Characters/JujutsuKaisenCharacter.h"
+#include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
 #include "SinglePlayGameMode.generated.h"
 
 /**

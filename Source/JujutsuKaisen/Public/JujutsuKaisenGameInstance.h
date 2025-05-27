@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "JujutsuKaisenCharacterDataAsset.h"
+#include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
 #include "JujutsuKaisenGameInstance.generated.h"
 
 /**

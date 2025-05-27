@@ -3,8 +3,8 @@
 
 #include "JujutsuKaisenGameInstance.h"
 #include "Kismet/GameplayStatics.h"
-#include "SinglePlayGameMode.h"
-#include "LobbyGameMode.h"
+#include "GameModes/SinglePlayGameMode.h"
+#include "GameModes/LobbyGameMode.h"
 
 
 

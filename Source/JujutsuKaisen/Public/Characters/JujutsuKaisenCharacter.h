@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
-#include "JujutsuKaisenCharacterDataAsset.h"
+#include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
 #include "JujutsuKaisenCharacter.generated.h"
 
 class USpringArmComponent;

@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SinglePlayGameMode.h"
+#include "GameModes/SinglePlayGameMode.h"
 #include "JujutsuKaisenGameInstance.h"
-#include "JujutsuKaisenCharacter.h"
-#include "JujutsuKaisenAnimInstance.h"
-#include "JujutsuKaisenCharacterDataAsset.h"
-#include "JujutsuKaisenPlayerController.h"
-#include "JujutsuKaisenAIController.h"
+#include "Characters/JujutsuKaisenCharacter.h"
+#include "Animations/JujutsuKaisenAnimInstance.h"
+#include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
+#include "Controllers/JujutsuKaisenPlayerController.h"
+#include "Controllers/JujutsuKaisenAIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 

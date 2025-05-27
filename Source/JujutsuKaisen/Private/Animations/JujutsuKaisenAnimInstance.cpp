@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "JujutsuKaisenAnimInstance.h"
-#include "JujutsuKaisenCharacter.h"
+#include "Animations/JujutsuKaisenAnimInstance.h"
+#include "Characters/JujutsuKaisenCharacter.h"
 
 void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
 {

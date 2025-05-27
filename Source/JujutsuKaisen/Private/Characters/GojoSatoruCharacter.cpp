@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GojoSatoruCharacter.h"
+#include "Characters/GojoSatoruCharacter.h"
 
 void AGojoSatoruCharacter::Skill_1()
 {
