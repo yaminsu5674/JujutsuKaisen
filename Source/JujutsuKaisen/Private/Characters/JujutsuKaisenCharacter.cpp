@@ -37,8 +37,8 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	UJujutsuKaisenCharacterDataAsset* MixamoAsset = Cast<UJujutsuKaisenCharacterDataAsset>(DataAssetPath.TryLoad());
 	if (MixamoAsset)
 	{
-		GetMesh()->SetSkeletalMesh(MixamoAsset->Mesh);
-		GetMesh()->SetAnimInstanceClass(MixamoAsset->AnimBP);
+		GetMesh()->SetSkeletalMesh(MixamoAsset->GetMesh());
+		GetMesh()->SetAnimInstanceClass(MixamoAsset->GetAnimBP());
 	}
 
 
@@ -142,20 +142,20 @@ void AJujutsuKaisenCharacter::InitCharacterWithData(UJujutsuKaisenCharacterDataA
 	if (!InDataAsset) return;
 
 	// Skeletal Mesh 설정
-	if (InDataAsset->Mesh)
+	if (InDataAsset->GetMesh())
 	{
-		SubMesh->SetSkeletalMesh(InDataAsset->Mesh);
+		SubMesh->SetSkeletalMesh(InDataAsset->GetMesh());
 	}
 
 	// AnimBP 설정
-	if (InDataAsset->AnimBP)
+	if (InDataAsset->GetAnimBP())
 	{
-		SubMesh->SetAnimInstanceClass(InDataAsset->AnimBP);
+		SubMesh->SetAnimInstanceClass(InDataAsset->GetAnimBP());
 
 	}
 
 	// Mesh 스케일 설정
-	SubMesh->SetRelativeScale3D(FVector(InDataAsset->MeshScale));
+	SubMesh->SetRelativeScale3D(FVector(InDataAsset->GetMeshScale()));
 
 	// Mesh 위치를 캡슐 아래로 내리기
 	float HalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();

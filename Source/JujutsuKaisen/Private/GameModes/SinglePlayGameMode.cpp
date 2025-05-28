@@ -46,7 +46,7 @@ void ASinglePlayGameMode::BeginPlay()
 
 void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsset* DataAsset, const FVector& SpawnLocation, const FRotator& SpawnRotation, bool bIsPlayerCharacter)
 {
-    if (!DataAsset || !DataAsset->CharacterClass)
+    if (!DataAsset || !DataAsset->GetCharacterClass())
     {
         UE_LOG(LogTemp, Error, TEXT("Character Class or DataAsset is not valid"));
         return;
@@ -71,7 +71,7 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
     AJujutsuKaisenCharacter* SpawnedCharacter = Cast<AJujutsuKaisenCharacter>(
         UGameplayStatics::BeginDeferredActorSpawnFromClass(
             World,
-            DataAsset->CharacterClass,
+            DataAsset->GetCharacterClass(),
             SpawnTransform,
             ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn,
             nullptr
