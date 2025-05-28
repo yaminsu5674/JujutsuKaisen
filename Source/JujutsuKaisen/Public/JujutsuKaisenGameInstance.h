@@ -19,11 +19,10 @@ class JUJUTSUKAISEN_API UJujutsuKaisenGameInstance : public UGameInstance
 
 	// enemy player data asset store as text
 
-public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UJujutsuKaisenCharacterDataAsset* MyCharacterDataAsset;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UJujutsuKaisenCharacterDataAsset* EnemyCharacterDataAsset;
 
 
@@ -41,5 +40,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetEnemyCharacterByPath(const FString& AssetPath);
+
+	FORCEINLINE UJujutsuKaisenCharacterDataAsset* GetMyCharacterDataAsset() const { return MyCharacterDataAsset; }
+
+	FORCEINLINE UJujutsuKaisenCharacterDataAsset* GetEnemyCharacterDataAsset() const { return EnemyCharacterDataAsset; }
 	
 };

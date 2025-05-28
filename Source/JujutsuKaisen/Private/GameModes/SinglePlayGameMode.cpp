@@ -30,15 +30,15 @@ void ASinglePlayGameMode::BeginPlay()
         return;
     }
 
-    if (!GameInstance->MyCharacterDataAsset || !GameInstance->EnemyCharacterDataAsset)
+    if (!GameInstance->GetMyCharacterDataAsset() || !GameInstance->GetEnemyCharacterDataAsset())
     {
         UE_LOG(LogTemp, Error, TEXT("Character Data asset is empty"));
         return;
     }
 
 
-    SpawnCharacterFromData(GameInstance->MyCharacterDataAsset, PlayerSpawnLocation, PlayerSpawnRotation, true);
-    SpawnCharacterFromData(GameInstance->EnemyCharacterDataAsset, EnemySpawnLocation, EnemySpawnRotation, false);
+    SpawnCharacterFromData(GameInstance->GetMyCharacterDataAsset(), PlayerSpawnLocation, PlayerSpawnRotation, true);
+    SpawnCharacterFromData(GameInstance->GetEnemyCharacterDataAsset(), EnemySpawnLocation, EnemySpawnRotation, false);
 
     PossessPlayer();
     PossessAI();
