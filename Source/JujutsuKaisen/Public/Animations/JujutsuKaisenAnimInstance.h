@@ -29,15 +29,26 @@ class JUJUTSUKAISEN_API UJujutsuKaisenAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
 	ECharacterState State;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
 	float Speed;
 
 public:
 	UFUNCTION(BlueprintCallable)
 	void OnStateAnimationEnds();
+
+	UFUNCTION(BlueprintCallable)
+	void SetState(ECharacterState InState);
+
+	UFUNCTION(BlueprintCallable)
+	ECharacterState GetState() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetSpeed(float InSpeed);
+
+	UFUNCTION(BlueprintCallable)
+	float GetSpeed() const;
 
 };

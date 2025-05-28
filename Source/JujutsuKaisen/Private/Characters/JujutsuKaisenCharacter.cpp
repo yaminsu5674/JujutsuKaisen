@@ -187,7 +187,8 @@ void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (_AnimInstance)
 	{
-		_AnimInstance->Speed = GetCharacterMovement()->Velocity.Size2D();
+		float Speed = GetCharacterMovement()->Velocity.Size2D();
+		_AnimInstance->SetSpeed(Speed);
 	}
 	
 
@@ -235,7 +236,7 @@ void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 	Super::Jump(); // 기본 동작 수행
 	if (_AnimInstance)
 	{
-		_AnimInstance->State = ECharacterState::Jump;
+		_AnimInstance->SetState(ECharacterState::Jump);
 	}
 	 /*if (GEngine)
 	 {
@@ -249,7 +250,7 @@ void AJujutsuKaisenCharacter::Hit()
 {
 	if (_AnimInstance)
 	{
-		_AnimInstance->State = ECharacterState::Hit;
+		_AnimInstance->SetState(ECharacterState::Hit);
 	}
 }
 
@@ -258,7 +259,7 @@ void AJujutsuKaisenCharacter::Die()
 {
 	if (_AnimInstance)
 	{
-		_AnimInstance->State = ECharacterState::Dead;
+		_AnimInstance->SetState(ECharacterState::Dead);
 	}
 }
 
@@ -266,7 +267,7 @@ void AJujutsuKaisenCharacter::Skill_1()
 {
 	if (_AnimInstance)
 	{
-		_AnimInstance->State = ECharacterState::Skill_1;
+		_AnimInstance->SetState(ECharacterState::Skill_1);
 	}
 }
 
@@ -274,7 +275,7 @@ void AJujutsuKaisenCharacter::Skill_2()
 {
 	if (_AnimInstance)
 	{
-		_AnimInstance->State = ECharacterState::Skill_2;
+		_AnimInstance->SetState(ECharacterState::Skill_2);
 	}
 }
 
@@ -282,6 +283,6 @@ void AJujutsuKaisenCharacter::Skill_3()
 {
 	if (_AnimInstance)
 	{
-		_AnimInstance->State = ECharacterState::Skill_3;
+		_AnimInstance->SetState(ECharacterState::Skill_3);
 	}
 }
