@@ -39,16 +39,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnStateAnimationEnds();
 
-	UFUNCTION(BlueprintCallable)
-	void SetState(ECharacterState InState);
+	FORCEINLINE void SetState(ECharacterState InState) { State = InState; }
 
-	UFUNCTION(BlueprintCallable)
-	ECharacterState GetState() const;
+	FORCEINLINE ECharacterState GetState() const { return State; }
 
-	UFUNCTION(BlueprintCallable)
-	void SetSpeed(float InSpeed);
+	FORCEINLINE void SetSpeed(float InSpeed) { Speed = InSpeed; }
 
-	UFUNCTION(BlueprintCallable)
-	float GetSpeed() const;
+	FORCEINLINE float GetSpeed() const { return Speed; }
 
 };

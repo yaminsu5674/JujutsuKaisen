@@ -15,25 +15,3 @@ void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
         State = ECharacterState::Locomotion;
     }
 }
-
-void UJujutsuKaisenAnimInstance::SetState(ECharacterState InState)
-{
-    State = InState;
-}
-
-
-float UJujutsuKaisenAnimInstance::GetSpeed() const
-{
-    return Speed;
-}
-
-void UJujutsuKaisenAnimInstance::SetSpeed(float InSpeed)
-{
-    Speed = InSpeed;
-}
-
-
-ECharacterState UJujutsuKaisenAnimInstance::GetState() const
-{
-    return State;
-}
