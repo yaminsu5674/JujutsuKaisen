@@ -97,10 +97,6 @@ public:
 
 	void Die();
 
-	virtual void Skill_1();
-
-	virtual void Skill_2();
-	
-	virtual void Skill_3();
+	void Skill();
 };
 

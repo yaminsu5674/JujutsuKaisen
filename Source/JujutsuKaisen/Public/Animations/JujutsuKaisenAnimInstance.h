@@ -14,12 +14,7 @@ enum class ECharacterState : uint8
 	Jump,
 	Hit,
 	Dead,
-	Skill_1,
-	Skill_2,
-	Skill_3,
-	// Punch
-	// Kick
-	// ...
+	Skill
 };
 /**
  *

@@ -263,26 +263,11 @@ void AJujutsuKaisenCharacter::Die()
 	}
 }
 
-void AJujutsuKaisenCharacter::Skill_1()
+void AJujutsuKaisenCharacter::Skill()
 {
 	if (_AnimInstance)
 	{
-		_AnimInstance->SetState(ECharacterState::Skill_1);
+		_AnimInstance->SetState(ECharacterState::Skill);
 	}
 }
 
-void AJujutsuKaisenCharacter::Skill_2()
-{
-	if (_AnimInstance)
-	{
-		_AnimInstance->SetState(ECharacterState::Skill_2);
-	}
-}
-
-void AJujutsuKaisenCharacter::Skill_3()
-{
-	if (_AnimInstance)
-	{
-		_AnimInstance->SetState(ECharacterState::Skill_3);
-	}
-}
