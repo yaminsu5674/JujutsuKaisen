@@ -40,17 +40,29 @@ class JUJUTSUKAISEN_API UJujutsuKaisenCharacterDataAsset : public UPrimaryDataAs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UAnimInstance> AnimBP;
 
+	// Ä¸½¶ ÄÄÆ÷³ÍÆ® Àý¹Ý ³ôÀÌ
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
+	double HalfHeight = 1.0f;
+
+	// Ä¸½¶ ÄÄÆ÷³ÍÆ® ¹Ý°æ
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
+	double Radius = 1.0f;
+
+
+
 public:
-	// Getter for CharacterClass
 	FORCEINLINE TSubclassOf<AJujutsuKaisenCharacter> GetCharacterClass() const { return CharacterClass; }
 
-	// Getter for Mesh
 	FORCEINLINE USkeletalMesh* GetMesh() const { return Mesh; }
 
-	// Getter for MeshScale
 	FORCEINLINE double GetMeshScale() const { return MeshScale; }
 
-	// Getter for AnimBP
 	FORCEINLINE TSubclassOf<UAnimInstance> GetAnimBP() const { return AnimBP; }
+
+	FORCEINLINE double GetHalfHeight() const { return HalfHeight; }
+
+	FORCEINLINE double GetRadius() const { return Radius; }
+
+
 
 };

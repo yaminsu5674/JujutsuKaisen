@@ -157,6 +157,10 @@ void AJujutsuKaisenCharacter::InitCharacterWithData(UJujutsuKaisenCharacterDataA
 	// Mesh 스케일 설정
 	SubMesh->SetRelativeScale3D(FVector(InDataAsset->GetMeshScale()));
 
+
+	// 캡슐 컴포넌트 높이, 반경 설정
+	GetCapsuleComponent()->InitCapsuleSize(InDataAsset->GetRadius(), InDataAsset->GetHalfHeight());
+
 	// Mesh 위치를 캡슐 아래로 내리기
 	float HalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 	SubMesh->SetRelativeLocation(FVector(0.f, 0.f, -HalfHeight));

@@ -64,8 +64,6 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
 
     // 캐릭터 스폰
 
-    // Legacy code 기능 문제없으면 레거시 삭제.
-    // AJujutsuKaisenCharacter* SpawnedCharacter = World->SpawnActor<AJujutsuKaisenCharacter>(DataAsset->CharacterClass, SpawnLocation, SpawnRotation, SpawnParams);
     FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 
     AJujutsuKaisenCharacter* SpawnedCharacter = Cast<AJujutsuKaisenCharacter>(
