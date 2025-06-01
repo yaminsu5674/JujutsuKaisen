@@ -126,7 +126,7 @@ void AJujutsuKaisenCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJujutsuKaisenCharacter::Look);
 
-		// JujutsuKaisenCharacter.cpp
+		// A_Skill
 		EnhancedInputComponent->BindAction(A_SkillAction, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::A_Skill);
 
 	}
