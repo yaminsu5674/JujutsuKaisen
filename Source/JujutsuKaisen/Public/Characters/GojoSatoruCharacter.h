@@ -15,6 +15,8 @@ class JUJUTSUKAISEN_API AGojoSatoruCharacter : public AJujutsuKaisenCharacter
 	GENERATED_BODY()
 
 public:
+	virtual void A_Skill(const FInputActionValue& Value) override;
+
 	
 	
 };

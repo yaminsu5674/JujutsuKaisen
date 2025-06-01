@@ -29,6 +29,11 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
+
+
+
+	// Input Action
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
@@ -44,6 +49,10 @@ class AJujutsuKaisenCharacter : public ACharacter
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
+
+	/** Look Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* A_SkillAction;
 
 	// Sub Mesh.
 	UPROPERTY(EditAnywhere,  Category = "Character params")
@@ -73,6 +82,8 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 	void JumpCustom(const FInputActionValue& Value);
+
+	virtual void A_Skill(const FInputActionValue& Value);
 
 	virtual void NotifyControllerChanged() override;
 

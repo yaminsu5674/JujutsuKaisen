@@ -42,8 +42,6 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	}
 
 
-
-
 	/*this->JumpMaxCount = 2;*/
 
 
@@ -91,7 +89,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 
 	JumpAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_Jump.IA_Jump")));
 
-
+	A_SkillAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_A_Skill.IA_A_Skill")));
 
 
 }
@@ -127,6 +125,10 @@ void AJujutsuKaisenCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJujutsuKaisenCharacter::Look);
+
+		// JujutsuKaisenCharacter.cpp
+		EnhancedInputComponent->BindAction(A_SkillAction, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::A_Skill);
+
 	}
 	else
 	{
@@ -275,3 +277,16 @@ void AJujutsuKaisenCharacter::Skill()
 	}
 }
 
+
+
+
+
+
+
+
+
+
+// virtual functions
+void AJujutsuKaisenCharacter::A_Skill(const FInputActionValue& Value)
+{
+}
