@@ -42,11 +42,11 @@ class JUJUTSUKAISEN_API UJujutsuKaisenCharacterDataAsset : public UPrimaryDataAs
 
 	// Ä¸½¶ ÄÄÆ÷³ÍÆ® Àý¹Ý ³ôÀÌ
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
-	double HalfHeight = 1.0f;
+	double CapsuleHalfHeight = 1.0f;
 
 	// Ä¸½¶ ÄÄÆ÷³ÍÆ® ¹Ý°æ
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
-	double Radius = 1.0f;
+	double CapsuleRadius = 1.0f;
 
 	// LeftFist Name
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
@@ -64,6 +64,12 @@ class JUJUTSUKAISEN_API UJujutsuKaisenCharacterDataAsset : public UPrimaryDataAs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
 	FString RightFootName;
 
+	// Ä¸½¶ ÄÄÆ÷³ÍÆ® ¹Ý°æ
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
+	double HitBoxRadius = 1.0f;
+
+
+
 
 
 public:
@@ -75,9 +81,9 @@ public:
 
 	FORCEINLINE TSubclassOf<UAnimInstance> GetAnimBP() const { return AnimBP; }
 
-	FORCEINLINE double GetHalfHeight() const { return HalfHeight; }
+	FORCEINLINE double GetCapsuleHalfHeight() const { return CapsuleHalfHeight; }
 
-	FORCEINLINE double GetRadius() const { return Radius; }
+	FORCEINLINE double GetCapsuleRadius() const { return CapsuleRadius; }
 
 	FORCEINLINE FString GetLeftFistName() const { return LeftFistName; }
 
@@ -86,6 +92,8 @@ public:
 	FORCEINLINE FString GetLeftFootName() const { return LeftFootName; }
 
 	FORCEINLINE FString GetRightFootName() const { return RightFootName; }
+
+	FORCEINLINE double GetHitBoxRadius() const { return HitBoxRadius; }
 
 
 
