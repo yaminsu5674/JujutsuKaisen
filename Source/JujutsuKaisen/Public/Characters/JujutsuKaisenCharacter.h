@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
+#include "Attack/JujutsuKaisenHitBox.h"
 #include "JujutsuKaisenCharacter.generated.h"
 
 class USpringArmComponent;
@@ -32,7 +33,7 @@ class AJujutsuKaisenCharacter : public ACharacter
 
 
 
-	// Input Action
+	// Input Action--------------------------------------------------
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -54,9 +55,30 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* A_SkillAction;
 
-	// Sub Mesh.
-	UPROPERTY(EditAnywhere,  Category = "Character params")
+
+
+
+	// Character Components --------------------------------------------------------
+
+	UPROPERTY(EditAnywhere,  Category = "Character components")
 	USkeletalMeshComponent* SubMesh;
+
+	UPROPERTY(VisibleAnywhere, Category = "Character components")
+	UJujutsuKaisenHitBox* LeftFist;
+
+	UPROPERTY(VisibleAnywhere, Category = "Character components")
+	UJujutsuKaisenHitBox* RightFist;
+
+	UPROPERTY(VisibleAnywhere, Category = "Character components")
+	UJujutsuKaisenHitBox* LeftFoot;
+
+	UPROPERTY(VisibleAnywhere, Category = "Character components")
+	UJujutsuKaisenHitBox* RightFoot;
+
+
+
+
+	// Character Params ---------------------------------------------------------
 
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	float MaxHealth = 100;
@@ -91,9 +113,10 @@ protected:
 
 	virtual void BeginPlay() override;
 
-private:
-	// // init functions 
-	// void SetAnimBP(const FString& AnimBPPath);
+	void InitHitBoxes();
+
+	void AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, const FString& BoneNameStr, float Radius);
+
 
 
 public:

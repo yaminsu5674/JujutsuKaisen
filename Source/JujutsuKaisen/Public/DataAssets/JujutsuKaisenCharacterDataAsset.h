@@ -22,7 +22,7 @@ class JUJUTSUKAISEN_API UJujutsuKaisenCharacterDataAsset : public UPrimaryDataAs
 
 	// 캐릭터 이름
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
-	FText Name;
+	FString Name;
 
 	// 캐릭터 클래스 (예: 고조사토루, 스쿠나 등의 서브클래스)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
@@ -48,6 +48,22 @@ class JUJUTSUKAISEN_API UJujutsuKaisenCharacterDataAsset : public UPrimaryDataAs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
 	double Radius = 1.0f;
 
+	// LeftFist Name
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
+	FString LeftFistName;
+
+	// RightFist Name
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
+	FString RightFistName;
+
+	// LeftFoot Name
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
+	FString LeftFootName;
+
+	// RightFoot Name
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
+	FString RightFootName;
+
 
 
 public:
@@ -62,6 +78,14 @@ public:
 	FORCEINLINE double GetHalfHeight() const { return HalfHeight; }
 
 	FORCEINLINE double GetRadius() const { return Radius; }
+
+	FORCEINLINE FString GetLeftFistName() const { return LeftFistName; }
+
+	FORCEINLINE FString GetRightFistName() const { return RightFistName; }
+
+	FORCEINLINE FString GetLeftFootName() const { return LeftFootName; }
+
+	FORCEINLINE FString GetRightFootName() const { return RightFootName; }
 
 
 

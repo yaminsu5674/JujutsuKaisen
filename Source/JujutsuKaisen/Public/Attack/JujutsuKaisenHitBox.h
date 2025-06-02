@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/BoxComponent.h"
-#include "JujutsuKaisenCollisionBox.generated.h"
+#include "Components/SphereComponent.h"
+#include "JujutsuKaisenHitBox.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class JUJUTSUKAISEN_API UJujutsuKaisenCollisionBox : public UBoxComponent
+class JUJUTSUKAISEN_API UJujutsuKaisenHitBox : public USphereComponent
 {
 	GENERATED_BODY()
 	
