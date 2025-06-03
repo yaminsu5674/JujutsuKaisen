@@ -132,5 +132,9 @@ public:
 	void Die();
 
 	void Skill();
+
+	void ActivateAttack();
+
+	void DeactivateAttack();
 };
 

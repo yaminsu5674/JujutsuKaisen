@@ -369,6 +369,37 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 }
 
 
+void AJujutsuKaisenCharacter::ActivateAttack()
+{
+	LeftFist->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	LeftFist->SetGenerateOverlapEvents(true);
+
+	RightFist->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	RightFist->SetGenerateOverlapEvents(true);
+
+	LeftFoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	LeftFoot->SetGenerateOverlapEvents(true);
+
+	RightFoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	RightFoot->SetGenerateOverlapEvents(true);
+}
+
+void AJujutsuKaisenCharacter::DeactivateAttack()
+{
+	LeftFist->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	LeftFist->SetGenerateOverlapEvents(false);
+
+	RightFist->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RightFist->SetGenerateOverlapEvents(false);
+
+	LeftFoot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	LeftFoot->SetGenerateOverlapEvents(false);
+
+	RightFoot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RightFoot->SetGenerateOverlapEvents(false);
+}
+
+
 
 
 

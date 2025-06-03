@@ -11,5 +11,8 @@ void UBaseSkill::Activate(AJujutsuKaisenCharacter* Caster, AJujutsuKaisenCharact
 		UE_LOG(LogTemp, Warning, TEXT("FireballSkill: No caster!"));
 		return;
 	}
+
+	// if Target exists, rotation Caster's body to direction to Target
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 
