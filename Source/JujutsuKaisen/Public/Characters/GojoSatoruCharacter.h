@@ -17,6 +17,8 @@ class JUJUTSUKAISEN_API AGojoSatoruCharacter : public AJujutsuKaisenCharacter
 public:
 	virtual void A_Skill(const FInputActionValue& Value) override;
 
+	virtual void R_Skill(const FInputActionValue& Value) override;
+
 	
 	
 };

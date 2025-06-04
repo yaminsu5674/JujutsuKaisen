@@ -92,6 +92,8 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 
 	A_SkillAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_A_Skill.IA_A_Skill")));
 
+	R_SkillAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_R_Skill.IA_R_Skill")));
+
 
 }
 
@@ -129,6 +131,9 @@ void AJujutsuKaisenCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 
 		// A_Skill
 		EnhancedInputComponent->BindAction(A_SkillAction, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::A_Skill);
+
+		// R_Skill
+		EnhancedInputComponent->BindAction(R_SkillAction, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::R_Skill);
 
 	}
 	else
@@ -409,5 +414,9 @@ void AJujutsuKaisenCharacter::DeactivateAttack()
 
 // virtual functions
 void AJujutsuKaisenCharacter::A_Skill(const FInputActionValue& Value)
+{
+}
+
+void AJujutsuKaisenCharacter::R_Skill(const FInputActionValue& Value)
 {
 }

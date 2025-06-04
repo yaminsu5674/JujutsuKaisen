@@ -44,7 +44,7 @@ public:
 
 	void Reset();
 
-	void Initialize(float InSpeed, float InLifespan, float InDamage, AJujutsuKaisenCharacter* InTarget);
+	void Initialize(AJujutsuKaisenCharacter* InTarget = NULL);
 
 
 

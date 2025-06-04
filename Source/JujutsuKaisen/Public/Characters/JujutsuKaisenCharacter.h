@@ -51,9 +51,11 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
-	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* A_SkillAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* R_SkillAction;
 
 
 
@@ -106,6 +108,8 @@ protected:
 	void JumpCustom(const FInputActionValue& Value);
 
 	virtual void A_Skill(const FInputActionValue& Value);
+
+	virtual void R_Skill(const FInputActionValue& Value);
 
 	virtual void NotifyControllerChanged() override;
 

@@ -39,6 +39,10 @@ void AProjectile::Tick(float DeltaTime)
 		FCollisionObjectQueryParams objCollisionQueryParams;
 		objCollisionQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
 
+		FCollisionQueryParams traceParams;
+		traceParams.AddIgnoredActor(this); 
+		traceParams.AddIgnoredActor(GetOwner()); 
+
 		if (GetWorld()->LineTraceSingleByObjectType(hitResult,
 			currentLocation,
 			nextLocation,
@@ -57,11 +61,8 @@ void AProjectile::Tick(float DeltaTime)
 	}
 }
 
-void AProjectile::Initialize(float InSpeed, float InLifespan, float InDamage, AJujutsuKaisenCharacter* InTarget)
+void AProjectile::Initialize(AJujutsuKaisenCharacter* InTarget)
 {
-	Speed = InSpeed;
-	Lifespan = InLifespan;
-	Damage = InDamage;
 	TargetCharacter = InTarget;
 
 	_LifeCountingDown = Lifespan;
