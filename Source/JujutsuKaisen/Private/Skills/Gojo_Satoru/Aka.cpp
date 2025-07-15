@@ -22,12 +22,6 @@ void UAka::Activate(AJujutsuKaisenCharacter* Caster, AJujutsuKaisenCharacter* Ta
 {
 	Super::Activate(Caster, Target);
 
-	// activate collision on Castser's HitBox;
-	if (Caster)
-	{
-		Caster->ActivateAttack();
-	}
-
 
 	// Spawn
 	if (ProjectileClass)

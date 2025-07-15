@@ -31,7 +31,7 @@ public:
 	void StartSingle();
 
 	UFUNCTION(BlueprintCallable, Category = "JujutsuKaisen")
-	void LeaveGame();
+	void LeaveSingle();
 
 	virtual void Init() override;
 

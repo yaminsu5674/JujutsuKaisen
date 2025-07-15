@@ -30,9 +30,6 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
-
-
-
 	// Input Action--------------------------------------------------
 
 	/** MappingContext */
@@ -58,8 +55,6 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UInputAction* R_SkillAction;
 
 
-
-
 	// Character Components --------------------------------------------------------
 
 	UPROPERTY(EditAnywhere,  Category = "Character components")
@@ -77,10 +72,15 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, Category = "Character components")
 	UJujutsuKaisenHitBox* RightFoot;
 
-
-
-
 	// Character Params ---------------------------------------------------------
+
+
+protected:
+	UPROPERTY(EditAnywhere, Category = "Character params")
+	bool bUsesWeapon = false;
+
+	UPROPERTY(EditAnywhere, Category = "Character components")
+	AActor* Weapon;
 
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	float MaxHealth = 100;
@@ -88,16 +88,13 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere)
 	float Health;
 
-public:
+	// Speed . It should be controlled on Character Not AnimationInstance
+	UPROPERTY(EditAnywhere, Category = "Character params")
+	float Speed = 100;
+
+	// AnimInstance
+	UPROPERTY()
 	class UJujutsuKaisenAnimInstance* _AnimInstance;
-
-public:
-	AJujutsuKaisenCharacter();
-
-	virtual void Tick(float DeltaTime) override;
-
-
-protected:
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
@@ -119,11 +116,17 @@ protected:
 
 	void InitHitBoxes();
 
+	virtual void InitWeapon();
+
 	void AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, const FString& BoneNameStr, float Radius);
 
 
 
 public:
+	AJujutsuKaisenCharacter();
+
+	virtual void Tick(float DeltaTime) override;
+
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
@@ -136,9 +139,5 @@ public:
 	void Die();
 
 	void Skill();
-
-	void ActivateAttack();
-
-	void DeactivateAttack();
 };
 

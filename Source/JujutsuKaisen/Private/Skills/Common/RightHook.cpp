@@ -16,11 +16,7 @@ void URightHook::Activate(AJujutsuKaisenCharacter* Caster, AJujutsuKaisenCharact
 {
 	Super::Activate(Caster, Target);
 
-	// activate collision on Castser's HitBox;
-	if (Caster)
-	{
-		Caster->ActivateAttack();
-	}
+	
 
 	// set HitBox's damage with damage member
 

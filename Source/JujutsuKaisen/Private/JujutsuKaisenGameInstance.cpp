@@ -25,7 +25,7 @@ void UJujutsuKaisenGameInstance::StartSingle()
 
 }
 
-void UJujutsuKaisenGameInstance::LeaveGame()
+void UJujutsuKaisenGameInstance::LeaveSingle()
 {
 
     auto world = GEngine->GetCurrentPlayWorld();

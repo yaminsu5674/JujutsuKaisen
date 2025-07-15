@@ -16,9 +16,6 @@
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
-//////////////////////////////////////////////////////////////////////////
-// AJujutsuKaisenCharacter
-
 AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 {
 
@@ -43,8 +40,10 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 
 	InitHitBoxes();
 
-
-
+	if (bUsesWeapon)
+	{
+		InitWeapon();
+	}
 
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -143,6 +142,109 @@ void AJujutsuKaisenCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 }
 
 
+void AJujutsuKaisenCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	Health = MaxHealth;
+	_AnimInstance = Cast<UJujutsuKaisenAnimInstance>(GetMesh()->GetAnimInstance());
+	if (_AnimInstance)
+	{
+		UE_LOG(LogTemp, Error, TEXT("_AnimInstance init!!!"));
+	}
+	// if (GEngine)
+	// {
+	// 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Some debug message!"));	
+	// }
+}
+
+void AJujutsuKaisenCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if (_AnimInstance)
+	{
+		float SpeedAnimation = GetCharacterMovement()->Velocity.Size2D();
+		_AnimInstance->SetSpeed(SpeedAnimation);
+	}
+	
+
+}
+
+void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
+{
+
+	// input is a Vector2D
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// find out which way is forward
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		// get right vector 
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// add movement 
+		AddMovementInput(ForwardDirection, MovementVector.Y*Speed);
+		AddMovementInput(RightDirection, MovementVector.X*Speed);
+	}
+}
+
+void AJujutsuKaisenCharacter::Look(const FInputActionValue& Value)
+{
+	// input is a Vector2D
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// add yaw and pitch input to controller
+		AddControllerYawInput(LookAxisVector.X);
+		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
+{
+	Super::Jump(); // 기본 동작 수행
+	if (_AnimInstance)
+	{
+		_AnimInstance->SetState(ECharacterState::Jump);
+	}
+	 /*if (GEngine)
+	 {
+	 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Jumping!"));	
+	 }*/
+}
+
+
+void AJujutsuKaisenCharacter::Hit()
+{
+	if (_AnimInstance)
+	{
+		_AnimInstance->SetState(ECharacterState::Hit);
+	}
+}
+
+
+void AJujutsuKaisenCharacter::Die()
+{
+	if (_AnimInstance)
+	{
+		_AnimInstance->SetState(ECharacterState::Dead);
+	}
+}
+
+void AJujutsuKaisenCharacter::Skill()
+{
+	if (_AnimInstance)
+	{
+		_AnimInstance->SetState(ECharacterState::Skill);
+	}
+}
+
 
 
 void AJujutsuKaisenCharacter::InitCharacterWithData(UJujutsuKaisenCharacterDataAsset* InDataAsset)
@@ -184,142 +286,39 @@ void AJujutsuKaisenCharacter::InitCharacterWithData(UJujutsuKaisenCharacterDataA
 	AttachHitBoxToBone(LeftFoot, InDataAsset->GetLeftFootName(), InDataAsset->GetHitBoxRadius());
 
 	AttachHitBoxToBone(RightFoot, InDataAsset->GetRightFootName(), InDataAsset->GetHitBoxRadius());
-
-
-
 }
 
-
-
-void AJujutsuKaisenCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	Health = MaxHealth;
-	_AnimInstance = Cast<UJujutsuKaisenAnimInstance>(GetMesh()->GetAnimInstance());
-	if (_AnimInstance)
-	{
-		UE_LOG(LogTemp, Error, TEXT("_AnimInstance init!!!"));
-	}
-	// if (GEngine)
-	// {
-	// 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Some debug message!"));	
-	// }
-}
-
-void AJujutsuKaisenCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	if (_AnimInstance)
-	{
-		float Speed = GetCharacterMovement()->Velocity.Size2D();
-		_AnimInstance->SetSpeed(Speed);
-	}
-	
-
-}
-
-void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
-{
-
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
-	}
-}
-
-void AJujutsuKaisenCharacter::Look(const FInputActionValue& Value)
-{
-	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
-	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
-	}
-}
-
-void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
-{
-	Super::Jump(); // 기본 동작 수행
-	if (_AnimInstance)
-	{
-		_AnimInstance->SetState(ECharacterState::Jump);
-	}
-	 /*if (GEngine)
-	 {
-	 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Jumping!"));	
-	 }*/
-}
-
-
-
-void AJujutsuKaisenCharacter::Hit()
-{
-	if (_AnimInstance)
-	{
-		_AnimInstance->SetState(ECharacterState::Hit);
-	}
-}
-
-
-void AJujutsuKaisenCharacter::Die()
-{
-	if (_AnimInstance)
-	{
-		_AnimInstance->SetState(ECharacterState::Dead);
-	}
-}
-
-void AJujutsuKaisenCharacter::Skill()
-{
-	if (_AnimInstance)
-	{
-		_AnimInstance->SetState(ECharacterState::Skill);
-	}
-}
 
 void AJujutsuKaisenCharacter::InitHitBoxes()
 {
 	// LeftFist
 	LeftFist = CreateDefaultSubobject<UJujutsuKaisenHitBox>(TEXT("LeftFistCollision"));
 	LeftFist->SetupAttachment(SubMesh);
-	LeftFist->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	LeftFist->SetGenerateOverlapEvents(false);
+	LeftFist->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	LeftFist->SetGenerateOverlapEvents(true);
 
 	// RightFist
 	RightFist = CreateDefaultSubobject<UJujutsuKaisenHitBox>(TEXT("RightFistCollision"));
 	RightFist->SetupAttachment(SubMesh);
-	RightFist->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	RightFist->SetGenerateOverlapEvents(false);
+	RightFist->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	RightFist->SetGenerateOverlapEvents(true);
 
 	// LeftFoot
 	LeftFoot = CreateDefaultSubobject<UJujutsuKaisenHitBox>(TEXT("LeftFootCollision"));
 	LeftFoot->SetupAttachment(SubMesh);
-	LeftFoot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	LeftFoot->SetGenerateOverlapEvents(false);
+	LeftFoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	LeftFoot->SetGenerateOverlapEvents(true);
 
 	// RightFoot
 	RightFoot = CreateDefaultSubobject<UJujutsuKaisenHitBox>(TEXT("RightFootCollision"));
 	RightFoot->SetupAttachment(SubMesh);
-	RightFoot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	RightFoot->SetGenerateOverlapEvents(false);
+	RightFoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	RightFoot->SetGenerateOverlapEvents(true);
+}
+
+void AJujutsuKaisenCharacter::InitWeapon()
+{
+	//
 }
 
 
@@ -374,35 +373,7 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 }
 
 
-void AJujutsuKaisenCharacter::ActivateAttack()
-{
-	LeftFist->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	LeftFist->SetGenerateOverlapEvents(true);
 
-	RightFist->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	RightFist->SetGenerateOverlapEvents(true);
-
-	LeftFoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	LeftFoot->SetGenerateOverlapEvents(true);
-
-	RightFoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	RightFoot->SetGenerateOverlapEvents(true);
-}
-
-void AJujutsuKaisenCharacter::DeactivateAttack()
-{
-	LeftFist->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	LeftFist->SetGenerateOverlapEvents(false);
-
-	RightFist->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	RightFist->SetGenerateOverlapEvents(false);
-
-	LeftFoot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	LeftFoot->SetGenerateOverlapEvents(false);
-
-	RightFoot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	RightFoot->SetGenerateOverlapEvents(false);
-}
 
 
 
@@ -420,3 +391,43 @@ void AJujutsuKaisenCharacter::A_Skill(const FInputActionValue& Value)
 void AJujutsuKaisenCharacter::R_Skill(const FInputActionValue& Value)
 {
 }
+
+
+
+
+
+
+
+
+
+
+
+//void AJujutsuKaisenCharacter::ActivateAttack()
+//{
+//	LeftFist->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+//	LeftFist->SetGenerateOverlapEvents(true);
+//
+//	RightFist->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+//	RightFist->SetGenerateOverlapEvents(true);
+//
+//	LeftFoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+//	LeftFoot->SetGenerateOverlapEvents(true);
+//
+//	RightFoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+//	RightFoot->SetGenerateOverlapEvents(true);
+//}
+//
+//void AJujutsuKaisenCharacter::DeactivateAttack()
+//{
+//	LeftFist->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+//	LeftFist->SetGenerateOverlapEvents(false);
+//
+//	RightFist->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+//	RightFist->SetGenerateOverlapEvents(false);
+//
+//	LeftFoot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+//	LeftFoot->SetGenerateOverlapEvents(false);
+//
+//	RightFoot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+//	RightFoot->SetGenerateOverlapEvents(false);
+//}
