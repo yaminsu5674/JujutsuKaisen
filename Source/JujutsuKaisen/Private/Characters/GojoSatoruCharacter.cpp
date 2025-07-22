@@ -6,7 +6,7 @@
 #include "Skills/Gojo_Satoru/Aka.h"
 #include "Skills/Common/RightHook.h"
 
-void AGojoSatoruCharacter::A_Skill(const FInputActionValue& Value)
+void AGojoSatoruCharacter::A_Pressed(const FInputActionValue& Value)
 {
 
     // make Skill Object with INTERFACE!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -24,7 +24,7 @@ void AGojoSatoruCharacter::A_Skill(const FInputActionValue& Value)
 
 }
 
-void AGojoSatoruCharacter::R_Skill(const FInputActionValue& Value)
+void AGojoSatoruCharacter::R_Pressed(const FInputActionValue& Value)
 {
 
     // make Skill Object with INTERFACE!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -38,6 +38,17 @@ void AGojoSatoruCharacter::R_Skill(const FInputActionValue& Value)
     {
         Skill->Activate(this); // Target은 nullptr로 기본값
     }
+
+
+}
+
+void AGojoSatoruCharacter::R_Released(const FInputActionValue& Value)
+{
+
+    if (GEngine)
+     {
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Released!!!"));
+     }
 
 
 }

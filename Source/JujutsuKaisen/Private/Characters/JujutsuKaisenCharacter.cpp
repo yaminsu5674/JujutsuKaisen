@@ -89,10 +89,11 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 
 	JumpAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_Jump.IA_Jump")));
 
-	A_SkillAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_A_Skill.IA_A_Skill")));
+	A_Pressed_Action = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_A_Pressed.IA_A_Pressed")));
 
-	R_SkillAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_R_Skill.IA_R_Skill")));
+	R_Pressed_Action = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_R_Pressed.IA_R_Pressed")));
 
+	R_Released_Action = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_R_Released.IA_R_Released")));
 
 }
 
@@ -128,12 +129,14 @@ void AJujutsuKaisenCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJujutsuKaisenCharacter::Look);
 
-		// A_Skill
-		EnhancedInputComponent->BindAction(A_SkillAction, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::A_Skill);
+		// A_Pressed
+		EnhancedInputComponent->BindAction(A_Pressed_Action, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::A_Pressed);
 
-		// R_Skill
-		EnhancedInputComponent->BindAction(R_SkillAction, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::R_Skill);
+		// R_Pressed
+		EnhancedInputComponent->BindAction(R_Pressed_Action, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::R_Pressed);
 
+		// R_Released
+		EnhancedInputComponent->BindAction(R_Released_Action, ETriggerEvent::Completed, this, &AJujutsuKaisenCharacter::R_Released);
 	}
 	else
 	{
@@ -384,11 +387,15 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 
 
 // virtual functions
-void AJujutsuKaisenCharacter::A_Skill(const FInputActionValue& Value)
+void AJujutsuKaisenCharacter::A_Pressed(const FInputActionValue& Value)
 {
 }
 
-void AJujutsuKaisenCharacter::R_Skill(const FInputActionValue& Value)
+void AJujutsuKaisenCharacter::R_Pressed(const FInputActionValue& Value)
+{
+}
+
+void AJujutsuKaisenCharacter::R_Released(const FInputActionValue& Value)
 {
 }
 
