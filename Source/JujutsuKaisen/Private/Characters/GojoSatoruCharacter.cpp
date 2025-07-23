@@ -6,6 +6,16 @@
 #include "Skills/Gojo_Satoru/Aka.h"
 #include "Skills/Common/RightHook.h"
 
+AGojoSatoruCharacter::AGojoSatoruCharacter()
+{
+
+}
+
+void AGojoSatoruCharacter::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+}
+
 void AGojoSatoruCharacter::A_Pressed(const FInputActionValue& Value)
 {
 

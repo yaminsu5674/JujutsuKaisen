@@ -4,6 +4,23 @@
 #include "Skills/BaseSkill.h"
 
 
+void UBaseSkill::SetOwner(AJujutsuKaisenCharacter* NewOwner)
+{
+	Owner = NewOwner;
+}
+
+
+bool UBaseSkill::GetBWantsTick()
+{
+	return bWantsTick;
+}
+
+void UBaseSkill::TickSkill(float DeltaTime)
+{
+
+}
+
+
 void UBaseSkill::Activate(AJujutsuKaisenCharacter* Caster, AJujutsuKaisenCharacter* Target)
 {
 	if (!Caster)
@@ -14,5 +31,14 @@ void UBaseSkill::Activate(AJujutsuKaisenCharacter* Caster, AJujutsuKaisenCharact
 
 	// if Target exists, rotation Caster's body to direction to Target
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+void UBaseSkill::OnPressed(AJujutsuKaisenCharacter* Target)
+{
+
+}
+
+void UBaseSkill::OnReleased(AJujutsuKaisenCharacter* Target)
+{
+
 }
 

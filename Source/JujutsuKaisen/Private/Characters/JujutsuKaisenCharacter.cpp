@@ -158,6 +158,9 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	// {
 	// 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Some debug message!"));	
 	// }
+
+	SkillManager = NewObject<USkillManager>(this);
+	SkillManager->RegisterOwner(this);  // 필요하면 캐릭터 참조 넘기기
 }
 
 void AJujutsuKaisenCharacter::Tick(float DeltaTime)

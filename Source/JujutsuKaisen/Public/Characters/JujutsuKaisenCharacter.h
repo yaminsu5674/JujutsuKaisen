@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
 #include "Attack/JujutsuKaisenHitBox.h"
+#include "Skills/SkillManager.h"
 #include "JujutsuKaisenCharacter.generated.h"
 
 class USpringArmComponent;
@@ -86,6 +87,9 @@ class AJujutsuKaisenCharacter : public ACharacter
 
 
 protected:
+	UPROPERTY()
+	USkillManager* SkillManager;
+
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	bool bUsesWeapon = false;
 
