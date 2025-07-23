@@ -21,17 +21,6 @@ void UBaseSkill::TickSkill(float DeltaTime)
 }
 
 
-void UBaseSkill::Activate(AJujutsuKaisenCharacter* Caster, AJujutsuKaisenCharacter* Target)
-{
-	if (!Caster)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("FireballSkill: No caster!"));
-		return;
-	}
-
-	// if Target exists, rotation Caster's body to direction to Target
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-}
 void UBaseSkill::OnPressed(AJujutsuKaisenCharacter* Target)
 {
 

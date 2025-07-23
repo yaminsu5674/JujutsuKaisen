@@ -17,6 +17,7 @@ class JUJUTSUKAISEN_API UBaseSkill : public UObject
 {
 	GENERATED_BODY()
 
+protected:
 	bool bWantsTick = false; // 필요할 때만 Tick
 
 	UPROPERTY()
@@ -28,8 +29,6 @@ public:
 	bool GetBWantsTick();
 
 	virtual void TickSkill(float DeltaTime);
-
-	virtual void Activate(AJujutsuKaisenCharacter* Caster, AJujutsuKaisenCharacter* Target = nullptr);
 
 	virtual void OnPressed(AJujutsuKaisenCharacter* Target);
 

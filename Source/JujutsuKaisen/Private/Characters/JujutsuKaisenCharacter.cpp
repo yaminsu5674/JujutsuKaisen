@@ -390,18 +390,36 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 
 
 // virtual functions
+void AJujutsuKaisenCharacter::InitSkills()
+{
+
+}
+
+
+
 void AJujutsuKaisenCharacter::A_Pressed(const FInputActionValue& Value)
 {
+	if (SkillManager)
+	{
+		SkillManager->HandlePressed("A", TargetCharacter);
+	}
 }
 
 void AJujutsuKaisenCharacter::R_Pressed(const FInputActionValue& Value)
 {
+	if (SkillManager)
+	{
+		SkillManager->HandlePressed("R", TargetCharacter); 
+	}
 }
 
 void AJujutsuKaisenCharacter::R_Released(const FInputActionValue& Value)
 {
+	if (SkillManager)
+	{
+		SkillManager->HandleReleased("R", TargetCharacter);
+	}
 }
-
 
 
 

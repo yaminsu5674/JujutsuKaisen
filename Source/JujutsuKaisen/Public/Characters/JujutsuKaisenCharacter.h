@@ -84,7 +84,8 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UJujutsuKaisenHitBox* RightFoot;
 
 	// Character Params ---------------------------------------------------------
-
+	UPROPERTY()
+	AJujutsuKaisenCharacter* TargetCharacter = nullptr;
 
 protected:
 	UPROPERTY()
@@ -110,6 +111,8 @@ protected:
 	UPROPERTY()
 	class UJujutsuKaisenAnimInstance* _AnimInstance;
 
+	virtual void InitSkills();
+
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
@@ -118,11 +121,11 @@ protected:
 
 	void JumpCustom(const FInputActionValue& Value);
 
-	virtual void A_Pressed(const FInputActionValue& Value);
+	void A_Pressed(const FInputActionValue& Value);
 
-	virtual void R_Pressed(const FInputActionValue& Value);
+	void R_Pressed(const FInputActionValue& Value);
 
-	virtual void R_Released(const FInputActionValue& Value);
+	void R_Released(const FInputActionValue& Value);
 
 	virtual void NotifyControllerChanged() override;
 

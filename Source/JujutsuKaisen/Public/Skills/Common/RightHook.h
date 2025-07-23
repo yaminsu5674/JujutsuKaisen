@@ -20,6 +20,6 @@ class JUJUTSUKAISEN_API URightHook : public UBaseSkill
 public:
 	URightHook();
 
-	virtual void Activate(AJujutsuKaisenCharacter* Caster, AJujutsuKaisenCharacter* Target = nullptr) override;
+	//virtual void Activate(AJujutsuKaisenCharacter* Caster, AJujutsuKaisenCharacter* Target = nullptr) override;
 	
 };

@@ -24,6 +24,10 @@ class JUJUTSUKAISEN_API UAka : public UBaseSkill
 public:
 	UAka();
 
-	virtual void Activate(AJujutsuKaisenCharacter* Caster, AJujutsuKaisenCharacter* Target = nullptr) override;
+	virtual void TickSkill(float DeltaTime) override;
+
+	virtual void OnPressed(AJujutsuKaisenCharacter* Target) override;
+
+	virtual void OnReleased(AJujutsuKaisenCharacter* Target) override;
 	
 };

@@ -11,54 +11,60 @@ AGojoSatoruCharacter::AGojoSatoruCharacter()
 
 }
 
+void AGojoSatoruCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+    InitSkills();
+}
+
 void AGojoSatoruCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 }
 
-void AGojoSatoruCharacter::A_Pressed(const FInputActionValue& Value)
+void AGojoSatoruCharacter::InitSkills()
 {
-
-    // make Skill Object with INTERFACE!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // 
-    // 
-    // use member function ex. activate(this);
-
-    UBaseSkill* Skill = NewObject<URightHook>(this); // 'this'는 Outer
-    
-    if (Skill)
+    SkillManager->RegisterSkill("R", NewObject<UAka>(this));
+    /*if (auto* Skill = SkillManager->BoundSkills.FindRef("R"))
     {
-        Skill->Activate(this); // Target은 nullptr로 기본값
-    }
-
-
-}
-
-void AGojoSatoruCharacter::R_Pressed(const FInputActionValue& Value)
-{
-
-    // make Skill Object with INTERFACE!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // 
-    // 
-    // use member function ex. activate(this);
-
-    UBaseSkill* Skill = NewObject<UAka>(this); // 'this'는 Outer
-
-    if (Skill)
-    {
-        Skill->Activate(this); // Target은 nullptr로 기본값
-    }
-
-
-}
-
-void AGojoSatoruCharacter::R_Released(const FInputActionValue& Value)
-{
-
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Skill Init!!!"));
+        }
+    }*/
     if (GEngine)
-     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Released!!!"));
-     }
-
-
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Skill Init!!!"));
+    }
+    
 }
+
+
+//void AGojoSatoruCharacter::R_Pressed(const FInputActionValue& Value)
+//{
+//
+//    // make Skill Object with INTERFACE!!!!!!!!!!!!!!!!!!!!!!!!!!
+//    // 
+//    // 
+//    // use member function ex. activate(this);
+//
+//    UBaseSkill* Skill = NewObject<UAka>(this); // 'this'는 Outer
+//
+//    if (Skill)
+//    {
+//        Skill->Activate(this); // Target은 nullptr로 기본값
+//    }
+//
+//
+//}
+//
+//void AGojoSatoruCharacter::R_Released(const FInputActionValue& Value)
+//{
+//
+//    if (GEngine)
+//     {
+//        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Released!!!"));
+//     }
+//
+//
+//}
