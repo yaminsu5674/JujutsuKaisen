@@ -2,11 +2,16 @@
 
 
 #include "Skills/BaseSkill.h"
+#include "Characters/JujutsuKaisenCharacter.h"
 
 
 void UBaseSkill::SetOwner(AJujutsuKaisenCharacter* NewOwner)
 {
 	Owner = NewOwner;
+	if (Owner)
+	{
+		AnimInstance = Owner->GetMesh()->GetAnimInstance();
+	}
 }
 
 

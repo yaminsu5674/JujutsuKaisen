@@ -26,6 +26,7 @@ void AGojoSatoruCharacter::InitSkills()
 {
     SkillManager->RegisterSkill("R", NewObject<UAka>(this));
     
+    
     /*if (GEngine)
     {
         GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Skill Init!!!"));

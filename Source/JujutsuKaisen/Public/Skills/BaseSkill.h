@@ -23,6 +23,9 @@ protected:
 	UPROPERTY()
 	AJujutsuKaisenCharacter* Owner;
 
+	UPROPERTY()
+	UAnimInstance* AnimInstance;
+
 public:
 	void SetOwner(AJujutsuKaisenCharacter* NewOwner);
 
