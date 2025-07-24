@@ -25,46 +25,10 @@ void AGojoSatoruCharacter::Tick(float DeltaTime)
 void AGojoSatoruCharacter::InitSkills()
 {
     SkillManager->RegisterSkill("R", NewObject<UAka>(this));
-    /*if (auto* Skill = SkillManager->BoundSkills.FindRef("R"))
-    {
-        if (GEngine)
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Skill Init!!!"));
-        }
-    }*/
-    if (GEngine)
+    
+    /*if (GEngine)
     {
         GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Skill Init!!!"));
-    }
+    }*/
     
 }
-
-
-//void AGojoSatoruCharacter::R_Pressed(const FInputActionValue& Value)
-//{
-//
-//    // make Skill Object with INTERFACE!!!!!!!!!!!!!!!!!!!!!!!!!!
-//    // 
-//    // 
-//    // use member function ex. activate(this);
-//
-//    UBaseSkill* Skill = NewObject<UAka>(this); // 'this'는 Outer
-//
-//    if (Skill)
-//    {
-//        Skill->Activate(this); // Target은 nullptr로 기본값
-//    }
-//
-//
-//}
-//
-//void AGojoSatoruCharacter::R_Released(const FInputActionValue& Value)
-//{
-//
-//    if (GEngine)
-//     {
-//        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Released!!!"));
-//     }
-//
-//
-//}

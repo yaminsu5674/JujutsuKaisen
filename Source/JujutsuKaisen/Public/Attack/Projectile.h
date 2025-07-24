@@ -7,10 +7,23 @@
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "Projectile.generated.h"
 
+UENUM(BlueprintType)
+enum class EProjectileBehaviorType : uint8
+{
+	None,
+	Move,
+	Place
+};
+
 UCLASS()
 class JUJUTSUKAISEN_API AProjectile : public AActor
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category = "Projectile Params")
+	EProjectileBehaviorType BehaviorType = EProjectileBehaviorType::None;
+
+	//bool bIsCharging = false;
 
 	UPROPERTY(EditAnywhere, Category = "Projectile Params")
 	float Speed = 500.0f;
@@ -42,9 +55,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void HandleMovement(float DeltaTime);
+
+	void HandlePlacement(float DeltaTime);
+
 	void Reset();
 
-	void Initialize(AJujutsuKaisenCharacter* InTarget = NULL);
+	void InitializeParams(AJujutsuKaisenCharacter* InTarget = nullptr);
+
+	void SetBehaviorType(EProjectileBehaviorType NewType);
 
 
 

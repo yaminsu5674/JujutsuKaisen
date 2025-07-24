@@ -20,7 +20,6 @@ void AProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	Reset();
-	
 }
 
 // Called every frame
@@ -28,40 +27,25 @@ void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (_LifeCountingDown > 0.0f)
+	if (_LifeCountingDown <= 0.0f)
+		return;
+
+	switch (BehaviorType)
 	{
-		FVector currentLocation = GetActorLocation();
-		FVector nextLocation = currentLocation + Direction * Speed * DeltaTime;
-		SetActorLocation(nextLocation);
-
-		// Line trace to detect collision
-		FHitResult hitResult;
-		FCollisionObjectQueryParams objCollisionQueryParams;
-		objCollisionQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
-
-		FCollisionQueryParams traceParams;
-		traceParams.AddIgnoredActor(this); 
-		traceParams.AddIgnoredActor(GetOwner()); 
-
-		if (GetWorld()->LineTraceSingleByObjectType(hitResult,
-			currentLocation,
-			nextLocation,
-			objCollisionQueryParams))
-		{
-			auto Target = Cast<AJujutsuKaisenCharacter>(hitResult.GetActor());
-			if (Target != nullptr)
-			{
-				//Target->Hit(Damage);
-				PrimaryActorTick.bCanEverTick = false;
-				Destroy();
-			}
-		}
-
-		_LifeCountingDown -= DeltaTime;
+	case EProjectileBehaviorType::Move:
+		HandleMovement(DeltaTime);
+		break;
+	case EProjectileBehaviorType::Place:
+		HandlePlacement(DeltaTime);
+		break;
+	default:
+		break;
 	}
+
+	//_LifeCountingDown -= DeltaTime;
 }
 
-void AProjectile::Initialize(AJujutsuKaisenCharacter* InTarget)
+void AProjectile::InitializeParams(AJujutsuKaisenCharacter* InTarget)
 {
 	TargetCharacter = InTarget;
 
@@ -78,7 +62,7 @@ void AProjectile::Initialize(AJujutsuKaisenCharacter* InTarget)
 	}
 
 	// auto destroy setting
-	SetLifeSpan(Lifespan);
+	// SetLifeSpan(Lifespan);
 }
 
 void AProjectile::Reset()
@@ -87,4 +71,52 @@ void AProjectile::Reset()
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 	SetActorTickEnabled(true);
+}
+
+void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
+{
+	BehaviorType = NewType;
+	if (BehaviorType == EProjectileBehaviorType::Move)
+	{
+		// auto destroy
+		SetLifeSpan(Lifespan);
+	}
+}
+
+void AProjectile::HandleMovement(float DeltaTime)
+{
+	FVector currentLocation = GetActorLocation();
+	FVector nextLocation = currentLocation + Direction * Speed * DeltaTime;
+	SetActorLocation(nextLocation);
+
+	// Line trace to detect collision
+	FHitResult hitResult;
+	FCollisionObjectQueryParams objCollisionQueryParams;
+	objCollisionQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
+
+	FCollisionQueryParams traceParams;
+	traceParams.AddIgnoredActor(this);
+	traceParams.AddIgnoredActor(GetOwner());
+
+	if (GetWorld()->LineTraceSingleByObjectType(hitResult,
+		currentLocation,
+		nextLocation,
+		objCollisionQueryParams))
+	{
+		auto Target = Cast<AJujutsuKaisenCharacter>(hitResult.GetActor());
+		if (Target != nullptr)
+		{
+			//Target->Hit(Damage);
+			PrimaryActorTick.bCanEverTick = false;
+			Destroy();
+		}
+	}
+
+	_LifeCountingDown -= DeltaTime;
+}
+
+
+void AProjectile::HandlePlacement(float DeltaTime)
+{
+	
 }

@@ -171,6 +171,10 @@ void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 		float SpeedAnimation = GetCharacterMovement()->Velocity.Size2D();
 		_AnimInstance->SetSpeed(SpeedAnimation);
 	}
+	if (SkillManager)
+	{
+		SkillManager->TickActiveSkills(DeltaTime);
+	}
 	
 
 }

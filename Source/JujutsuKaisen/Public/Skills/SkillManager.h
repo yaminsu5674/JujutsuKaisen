@@ -18,6 +18,7 @@ class JUJUTSUKAISEN_API USkillManager : public UObject
 {
 	GENERATED_BODY()
 
+    UPROPERTY()
     TMap<FName, UBaseSkill*> BoundSkills;
 
     UPROPERTY()
