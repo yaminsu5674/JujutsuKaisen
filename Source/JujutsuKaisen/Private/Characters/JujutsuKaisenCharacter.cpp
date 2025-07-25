@@ -27,7 +27,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	SubMesh->SetupAttachment(GetMesh());
 	SubMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 
-	GetMesh()->SetVisibility(false);
+	//GetMesh()->SetVisibility(false);
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 	
 	FSoftObjectPath DataAssetPath(TEXT("/Game/Dynamic/DataAsset/Mixamo.Mixamo"));
@@ -424,42 +424,3 @@ void AJujutsuKaisenCharacter::R_Released(const FInputActionValue& Value)
 		SkillManager->HandleReleased("R", TargetCharacter);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-//void AJujutsuKaisenCharacter::ActivateAttack()
-//{
-//	LeftFist->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-//	LeftFist->SetGenerateOverlapEvents(true);
-//
-//	RightFist->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-//	RightFist->SetGenerateOverlapEvents(true);
-//
-//	LeftFoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-//	LeftFoot->SetGenerateOverlapEvents(true);
-//
-//	RightFoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-//	RightFoot->SetGenerateOverlapEvents(true);
-//}
-//
-//void AJujutsuKaisenCharacter::DeactivateAttack()
-//{
-//	LeftFist->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-//	LeftFist->SetGenerateOverlapEvents(false);
-//
-//	RightFist->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-//	RightFist->SetGenerateOverlapEvents(false);
-//
-//	LeftFoot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-//	LeftFoot->SetGenerateOverlapEvents(false);
-//
-//	RightFoot->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-//	RightFoot->SetGenerateOverlapEvents(false);
-//}
