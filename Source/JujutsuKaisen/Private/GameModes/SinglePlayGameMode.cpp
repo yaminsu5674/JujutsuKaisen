@@ -78,9 +78,6 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
 
     if (SpawnedCharacter)
     {
-        // 메시, 데이터셋 등 초기화
-        SpawnedCharacter->InitCharacterWithData(DataAsset);
-
         // 실제 BeginPlay() 호출됨
         UGameplayStatics::FinishSpawningActor(SpawnedCharacter, SpawnTransform);
 

@@ -137,7 +137,7 @@ protected:
 
 	virtual void InitWeapon();
 
-	void AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, const FString& BoneNameStr, float Radius);
+	void AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, const FString& BoneNameStr);
 
 
 
@@ -150,8 +150,6 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-	// call this function when game mode makes character instance;
-	void InitCharacterWithData(UJujutsuKaisenCharacterDataAsset* InDataAsset);
 
 	void Hit();
 

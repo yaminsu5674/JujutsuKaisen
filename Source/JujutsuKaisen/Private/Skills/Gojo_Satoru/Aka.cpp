@@ -16,7 +16,7 @@ UAka::UAka()
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> LateMontageFinder(TEXT("AnimMontage'/Game/Static/JujutsuKaisenCharacters/GojoSatoru_Student/Animation/AkaLate_Montage.AkaLate_Montage'"));
 	if (LateMontageFinder.Succeeded()) AkaLateMontage = LateMontageFinder.Object;
 
-	static ConstructorHelpers::FClassFinder<AProjectile> ProjectileBPClass(TEXT("/Game/Dynamic/Projectiles/BP_Projectile_Aka"));
+	static ConstructorHelpers::FClassFinder<AProjectile> ProjectileBPClass(TEXT("/Game/Dynamic/Blueprints/Projectiles/BP_Projectile_Aka"));
 	if (ProjectileBPClass.Succeeded()) ProjectileClass = ProjectileBPClass.Class;
 }
 
@@ -162,8 +162,6 @@ void UAka::SpawnProjectile()
 		FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 		FName("hand_r")
 	);*/
-
-
 
 	AkaProjectile = Projectile;
 }

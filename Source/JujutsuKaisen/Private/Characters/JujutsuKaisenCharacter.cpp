@@ -18,40 +18,26 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 {
-
 	// My Customize settings
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	AutoPossessAI = EAutoPossessAI::Disabled;
-
-	/*SubMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SubMesh"));
-	SubMesh->SetupAttachment(GetMesh());
-	SubMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;*/
-
-	//GetMesh()->SetVisibility(false);
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
-	
-	/*FSoftObjectPath DataAssetPath(TEXT("/Game/Dynamic/DataAsset/Mixamo.Mixamo"));
-	UJujutsuKaisenCharacterDataAsset* MixamoAsset = Cast<UJujutsuKaisenCharacterDataAsset>(DataAssetPath.TryLoad());
-	if (MixamoAsset)
-	{
-		GetMesh()->SetSkeletalMesh(MixamoAsset->GetMesh());
-		GetMesh()->SetAnimInstanceClass(MixamoAsset->GetAnimBP());
-	}*/
+	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
 	InitHitBoxes();
-
 	if (bUsesWeapon)
 	{
 		InitWeapon();
 	}
 
 	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	// GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
+
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
@@ -154,13 +140,15 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("_AnimInstance init!!!"));
 	}
-	// if (GEngine)
-	// {
-	// 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Some debug message!"));	
-	// }
 
 	SkillManager = NewObject<USkillManager>(this);
 	SkillManager->RegisterOwner(this);  // 필요하면 캐릭터 참조 넘기기
+
+	// Attach CollisionBox to Fist, Foot
+	AttachHitBoxToBone(LeftFist, FString(TEXT("hand_l")));
+	AttachHitBoxToBone(RightFist, FString(TEXT("hand_r")));
+	AttachHitBoxToBone(LeftFoot, FString(TEXT("ball_l")));
+	AttachHitBoxToBone(RightFoot, FString(TEXT("ball_r")));
 }
 
 void AJujutsuKaisenCharacter::Tick(float DeltaTime)
@@ -223,10 +211,6 @@ void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 	{
 		_AnimInstance->SetState(ECharacterState::Jump);
 	}
-	 /*if (GEngine)
-	 {
-	 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Jumping!"));	
-	 }*/
 }
 
 
@@ -255,48 +239,6 @@ void AJujutsuKaisenCharacter::Skill()
 	}
 }
 
-
-
-void AJujutsuKaisenCharacter::InitCharacterWithData(UJujutsuKaisenCharacterDataAsset* InDataAsset)
-{
-	if (!InDataAsset) return;
-
-	// Skeletal Mesh 설정
-	if (InDataAsset->GetMesh())
-	{
-		GetMesh()->SetSkeletalMesh(InDataAsset->GetMesh());
-	}
-
-	// AnimBP 설정
-	if (InDataAsset->GetAnimBP())
-	{
-		GetMesh()->SetAnimInstanceClass(InDataAsset->GetAnimBP());
-
-	}
-
-	// Mesh 스케일 설정
-	GetMesh()->SetRelativeScale3D(FVector(InDataAsset->GetMeshScale()));
-
-
-	// 캡슐 컴포넌트 높이, 반경 설정
-	GetCapsuleComponent()->InitCapsuleSize(InDataAsset->GetCapsuleRadius(), InDataAsset->GetCapsuleHalfHeight());
-
-	// Mesh 위치를 캡슐 아래로 내리기
-	float HalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
-	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -HalfHeight));
-
-	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-
-
-	// Attach CollisionBox to Fist, Foot
-	AttachHitBoxToBone(LeftFist, InDataAsset->GetLeftFistName(), InDataAsset->GetHitBoxRadius());
-
-	AttachHitBoxToBone(RightFist, InDataAsset->GetRightFistName(), InDataAsset->GetHitBoxRadius());
-
-	AttachHitBoxToBone(LeftFoot, InDataAsset->GetLeftFootName(), InDataAsset->GetHitBoxRadius());
-
-	AttachHitBoxToBone(RightFoot, InDataAsset->GetRightFootName(), InDataAsset->GetHitBoxRadius());
-}
 
 
 void AJujutsuKaisenCharacter::InitHitBoxes()
@@ -332,7 +274,7 @@ void AJujutsuKaisenCharacter::InitWeapon()
 }
 
 
-void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, const FString& BoneNameStr, float Radius)
+void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, const FString& BoneNameStr)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Try bone!!!"));
 	FName BoneName(*BoneNameStr);
@@ -342,6 +284,7 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 	UE_LOG(LogTemp, Warning, TEXT("success attach to bone"));
 
 	HitBox->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, BoneName);
+	const float Radius = 12.0f;
 	HitBox->SetSphereRadius(Radius);
 	HitBox->SetRelativeLocation(FVector::ZeroVector);
 
