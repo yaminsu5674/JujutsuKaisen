@@ -139,9 +139,11 @@ void UAka::SpawnProjectile()
 	UWorld* World = Owner->GetWorld();
 	if (!World) return;
 
-	const FVector Offset = Owner->GetActorForwardVector() * 10.f;
-	const FVector SpawnLocation = Owner->GetMesh()->GetSocketLocation(FName("hand_r")) + Offset;
+	// 미리 방향 참조용
+	const FVector ForwardOffset = FVector(10.f, 0.f, 0.f); // 손 기준 앞으로 50
+
 	const FRotator SpawnRotation = Owner->GetActorRotation();
+	const FVector SpawnLocation = Owner->GetMesh()->GetSocketLocation(FName("index_03_r")) + Owner->GetActorForwardVector() * 5.f;
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = Owner;
@@ -157,11 +159,16 @@ void UAka::SpawnProjectile()
 	Projectile->InitializeParams();
 
 	Projectile->SetActorEnableCollision(false);
+
+
 	/*Projectile->AttachToComponent(
 		Owner->GetMesh(),
-		FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-		FName("hand_r")
-	);*/
+		FAttachmentTransformRules::KeepWorldTransform,
+		FName("index_03_r")
+	);
+
+
+	Projectile->SetActorRelativeLocation(ForwardOffset);*/
 
 	AkaProjectile = Projectile;
 }
@@ -172,7 +179,11 @@ void UAka::LaunchProjectile()
 	if (AkaProjectile)
 	{
 		AkaProjectile->SetActorEnableCollision(true);
-		AkaProjectile->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+		//AkaProjectile->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		//const FRotator LaunchRotation = Owner->GetActorRotation(); // 캐릭터의 정면 회전
+		//AkaProjectile->SetActorRotation(LaunchRotation); // 회전 보정
+
 		AkaProjectile->SetBehaviorType(EProjectileBehaviorType::Move);
 		AkaProjectile = nullptr;
 	}

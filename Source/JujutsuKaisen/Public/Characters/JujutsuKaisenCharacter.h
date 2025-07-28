@@ -88,6 +88,9 @@ class AJujutsuKaisenCharacter : public ACharacter
 	AJujutsuKaisenCharacter* TargetCharacter = nullptr;
 
 protected:
+	UPROPERTY(EditAnywhere, Category = "Character params")
+	bool bVisibleHitbox = false;
+
 	UPROPERTY()
 	USkillManager* SkillManager;
 

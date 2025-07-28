@@ -288,40 +288,39 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 	HitBox->SetSphereRadius(Radius);
 	HitBox->SetRelativeLocation(FVector::ZeroVector);
 
-	// 디버그용 구 메시 불러오기
-	UStaticMesh* SphereMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
-	if (SphereMesh)
+	if (bVisibleHitbox)
 	{
-		// 디버그용 메시 생성
-		UStaticMeshComponent* DebugMesh = NewObject<UStaticMeshComponent>(this);
-		AddInstanceComponent(DebugMesh);
-		DebugMesh->RegisterComponent();
-		DebugMesh->SetStaticMesh(SphereMesh);
-		DebugMesh->AttachToComponent(HitBox, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-
-		// 메시 크기 조절 (스피어 반지름 기준으로 비례)
-		float Scale = Radius / 50.f;
-		/*DebugMesh->SetRelativeScale3D(FVector(Scale));*/
-		DebugMesh->SetWorldScale3D(FVector(Scale));
-
-
-
-		// 머티리얼 적용
-		UMaterial* BaseMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Engine/EngineDebugMaterials/VertexColorMaterial.VertexColorMaterial"));
-		if (BaseMaterial)
+		UStaticMesh* SphereMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
+		if (SphereMesh)
 		{
-			UMaterialInstanceDynamic* DebugMat = UMaterialInstanceDynamic::Create(BaseMaterial, this);
-			if (DebugMat)
-			{
-				DebugMat->SetVectorParameterValue("Color", FLinearColor(1.f, 0.f, 0.f, 0.3f)); // 빨간색
-				DebugMat->SetScalarParameterValue("Opacity", 0.3f);
-				DebugMesh->SetMaterial(0, DebugMat);
-			}
-		}
+			UStaticMeshComponent* DebugMesh = NewObject<UStaticMeshComponent>(this);
+			AddInstanceComponent(DebugMesh);
+			DebugMesh->RegisterComponent();
+			DebugMesh->SetStaticMesh(SphereMesh);
+			DebugMesh->AttachToComponent(HitBox, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-		DebugMesh->SetVisibility(true);
-		DebugMesh->SetHiddenInGame(false);
-		DebugMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			// 메시 크기 조절 (스피어 반지름 기준으로 비례)
+			float Scale = Radius / 50.f;
+			/*DebugMesh->SetRelativeScale3D(FVector(Scale));*/
+			DebugMesh->SetWorldScale3D(FVector(Scale));
+
+			// 머티리얼 적용
+			UMaterial* BaseMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Engine/EngineDebugMaterials/VertexColorMaterial.VertexColorMaterial"));
+			if (BaseMaterial)
+			{
+				UMaterialInstanceDynamic* DebugMat = UMaterialInstanceDynamic::Create(BaseMaterial, this);
+				if (DebugMat)
+				{
+					DebugMat->SetVectorParameterValue("Color", FLinearColor(1.f, 0.f, 0.f, 0.3f)); // 빨간색
+					DebugMat->SetScalarParameterValue("Opacity", 0.3f);
+					DebugMesh->SetMaterial(0, DebugMat);
+				}
+			}
+
+			DebugMesh->SetVisibility(true);
+			DebugMesh->SetHiddenInGame(false);
+			DebugMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
 	}
 }
 
