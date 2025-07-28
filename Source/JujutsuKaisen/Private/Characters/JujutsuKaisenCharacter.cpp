@@ -23,20 +23,20 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	AutoPossessAI = EAutoPossessAI::Disabled;
 
-	SubMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SubMesh"));
+	/*SubMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SubMesh"));
 	SubMesh->SetupAttachment(GetMesh());
-	SubMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+	SubMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;*/
 
 	//GetMesh()->SetVisibility(false);
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 	
-	FSoftObjectPath DataAssetPath(TEXT("/Game/Dynamic/DataAsset/Mixamo.Mixamo"));
+	/*FSoftObjectPath DataAssetPath(TEXT("/Game/Dynamic/DataAsset/Mixamo.Mixamo"));
 	UJujutsuKaisenCharacterDataAsset* MixamoAsset = Cast<UJujutsuKaisenCharacterDataAsset>(DataAssetPath.TryLoad());
 	if (MixamoAsset)
 	{
 		GetMesh()->SetSkeletalMesh(MixamoAsset->GetMesh());
 		GetMesh()->SetAnimInstanceClass(MixamoAsset->GetAnimBP());
-	}
+	}*/
 
 	InitHitBoxes();
 
@@ -264,18 +264,18 @@ void AJujutsuKaisenCharacter::InitCharacterWithData(UJujutsuKaisenCharacterDataA
 	// Skeletal Mesh 설정
 	if (InDataAsset->GetMesh())
 	{
-		SubMesh->SetSkeletalMesh(InDataAsset->GetMesh());
+		GetMesh()->SetSkeletalMesh(InDataAsset->GetMesh());
 	}
 
 	// AnimBP 설정
 	if (InDataAsset->GetAnimBP())
 	{
-		SubMesh->SetAnimInstanceClass(InDataAsset->GetAnimBP());
+		GetMesh()->SetAnimInstanceClass(InDataAsset->GetAnimBP());
 
 	}
 
 	// Mesh 스케일 설정
-	SubMesh->SetRelativeScale3D(FVector(InDataAsset->GetMeshScale()));
+	GetMesh()->SetRelativeScale3D(FVector(InDataAsset->GetMeshScale()));
 
 
 	// 캡슐 컴포넌트 높이, 반경 설정
@@ -283,9 +283,9 @@ void AJujutsuKaisenCharacter::InitCharacterWithData(UJujutsuKaisenCharacterDataA
 
 	// Mesh 위치를 캡슐 아래로 내리기
 	float HalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
-	SubMesh->SetRelativeLocation(FVector(0.f, 0.f, -HalfHeight));
+	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -HalfHeight));
 
-	SubMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
 
 	// Attach CollisionBox to Fist, Foot
@@ -303,25 +303,25 @@ void AJujutsuKaisenCharacter::InitHitBoxes()
 {
 	// LeftFist
 	LeftFist = CreateDefaultSubobject<UJujutsuKaisenHitBox>(TEXT("LeftFistCollision"));
-	LeftFist->SetupAttachment(SubMesh);
+	LeftFist->SetupAttachment(GetMesh());
 	LeftFist->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	LeftFist->SetGenerateOverlapEvents(true);
 
 	// RightFist
 	RightFist = CreateDefaultSubobject<UJujutsuKaisenHitBox>(TEXT("RightFistCollision"));
-	RightFist->SetupAttachment(SubMesh);
+	RightFist->SetupAttachment(GetMesh());
 	RightFist->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	RightFist->SetGenerateOverlapEvents(true);
 
 	// LeftFoot
 	LeftFoot = CreateDefaultSubobject<UJujutsuKaisenHitBox>(TEXT("LeftFootCollision"));
-	LeftFoot->SetupAttachment(SubMesh);
+	LeftFoot->SetupAttachment(GetMesh());
 	LeftFoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	LeftFoot->SetGenerateOverlapEvents(true);
 
 	// RightFoot
 	RightFoot = CreateDefaultSubobject<UJujutsuKaisenHitBox>(TEXT("RightFootCollision"));
-	RightFoot->SetupAttachment(SubMesh);
+	RightFoot->SetupAttachment(GetMesh());
 	RightFoot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	RightFoot->SetGenerateOverlapEvents(true);
 }
@@ -336,12 +336,12 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 {
 	UE_LOG(LogTemp, Warning, TEXT("Try bone!!!"));
 	FName BoneName(*BoneNameStr);
-	if (!HitBox || BoneNameStr.IsEmpty() || !SubMesh || !SubMesh->DoesSocketExist(BoneName)) return;
+	if (!HitBox || BoneNameStr.IsEmpty() || !GetMesh() || !GetMesh()->DoesSocketExist(BoneName)) return;
 
 
 	UE_LOG(LogTemp, Warning, TEXT("success attach to bone"));
 
-	HitBox->AttachToComponent(SubMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, BoneName);
+	HitBox->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, BoneName);
 	HitBox->SetSphereRadius(Radius);
 	HitBox->SetRelativeLocation(FVector::ZeroVector);
 

@@ -10,10 +10,10 @@ UAka::UAka()
 	AkaProjectile = nullptr;
 	state = 0;
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> EarlyMontageFinder(TEXT("AnimMontage'/Game/Static/Animation_Source/Gojo_Satoru/Aka/AkaEarly_Montage.AkaEarly_Montage'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> EarlyMontageFinder(TEXT("AnimMontage'/Game/Static/JujutsuKaisenCharacters/GojoSatoru_Student/Animation/AkaEarly_Montage.AkaEarly_Montage'"));
 	if (EarlyMontageFinder.Succeeded()) AkaEarlyMontage = EarlyMontageFinder.Object;
-
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> LateMontageFinder(TEXT("AnimMontage'/Game/Static/Animation_Source/Gojo_Satoru/Aka/AkaLate_Montage.AkaLate_Montage'"));
+	
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> LateMontageFinder(TEXT("AnimMontage'/Game/Static/JujutsuKaisenCharacters/GojoSatoru_Student/Animation/AkaLate_Montage.AkaLate_Montage'"));
 	if (LateMontageFinder.Succeeded()) AkaLateMontage = LateMontageFinder.Object;
 
 	static ConstructorHelpers::FClassFinder<AProjectile> ProjectileBPClass(TEXT("/Game/Dynamic/Projectiles/BP_Projectile_Aka"));
@@ -39,11 +39,11 @@ void UAka::OnPressed(AJujutsuKaisenCharacter* Target)
 
 void UAka::OnReleased(AJujutsuKaisenCharacter* Target)
 {
-	if (state == 1)
+	if (AnimInstance && state == 1)
 	{
 		AnimInstance->Montage_Stop(0.2f);
 
-		if (AnimInstance && AkaEarlyMontage)
+		if ( AkaEarlyMontage)
 		{
 			AnimInstance->Montage_Play(AkaEarlyMontage);
 			if (!AkaProjectile)
@@ -54,7 +54,7 @@ void UAka::OnReleased(AJujutsuKaisenCharacter* Target)
 		return;
 	}
 
-	if (state == 2)
+	if (AnimInstance && state == 2)
 	{
 		UnbindMontageNotifies();
 		AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &UAka::OnMontageNotify3Begin);
@@ -140,7 +140,7 @@ void UAka::SpawnProjectile()
 	if (!World) return;
 
 	const FVector Offset = Owner->GetActorForwardVector() * 10.f;
-	const FVector SpawnLocation = Owner->GetMesh()->GetSocketLocation(FName("RightHand")) + Offset;
+	const FVector SpawnLocation = Owner->GetMesh()->GetSocketLocation(FName("hand_r")) + Offset;
 	const FRotator SpawnRotation = Owner->GetActorRotation();
 
 	FActorSpawnParameters SpawnParams;
@@ -160,7 +160,7 @@ void UAka::SpawnProjectile()
 	/*Projectile->AttachToComponent(
 		Owner->GetMesh(),
 		FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-		FName("RightHand")
+		FName("hand_r")
 	);*/
 
 

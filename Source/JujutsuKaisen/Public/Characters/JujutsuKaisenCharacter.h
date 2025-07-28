@@ -68,8 +68,8 @@ class AJujutsuKaisenCharacter : public ACharacter
 
 	// Character Components --------------------------------------------------------
 
-	UPROPERTY(EditAnywhere,  Category = "Character components")
-	USkeletalMeshComponent* SubMesh;
+	/*UPROPERTY(EditAnywhere,  Category = "Character components")
+	USkeletalMeshComponent* SubMesh;*/
 
 	UPROPERTY(VisibleAnywhere, Category = "Character components")
 	UJujutsuKaisenHitBox* LeftFist;
