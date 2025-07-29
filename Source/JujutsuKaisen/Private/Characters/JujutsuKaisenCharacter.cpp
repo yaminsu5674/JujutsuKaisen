@@ -141,6 +141,11 @@ void AJujutsuKaisenCharacter::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("_AnimInstance init!!!"));
 	}
 
+	float CapsuleHalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+	FVector NewLocation = GetActorLocation();
+	NewLocation.Z = CapsuleHalfHeight; // 또는 약간 보정하고 싶으면 CapsuleHalfHeight + 오차값
+	SetActorLocation(NewLocation);
+
 	SkillManager = NewObject<USkillManager>(this);
 	SkillManager->RegisterOwner(this);  // 필요하면 캐릭터 참조 넘기기
 

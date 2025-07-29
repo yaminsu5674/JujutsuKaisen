@@ -53,18 +53,15 @@ void UAka::OnReleased(AJujutsuKaisenCharacter* Target)
 		}
 		return;
 	}
-
 	if (AnimInstance && state == 2)
 	{
 		UnbindMontageNotifies();
 		AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &UAka::OnMontageNotify3Begin);
 		AnimInstance->Montage_Resume(AkaLateMontage);
-
 		LaunchProjectile();
 	}
 }
 
-// 초기화 함수
 void UAka::ResetSkill()
 {
 	state = 0;
@@ -78,7 +75,6 @@ void UAka::ResetSkill()
 	UnbindMontageNotifies();
 }
 
-// 노티파이 바인딩
 void UAka::BindMontageNotifies()
 {
 	if (AnimInstance)
@@ -92,7 +88,6 @@ void UAka::BindMontageNotifies()
 	}
 }
 
-// 노티파이 언바인딩
 void UAka::UnbindMontageNotifies()
 {
 	if (AnimInstance)
@@ -139,11 +134,9 @@ void UAka::SpawnProjectile()
 	UWorld* World = Owner->GetWorld();
 	if (!World) return;
 
-	// 미리 방향 참조용
-	const FVector ForwardOffset = FVector(10.f, 0.f, 0.f); // 손 기준 앞으로 50
-
+	const FVector ForwardOffset = FVector(60.f, 0.f, 0.f);
 	const FRotator SpawnRotation = Owner->GetActorRotation();
-	const FVector SpawnLocation = Owner->GetMesh()->GetSocketLocation(FName("index_03_r")) + Owner->GetActorForwardVector() * 5.f;
+	const FVector SpawnLocation = Owner->GetMesh()->GetSocketLocation(FName("index_03_r")) + Owner->GetActorForwardVector();
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = Owner;
@@ -155,20 +148,8 @@ void UAka::SpawnProjectile()
 		UE_LOG(LogTemp, Error, TEXT("Failed to spawn Aka projectile"));
 		return;
 	}
-
-	Projectile->InitializeParams();
-
+	Projectile->InitializeTarget();
 	Projectile->SetActorEnableCollision(false);
-
-
-	/*Projectile->AttachToComponent(
-		Owner->GetMesh(),
-		FAttachmentTransformRules::KeepWorldTransform,
-		FName("index_03_r")
-	);
-
-
-	Projectile->SetActorRelativeLocation(ForwardOffset);*/
 
 	AkaProjectile = Projectile;
 }
@@ -179,11 +160,6 @@ void UAka::LaunchProjectile()
 	if (AkaProjectile)
 	{
 		AkaProjectile->SetActorEnableCollision(true);
-
-		//AkaProjectile->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		//const FRotator LaunchRotation = Owner->GetActorRotation(); // 캐릭터의 정면 회전
-		//AkaProjectile->SetActorRotation(LaunchRotation); // 회전 보정
-
 		AkaProjectile->SetBehaviorType(EProjectileBehaviorType::Move);
 		AkaProjectile = nullptr;
 	}

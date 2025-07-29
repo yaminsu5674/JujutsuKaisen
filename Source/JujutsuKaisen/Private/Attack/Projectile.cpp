@@ -9,12 +9,16 @@ AProjectile::AProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	InitialLifeSpan = 0.0f;
-
+	_LifeCountingDown = Lifespan;
 	_MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
 	SetRootComponent(_MeshComponent);
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
+	SetActorTickEnabled(true);
 
-
-
+	_MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	_MeshComponent->SetCollisionObjectType(ECC_WorldDynamic);
+	_MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 }
 
 // Called when the game starts or when spawned
@@ -44,15 +48,11 @@ void AProjectile::Tick(float DeltaTime)
 	default:
 		break;
 	}
-
-	//_LifeCountingDown -= DeltaTime;
 }
 
-void AProjectile::InitializeParams(AJujutsuKaisenCharacter* InTarget)
+void AProjectile::InitializeTarget(AJujutsuKaisenCharacter* InTarget)
 {
 	TargetCharacter = InTarget;
-
-	_LifeCountingDown = Lifespan;
 
 	if (TargetCharacter)
 	{
@@ -63,18 +63,8 @@ void AProjectile::InitializeParams(AJujutsuKaisenCharacter* InTarget)
 	{
 		Direction = GetActorForwardVector(); 
 	}
-
-	// auto destroy setting
-	// SetLifeSpan(Lifespan);
 }
 
-void AProjectile::Reset()
-{
-	_LifeCountingDown = Lifespan;
-	SetActorHiddenInGame(false);
-	SetActorEnableCollision(true);
-	SetActorTickEnabled(true);
-}
 
 void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 {
@@ -111,10 +101,9 @@ void AProjectile::HandleMovement(float DeltaTime)
 		{
 			//Target->Hit(Damage);
 			PrimaryActorTick.bCanEverTick = false;
-			Destroy();
+			//Destroy();
 		}
 	}
-
 	_LifeCountingDown -= DeltaTime;
 }
 

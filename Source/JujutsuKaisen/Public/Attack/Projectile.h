@@ -48,20 +48,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 public:	
 	// Sets default values for this actor's properties
 	AProjectile();
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 	void HandleMovement(float DeltaTime);
 
 	void HandlePlacement(float DeltaTime);
 
-	void Reset();
-
-	void InitializeParams(AJujutsuKaisenCharacter* InTarget = nullptr);
+	void InitializeTarget(AJujutsuKaisenCharacter* InTarget = nullptr);
 
 	void SetBehaviorType(EProjectileBehaviorType NewType);
 
