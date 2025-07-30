@@ -71,7 +71,6 @@ void UAka::ResetSkill()
 		AkaProjectile->Destroy();
 		AkaProjectile = nullptr;
 	}
-
 	UnbindMontageNotifies();
 }
 
@@ -148,7 +147,7 @@ void UAka::SpawnProjectile()
 		UE_LOG(LogTemp, Error, TEXT("Failed to spawn Aka projectile"));
 		return;
 	}
-	Projectile->InitializeTarget();
+	Projectile->InitializeTarget(Owner->GetTargetCharacter());
 	Projectile->SetActorEnableCollision(false);
 
 	AkaProjectile = Projectile;

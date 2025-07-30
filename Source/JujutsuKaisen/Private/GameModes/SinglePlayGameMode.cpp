@@ -42,6 +42,12 @@ void ASinglePlayGameMode::BeginPlay()
 
     PossessPlayer();
     PossessAI();
+
+    if (PlayerCharacter && EnemyCharacter)
+    {
+        PlayerCharacter->SetTargetCharacter(EnemyCharacter);
+        EnemyCharacter->SetTargetCharacter(PlayerCharacter);
+    }
 }
 
 void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsset* DataAsset, const FVector& SpawnLocation, const FRotator& SpawnRotation, bool bIsPlayerCharacter)

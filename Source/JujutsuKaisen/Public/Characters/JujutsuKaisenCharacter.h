@@ -154,6 +154,10 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	AJujutsuKaisenCharacter* GetTargetCharacter();
+
+	void SetTargetCharacter(AJujutsuKaisenCharacter* NewTarget);
+	
 	void Hit();
 
 	void Die();

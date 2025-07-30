@@ -80,7 +80,6 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	R_Pressed_Action = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_R_Pressed.IA_R_Pressed")));
 
 	R_Released_Action = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_R_Released.IA_R_Released")));
-
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -143,7 +142,7 @@ void AJujutsuKaisenCharacter::BeginPlay()
 
 	float CapsuleHalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 	FVector NewLocation = GetActorLocation();
-	NewLocation.Z = CapsuleHalfHeight; // 또는 약간 보정하고 싶으면 CapsuleHalfHeight + 오차값
+	NewLocation.Z = CapsuleHalfHeight;
 	SetActorLocation(NewLocation);
 
 	SkillManager = NewObject<USkillManager>(this);
@@ -330,7 +329,15 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 }
 
 
+AJujutsuKaisenCharacter* AJujutsuKaisenCharacter::GetTargetCharacter()
+{
+	return TargetCharacter;
+}
 
+void AJujutsuKaisenCharacter::SetTargetCharacter(AJujutsuKaisenCharacter* NewTarget)
+{
+	TargetCharacter = NewTarget;
+}
 
 
 
@@ -341,6 +348,10 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 
 
 // virtual functions
+
+
+
+// init common skills ex. guard, jump, ...
 void AJujutsuKaisenCharacter::InitSkills()
 {
 
@@ -371,3 +382,5 @@ void AJujutsuKaisenCharacter::R_Released(const FInputActionValue& Value)
 		SkillManager->HandleReleased("R", TargetCharacter);
 	}
 }
+
+
