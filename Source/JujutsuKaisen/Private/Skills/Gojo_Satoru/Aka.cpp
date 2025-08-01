@@ -150,8 +150,6 @@ void UAka::SpawnProjectile()
 		UE_LOG(LogTemp, Error, TEXT("Failed to spawn Aka projectile"));
 		return;
 	}
-	//Projectile->SetDirection(Owner->GetTargetCharacter());
-	Projectile->SetActorEnableCollision(false);
 
 	AkaProjectile = Projectile;
 }
@@ -159,25 +157,12 @@ void UAka::SpawnProjectile()
 
 void UAka::LaunchProjectile()
 {
-	//if (Owner)
-	//{
-	//	if (Target)
-	//	{
-	//		FVector Direction = (Target->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal();
-	//		FRotator LookAtRotation = Direction.Rotation();
-
-	//		// Yaw만 회전 (Pitch, Roll은 유지)
-	//		FRotator OnlyYawRotation = FRotator(0.f, LookAtRotation.Yaw, 0.f);
-	//		Owner->SetActorRotation(OnlyYawRotation);
-	//	}
-	//}
 	if (Owner && Target)
 	{
 		USkillLibrary::RotateActorToFaceTarget(Owner, Target);
 	}
 	if (AkaProjectile)
 	{
-		AkaProjectile->SetActorEnableCollision(true);
 		AkaProjectile->SetDirection(Target);
 		AkaProjectile->SetBehaviorType(EProjectileBehaviorType::Move);
 		AkaProjectile = nullptr;

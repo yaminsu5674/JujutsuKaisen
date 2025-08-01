@@ -65,18 +65,19 @@ void AProjectile::SetDirection(AJujutsuKaisenCharacter* InTarget)
 void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 {
 	BehaviorType = NewType;
-	if (BehaviorType == EProjectileBehaviorType::Move)
-	{
-		// auto destroy
-		SetLifeSpan(Lifespan);
-		SetActorEnableCollision(true);
-		// direction re-calculate!!
-		/*if (TargetCharacter)
-		{
-			Direction = (TargetCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-			SetActorRotation(Direction.Rotation());
-		}*/
 
+	switch (BehaviorType)
+	{
+	case EProjectileBehaviorType::Move:
+	{
+		SetLifeSpan(Lifespan);
+		SetActorEnableCollision(true); 
+		break;
+	}
+	case EProjectileBehaviorType::None:
+	default:
+		SetActorEnableCollision(false); 
+		break;
 	}
 }
 
@@ -106,7 +107,7 @@ void AProjectile::HandleMovement(float DeltaTime)
 			// Hit should be detected on Skill delegate function.
 			// Target->Hit(Damage);
 			PrimaryActorTick.bCanEverTick = false;
-			//Destroy();
+			// Destroy();
 		}
 	}
 	_LifeCountingDown -= DeltaTime;
