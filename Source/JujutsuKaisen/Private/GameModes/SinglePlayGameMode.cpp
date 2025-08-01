@@ -47,6 +47,9 @@ void ASinglePlayGameMode::BeginPlay()
     {
         PlayerCharacter->SetTargetCharacter(EnemyCharacter);
         EnemyCharacter->SetTargetCharacter(PlayerCharacter);
+
+        PlayerCharacter->InitSkills();
+        EnemyCharacter->InitSkills();
     }
 }
 

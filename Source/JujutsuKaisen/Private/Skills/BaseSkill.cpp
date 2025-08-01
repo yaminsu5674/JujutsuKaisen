@@ -14,6 +14,14 @@ void UBaseSkill::SetOwner(AJujutsuKaisenCharacter* NewOwner)
 	}
 }
 
+void UBaseSkill::SetTarget(AJujutsuKaisenCharacter* NewTarget)
+{
+	Target = NewTarget;
+	/*if (Owner)
+	{
+		AnimInstance = Owner->GetMesh()->GetAnimInstance();
+	}*/
+}
 
 bool UBaseSkill::GetBWantsTick()
 {
@@ -26,12 +34,12 @@ void UBaseSkill::TickSkill(float DeltaTime)
 }
 
 
-void UBaseSkill::OnPressed(AJujutsuKaisenCharacter* Target)
+void UBaseSkill::OnPressed()
 {
 
 }
 
-void UBaseSkill::OnReleased(AJujutsuKaisenCharacter* Target)
+void UBaseSkill::OnReleased()
 {
 
 }

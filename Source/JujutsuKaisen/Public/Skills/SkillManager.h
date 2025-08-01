@@ -29,9 +29,9 @@ public:
 
     void RegisterOwner(AJujutsuKaisenCharacter* InOwner);
 
-    void HandlePressed(FName Key, AJujutsuKaisenCharacter* Target);
+    void HandlePressed(FName Key);
 
-    void HandleReleased(FName Key, AJujutsuKaisenCharacter* Target);
+    void HandleReleased(FName Key);
 
     void TickActiveSkills(float Delta);
 	

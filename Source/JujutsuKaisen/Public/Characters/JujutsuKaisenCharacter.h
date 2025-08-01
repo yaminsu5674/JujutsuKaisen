@@ -114,8 +114,6 @@ protected:
 	UPROPERTY()
 	class UJujutsuKaisenAnimInstance* _AnimInstance;
 
-	virtual void InitSkills();
-
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
@@ -149,12 +147,14 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void InitSkills();
+
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-	AJujutsuKaisenCharacter* GetTargetCharacter();
+	AJujutsuKaisenCharacter* GetTargetCharacter () const;
 
 	void SetTargetCharacter(AJujutsuKaisenCharacter* NewTarget);
 	

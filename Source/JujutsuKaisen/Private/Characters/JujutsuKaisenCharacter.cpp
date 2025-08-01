@@ -329,7 +329,7 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 }
 
 
-AJujutsuKaisenCharacter* AJujutsuKaisenCharacter::GetTargetCharacter()
+AJujutsuKaisenCharacter* AJujutsuKaisenCharacter::GetTargetCharacter() const
 {
 	return TargetCharacter;
 }
@@ -363,7 +363,7 @@ void AJujutsuKaisenCharacter::A_Pressed(const FInputActionValue& Value)
 {
 	if (SkillManager)
 	{
-		SkillManager->HandlePressed("A", TargetCharacter);
+		SkillManager->HandlePressed("A");
 	}
 }
 
@@ -371,7 +371,7 @@ void AJujutsuKaisenCharacter::R_Pressed(const FInputActionValue& Value)
 {
 	if (SkillManager)
 	{
-		SkillManager->HandlePressed("R", TargetCharacter); 
+		SkillManager->HandlePressed("R"); 
 	}
 }
 
@@ -379,7 +379,7 @@ void AJujutsuKaisenCharacter::R_Released(const FInputActionValue& Value)
 {
 	if (SkillManager)
 	{
-		SkillManager->HandleReleased("R", TargetCharacter);
+		SkillManager->HandleReleased("R");
 	}
 }
 

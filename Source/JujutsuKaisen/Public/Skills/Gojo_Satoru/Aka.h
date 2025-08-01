@@ -33,9 +33,9 @@ public:
 
 	virtual void TickSkill(float DeltaTime) override;
 
-	virtual void OnPressed(AJujutsuKaisenCharacter* Target) override;
+	virtual void OnPressed() override;
 
-	virtual void OnReleased(AJujutsuKaisenCharacter* Target) override;
+	virtual void OnReleased() override;
 
 	// 초기화 및 바인딩 관리
 	void ResetSkill();

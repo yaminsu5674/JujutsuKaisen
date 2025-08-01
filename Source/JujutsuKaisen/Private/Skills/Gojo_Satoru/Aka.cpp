@@ -3,6 +3,7 @@
 #include "Skills/Gojo_Satoru/Aka.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
+#include "Library/SkillLibrary.h"
 
 UAka::UAka()
 {
@@ -25,7 +26,7 @@ void UAka::TickSkill(float DeltaTime)
 	// 충전 등 지속 로직
 }
 
-void UAka::OnPressed(AJujutsuKaisenCharacter* Target)
+void UAka::OnPressed()
 {
 	state = 1;
 
@@ -37,7 +38,7 @@ void UAka::OnPressed(AJujutsuKaisenCharacter* Target)
 
 }
 
-void UAka::OnReleased(AJujutsuKaisenCharacter* Target)
+void UAka::OnReleased()
 {
 	if (AnimInstance && state == 1)
 	{
@@ -48,6 +49,7 @@ void UAka::OnReleased(AJujutsuKaisenCharacter* Target)
 			AnimInstance->Montage_Play(AkaEarlyMontage);
 			if (!AkaProjectile)
 			{
+				UE_LOG(LogTemp, Error, TEXT("SpawnProjectile()"));
 				SpawnProjectile();
 			}
 		}
@@ -113,6 +115,7 @@ void UAka::OnMontageNotify2Begin(FName NotifyName, const FBranchingPointNotifyPa
 		AnimInstance->Montage_Pause(AkaLateMontage);
 		if (!AkaProjectile)
 		{
+			UE_LOG(LogTemp, Error, TEXT("SpawnProjectile()"));
 			SpawnProjectile();
 		}
 	}
@@ -147,7 +150,7 @@ void UAka::SpawnProjectile()
 		UE_LOG(LogTemp, Error, TEXT("Failed to spawn Aka projectile"));
 		return;
 	}
-	Projectile->InitializeTarget(Owner->GetTargetCharacter());
+	//Projectile->SetDirection(Owner->GetTargetCharacter());
 	Projectile->SetActorEnableCollision(false);
 
 	AkaProjectile = Projectile;
@@ -156,9 +159,26 @@ void UAka::SpawnProjectile()
 
 void UAka::LaunchProjectile()
 {
+	//if (Owner)
+	//{
+	//	if (Target)
+	//	{
+	//		FVector Direction = (Target->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal();
+	//		FRotator LookAtRotation = Direction.Rotation();
+
+	//		// Yaw만 회전 (Pitch, Roll은 유지)
+	//		FRotator OnlyYawRotation = FRotator(0.f, LookAtRotation.Yaw, 0.f);
+	//		Owner->SetActorRotation(OnlyYawRotation);
+	//	}
+	//}
+	if (Owner && Target)
+	{
+		USkillLibrary::RotateActorToFaceTarget(Owner, Target);
+	}
 	if (AkaProjectile)
 	{
 		AkaProjectile->SetActorEnableCollision(true);
+		AkaProjectile->SetDirection(Target);
 		AkaProjectile->SetBehaviorType(EProjectileBehaviorType::Move);
 		AkaProjectile = nullptr;
 	}

@@ -13,7 +13,7 @@ AProjectile::AProjectile()
 	_MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
 	SetRootComponent(_MeshComponent);
 	SetActorHiddenInGame(false);
-	SetActorEnableCollision(true);
+	SetActorEnableCollision(false);
 	SetActorTickEnabled(true);
 
 	_MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -42,21 +42,17 @@ void AProjectile::Tick(float DeltaTime)
 	case EProjectileBehaviorType::Move:
 		HandleMovement(DeltaTime);
 		break;
-	case EProjectileBehaviorType::Place:
-		HandlePlacement(DeltaTime);
-		break;
 	default:
 		break;
 	}
 }
 
-void AProjectile::InitializeTarget(AJujutsuKaisenCharacter* InTarget)
+void AProjectile::SetDirection(AJujutsuKaisenCharacter* InTarget)
 {
-	TargetCharacter = InTarget;
 
-	if (TargetCharacter)
+	if (InTarget)
 	{
-		Direction = (TargetCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		Direction = (InTarget->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 		SetActorRotation(Direction.Rotation()); 
 	}
 	else
@@ -73,6 +69,14 @@ void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 	{
 		// auto destroy
 		SetLifeSpan(Lifespan);
+		SetActorEnableCollision(true);
+		// direction re-calculate!!
+		/*if (TargetCharacter)
+		{
+			Direction = (TargetCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+			SetActorRotation(Direction.Rotation());
+		}*/
+
 	}
 }
 
@@ -99,16 +103,11 @@ void AProjectile::HandleMovement(float DeltaTime)
 		auto Target = Cast<AJujutsuKaisenCharacter>(hitResult.GetActor());
 		if (Target != nullptr)
 		{
-			//Target->Hit(Damage);
+			// Hit should be detected on Skill delegate function.
+			// Target->Hit(Damage);
 			PrimaryActorTick.bCanEverTick = false;
 			//Destroy();
 		}
 	}
 	_LifeCountingDown -= DeltaTime;
-}
-
-
-void AProjectile::HandlePlacement(float DeltaTime)
-{
-	
 }

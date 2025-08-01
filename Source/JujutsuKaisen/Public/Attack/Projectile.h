@@ -11,8 +11,7 @@ UENUM(BlueprintType)
 enum class EProjectileBehaviorType : uint8
 {
 	None,
-	Move,
-	Place
+	Move
 };
 
 UCLASS()
@@ -38,8 +37,6 @@ class JUJUTSUKAISEN_API AProjectile : public AActor
 
 	FVector Direction;
 
-	AJujutsuKaisenCharacter *TargetCharacter;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Visual, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* _MeshComponent;
 	
@@ -55,11 +52,9 @@ public:
 	// Sets default values for this actor's properties
 	AProjectile();
 
-	void HandleMovement(float DeltaTime);
+	virtual void HandleMovement(float DeltaTime);
 
-	void HandlePlacement(float DeltaTime);
-
-	void InitializeTarget(AJujutsuKaisenCharacter* InTarget = nullptr);
+	void SetDirection(AJujutsuKaisenCharacter* InTarget = nullptr);
 
 	void SetBehaviorType(EProjectileBehaviorType NewType);
 

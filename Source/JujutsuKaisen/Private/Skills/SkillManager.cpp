@@ -2,6 +2,7 @@
 
 
 #include "Skills/SkillManager.h"
+#include "Characters/JujutsuKaisenCharacter.h"
 
 void USkillManager::RegisterOwner(AJujutsuKaisenCharacter* InOwner)
 {
@@ -13,23 +14,33 @@ void USkillManager::RegisterSkill(FName Key, UBaseSkill* Skill)
     if (Owner)
     {
         Skill->SetOwner(Owner);
+        if (Owner->GetTargetCharacter())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Target init on Skill"));
+            Skill->SetTarget(Owner->GetTargetCharacter());
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Owner has no target when RegisterSkill is called"));
+        }
+        
     }
     BoundSkills.Add(Key, Skill); 
 }
 
-void USkillManager::HandlePressed(FName Key, AJujutsuKaisenCharacter* Target)
+void USkillManager::HandlePressed(FName Key)
 {
     if (auto* Skill = BoundSkills.FindRef(Key))
     {
-        Skill->OnPressed(Target);
+        Skill->OnPressed();
     }
 }
 
-void USkillManager::HandleReleased(FName Key, AJujutsuKaisenCharacter* Target)
+void USkillManager::HandleReleased(FName Key)
 {
     if (auto* Skill = BoundSkills.FindRef(Key))
     {
-        Skill->OnReleased(Target);
+        Skill->OnReleased();
     }
 }
 

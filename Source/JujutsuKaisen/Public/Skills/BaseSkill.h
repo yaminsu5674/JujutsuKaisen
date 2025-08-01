@@ -24,16 +24,21 @@ protected:
 	AJujutsuKaisenCharacter* Owner;
 
 	UPROPERTY()
+	AJujutsuKaisenCharacter* Target;
+
+	UPROPERTY()
 	UAnimInstance* AnimInstance;
 
 public:
 	void SetOwner(AJujutsuKaisenCharacter* NewOwner);
 
+	void SetTarget(AJujutsuKaisenCharacter* NewTarget);
+
 	bool GetBWantsTick();
 
 	virtual void TickSkill(float DeltaTime);
 
-	virtual void OnPressed(AJujutsuKaisenCharacter* Target);
+	virtual void OnPressed();
 
-	virtual void OnReleased(AJujutsuKaisenCharacter* Target);
+	virtual void OnReleased();
 };
