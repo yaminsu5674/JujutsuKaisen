@@ -140,6 +140,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	float DashSpeed = 1200;
 
+	UPROPERTY(EditAnywhere, Category = "Character params")
+	float DefaultJumpVelocity = 1200;
+
+	UPROPERTY(EditAnywhere, Category = "Character params")
+	float SuperJumpVelocity = 2300;
+
 	// AnimInstance
 	UPROPERTY()
 	class UJujutsuKaisenAnimInstance* _AnimInstance;
@@ -156,6 +162,8 @@ protected:
 	void StopDash();
 
 	void JumpCustom(const FInputActionValue& Value);
+
+	void Landed(const FHitResult& Hit);
 
 	void A_Pressed(const FInputActionValue& Value);
 
