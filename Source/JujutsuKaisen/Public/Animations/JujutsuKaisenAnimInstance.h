@@ -45,7 +45,7 @@ class JUJUTSUKAISEN_API UJujutsuKaisenAnimInstance : public UAnimInstance
 protected:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void NativeInitializeAnimation();
+	virtual void NativeInitializeAnimation() override;
 
 public:
 	UFUNCTION(BlueprintCallable)

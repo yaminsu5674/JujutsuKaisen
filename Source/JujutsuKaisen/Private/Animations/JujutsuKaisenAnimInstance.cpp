@@ -65,6 +65,7 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UJujutsuKaisenAnimInstance::NativeInitializeAnimation()
 {
+    Super::NativeInitializeAnimation();
     APawn* OwnerPawn = TryGetPawnOwner();
     if (OwnerPawn)
     {
