@@ -21,12 +21,12 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
 {
-    if (State == ECharacterState::Dead)
+    if (State == EAnimState::Dead)
     {
         // do nothing
     }
     else
     {
-        State = ECharacterState::Locomotion;
+        State = EAnimState::Locomotion;
     }
 }

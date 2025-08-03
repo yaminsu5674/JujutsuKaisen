@@ -228,7 +228,7 @@ void AJujutsuKaisenCharacter::Dash(const FInputActionValue& Value)
 	GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
 	if (_AnimInstance)
 	{
-		_AnimInstance->SetState(ECharacterState::Dash);
+		_AnimInstance->SetState(EAnimState::Dash);
 	}
 }
 
@@ -242,7 +242,7 @@ void AJujutsuKaisenCharacter::StopDash()
 	GetCharacterMovement()->MinAnalogWalkSpeed = DefaultSpeed;
 	if (_AnimInstance)
 	{
-		_AnimInstance->SetState(ECharacterState::Locomotion);
+		_AnimInstance->SetState(EAnimState::Locomotion);
 	}
 }
 
@@ -251,7 +251,7 @@ void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 	Super::Jump(); // 기본 동작 수행
 	if (_AnimInstance)
 	{
-		_AnimInstance->SetState(ECharacterState::Jump);
+		_AnimInstance->SetState(EAnimState::Jump);
 	}
 }
 
@@ -260,7 +260,7 @@ void AJujutsuKaisenCharacter::Hit()
 {
 	if (_AnimInstance)
 	{
-		_AnimInstance->SetState(ECharacterState::Hit);
+		_AnimInstance->SetState(EAnimState::Hit);
 	}
 }
 
@@ -269,7 +269,7 @@ void AJujutsuKaisenCharacter::Die()
 {
 	if (_AnimInstance)
 	{
-		_AnimInstance->SetState(ECharacterState::Dead);
+		_AnimInstance->SetState(EAnimState::Dead);
 	}
 }
 
@@ -277,7 +277,7 @@ void AJujutsuKaisenCharacter::Skill()
 {
 	if (_AnimInstance)
 	{
-		_AnimInstance->SetState(ECharacterState::Skill);
+		_AnimInstance->SetState(EAnimState::Skill);
 	}
 }
 
