@@ -49,6 +49,10 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	// Dash
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* DashAction;
+
 	// Combo Attack
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* A_Pressed_Action;
@@ -106,9 +110,20 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	float Health;
 
+	UPROPERTY(VisibleAnywhere)
+	bool bIsDashing = false;
+
+	// Speed . It should be controlled on Character Not AnimationInstance
+	UPROPERTY(VisibleAnywhere)
+	float Speed;
+
 	// Speed . It should be controlled on Character Not AnimationInstance
 	UPROPERTY(EditAnywhere, Category = "Character params")
-	float Speed = 100;
+	float DefaultSpeed = 500;
+
+	// Speed . It should be controlled on Character Not AnimationInstance
+	UPROPERTY(EditAnywhere, Category = "Character params")
+	float DashSpeed = 2000;
 
 	// AnimInstance
 	UPROPERTY()
@@ -119,6 +134,11 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	// Dash
+	void Dash(const FInputActionValue& Value);
+
+	void StopDash();
 
 	void JumpCustom(const FInputActionValue& Value);
 
