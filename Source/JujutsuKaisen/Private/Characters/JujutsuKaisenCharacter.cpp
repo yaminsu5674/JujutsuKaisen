@@ -176,8 +176,14 @@ void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 	{
 		SkillManager->TickActiveSkills(DeltaTime);
 	}
-	
+}
 
+void AJujutsuKaisenCharacter::SetState(ECharacterState InState)
+{
+	if (static_cast<uint8>(InState) >= static_cast<uint8>(CurrentState))
+	{
+		CurrentState = InState;
+	}
 }
 
 void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)

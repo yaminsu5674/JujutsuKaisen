@@ -16,12 +16,27 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
+UENUM(BlueprintType)
+enum class ECharacterState : uint8
+{
+	Locomotion = 0,
+	Dash = 1,
+	Jump = 2,
+	SuperJump = 3,
+	Skill = 4,
+	Hit = 5,
+	Dead = 6
+};
+
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(Blueprintable)
 class AJujutsuKaisenCharacter : public ACharacter
 {
 	GENERATED_BODY()
+
+	UPROPERTY()
+	ECharacterState CurrentState = ECharacterState::Locomotion;
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -166,6 +181,8 @@ public:
 	AJujutsuKaisenCharacter();
 
 	virtual void Tick(float DeltaTime) override;
+
+	void SetState(ECharacterState InState);
 
 	virtual void InitSkills();
 

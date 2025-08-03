@@ -13,6 +13,7 @@ enum class EAnimState : uint8
 	Locomotion,
 	Dash,
 	Jump,
+	SuperJump,
 	Hit,
 	Dead,
 	Skill
