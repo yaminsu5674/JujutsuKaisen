@@ -30,6 +30,10 @@ void UAka::OnPressed()
 {
 	state = 1;
 
+	if (Owner && Target)
+	{
+		USkillLibrary::RotateActorToFaceTarget(Owner, Target);
+	}
 	if (AnimInstance && AkaLateMontage)
 	{
 		BindMontageNotifies();
