@@ -20,12 +20,9 @@ UENUM(BlueprintType)
 enum class ECharacterState : uint8
 {
 	Locomotion = 0,
-	Dash = 1,
-	Jump = 2,
-	SuperJump = 3,
-	Skill = 4,
-	Hit = 5,
-	Dead = 6
+	Skill = 1,
+	Hit = 2,
+	Dead = 3
 };
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -182,7 +179,9 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void SetState(ECharacterState InState);
+	bool SetState(ECharacterState InState);
+
+	ECharacterState GetState() const;
 
 	virtual void InitSkills();
 
@@ -195,12 +194,10 @@ public:
 
 	void SetTargetCharacter(AJujutsuKaisenCharacter* NewTarget);
 
-	bool GetBIsDashing();
+	bool GetBIsDashing() const;
 	
 	void Hit();
 
 	void Die();
-
-	void Skill();
 };
 

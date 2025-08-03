@@ -54,3 +54,14 @@ void USkillManager::TickActiveSkills(float Delta)
         }
     }
 }
+
+void USkillManager::ResetActiveSkills()
+{
+    for (auto& Pair : BoundSkills)
+    {
+        if (Pair.Value)
+        {
+            Pair.Value->ResetSkill();
+        }
+    }
+}

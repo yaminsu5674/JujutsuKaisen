@@ -34,5 +34,7 @@ public:
     void HandleReleased(FName Key);
 
     void TickActiveSkills(float Delta);
+
+    void ResetActiveSkills();
 	
 };

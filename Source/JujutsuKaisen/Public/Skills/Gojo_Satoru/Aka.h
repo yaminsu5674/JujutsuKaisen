@@ -38,7 +38,7 @@ public:
 	virtual void OnReleased() override;
 
 	// 초기화 및 바인딩 관리
-	void ResetSkill();
+	virtual void ResetSkill() override;
 	void BindMontageNotifies();
 	void UnbindMontageNotifies();
 

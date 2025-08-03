@@ -19,6 +19,8 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 {
 	// My Customize settings
+	CurrentState = ECharacterState::Locomotion;
+
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	AutoPossessAI = EAutoPossessAI::Disabled;
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
@@ -178,63 +180,65 @@ void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 	}
 }
 
-void AJujutsuKaisenCharacter::SetState(ECharacterState InState)
-{
-	if (static_cast<uint8>(InState) >= static_cast<uint8>(CurrentState))
-	{
-		CurrentState = InState;
-	}
-}
 
 void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
 {
-
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
+	if (SetState(ECharacterState::Locomotion))
 	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		// input is a Vector2D
+		FVector2D MovementVector = Value.Get<FVector2D>();
 
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		if (Controller != nullptr)
+		{
+			// find out which way is forward
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			// get forward vector
+			const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
+			// get right vector 
+			const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+			// add movement 
+			AddMovementInput(ForwardDirection, MovementVector.Y);
+			AddMovementInput(RightDirection, MovementVector.X);
+		}
 	}
 }
 
 void AJujutsuKaisenCharacter::Look(const FInputActionValue& Value)
 {
-	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
+	if (SetState(ECharacterState::Locomotion))
 	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
+		// input is a Vector2D
+		FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+		if (Controller != nullptr)
+		{
+			// add yaw and pitch input to controller
+			AddControllerYawInput(LookAxisVector.X);
+			AddControllerPitchInput(LookAxisVector.Y);
+		}
 	}
+	
 }
 
 
 void AJujutsuKaisenCharacter::Dash(const FInputActionValue& Value)
 {
-	if (bIsDashing)
-		return;
-
-	bIsDashing = true;
-	GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
-	GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
-	if (_AnimInstance)
+	if (SetState(ECharacterState::Locomotion))
 	{
-		_AnimInstance->SetState(EAnimState::Dash);
+		if (bIsDashing)
+			return;
+
+		bIsDashing = true;
+		GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
+		GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
+		if (_AnimInstance)
+		{
+			_AnimInstance->SetState(EAnimState::Dash);
+		}
 	}
 }
 
@@ -254,38 +258,41 @@ void AJujutsuKaisenCharacter::StopDash()
 
 void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 {
-	Super::Jump(); // 기본 동작 수행
-	if (_AnimInstance)
+	if (SetState(ECharacterState::Locomotion))
 	{
-		_AnimInstance->SetState(EAnimState::Jump);
+		Super::Jump(); // 기본 동작 수행
+		if (_AnimInstance)
+		{
+			_AnimInstance->SetState(EAnimState::Jump);
+		}
 	}
 }
 
 
 void AJujutsuKaisenCharacter::Hit()
 {
-	if (_AnimInstance)
+	if (SetState(ECharacterState::Hit))
 	{
-		_AnimInstance->SetState(EAnimState::Hit);
+		if (SkillManager)
+		{
+			SkillManager->ResetActiveSkills();
+		}
 	}
 }
 
 
 void AJujutsuKaisenCharacter::Die()
 {
-	if (_AnimInstance)
+	if (SetState(ECharacterState::Dead))
 	{
-		_AnimInstance->SetState(EAnimState::Dead);
+		if (SkillManager)
+		{
+			SkillManager->ResetActiveSkills();
+		}
 	}
+
 }
 
-void AJujutsuKaisenCharacter::Skill()
-{
-	if (_AnimInstance)
-	{
-		_AnimInstance->SetState(EAnimState::Skill);
-	}
-}
 
 
 
@@ -373,6 +380,26 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 }
 
 
+
+
+////  getter , setter methods
+///////////////////////////////////////
+bool AJujutsuKaisenCharacter::SetState(ECharacterState InState)
+{
+	if (static_cast<uint8>(InState) >= static_cast<uint8>(CurrentState))
+	{
+		CurrentState = InState;
+		return true;
+	}
+	return false;
+}
+
+
+ECharacterState AJujutsuKaisenCharacter::GetState() const
+{
+	return CurrentState;
+}
+
 AJujutsuKaisenCharacter* AJujutsuKaisenCharacter::GetTargetCharacter() const
 {
 	return TargetCharacter;
@@ -383,7 +410,7 @@ void AJujutsuKaisenCharacter::SetTargetCharacter(AJujutsuKaisenCharacter* NewTar
 	TargetCharacter = NewTarget;
 }
 
-bool AJujutsuKaisenCharacter::GetBIsDashing()
+bool AJujutsuKaisenCharacter::GetBIsDashing() const
 {
 	return bIsDashing;
 }
@@ -396,8 +423,7 @@ bool AJujutsuKaisenCharacter::GetBIsDashing()
 
 
 // virtual functions
-
-
+///////////////////////////////////////////////
 
 // init common skills ex. guard, jump, ...
 void AJujutsuKaisenCharacter::InitSkills()
@@ -409,17 +435,23 @@ void AJujutsuKaisenCharacter::InitSkills()
 
 void AJujutsuKaisenCharacter::A_Pressed(const FInputActionValue& Value)
 {
-	if (SkillManager)
+	if (SetState(ECharacterState::Skill))
 	{
-		SkillManager->HandlePressed("A");
+		if (SkillManager)
+		{
+			SkillManager->HandlePressed("A");
+		}
 	}
 }
 
 void AJujutsuKaisenCharacter::R_Pressed(const FInputActionValue& Value)
 {
-	if (SkillManager)
+	if (SetState(ECharacterState::Skill))
 	{
-		SkillManager->HandlePressed("R"); 
+		if (SkillManager)
+		{
+			SkillManager->HandlePressed("R");
+		}
 	}
 }
 

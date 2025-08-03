@@ -16,7 +16,7 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     if (!Character) return;
 
     Speed = OwnerPawn->GetVelocity().Size();
-    bIsDashing = Character->GetBIsDashing(); // 캐릭터에 bIsDashing 멤버 필요
+    bIsDashing = Character->GetBIsDashing();
 }
 
 void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()

@@ -33,6 +33,11 @@ void UBaseSkill::TickSkill(float DeltaTime)
 
 }
 
+void UBaseSkill::ResetSkill()
+{
+
+}
+
 
 void UBaseSkill::OnPressed()
 {

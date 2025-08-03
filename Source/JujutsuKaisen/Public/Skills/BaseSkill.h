@@ -36,6 +36,8 @@ public:
 
 	bool GetBWantsTick();
 
+	virtual void ResetSkill();
+
 	virtual void TickSkill(float DeltaTime);
 
 	virtual void OnPressed();
