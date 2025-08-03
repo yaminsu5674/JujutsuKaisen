@@ -123,6 +123,9 @@ protected:
 	float Health;
 
 	UPROPERTY(VisibleAnywhere)
+	uint8 JumpCount = 0;
+
+	UPROPERTY(VisibleAnywhere)
 	bool bIsDashing = false;
 
 	// Speed . It should be controlled on Character Not AnimationInstance
@@ -179,6 +182,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	void ForceState(ECharacterState InState);
+
 	bool SetState(ECharacterState InState);
 
 	ECharacterState GetState() const;
@@ -193,6 +198,8 @@ public:
 	AJujutsuKaisenCharacter* GetTargetCharacter () const;
 
 	void SetTargetCharacter(AJujutsuKaisenCharacter* NewTarget);
+
+	uint8 GetJumpCount() const;
 
 	bool GetBIsDashing() const;
 	

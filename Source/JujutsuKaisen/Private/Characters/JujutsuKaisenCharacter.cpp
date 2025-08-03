@@ -146,9 +146,9 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	Super::BeginPlay();
 	Health = MaxHealth;
 	_AnimInstance = Cast<UJujutsuKaisenAnimInstance>(GetMesh()->GetAnimInstance());
-	if (_AnimInstance)
+	if (!_AnimInstance)
 	{
-		UE_LOG(LogTemp, Error, TEXT("_AnimInstance init!!!"));
+		UE_LOG(LogTemp, Error, TEXT("_AnimInstance not init!!!"));
 	}
 
 	float CapsuleHalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
@@ -169,11 +169,6 @@ void AJujutsuKaisenCharacter::BeginPlay()
 void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	/*if (_AnimInstance)
-	{
-		float SpeedAnimation = GetCharacterMovement()->Velocity.Size2D();
-		_AnimInstance->SetSpeed(SpeedAnimation);
-	}*/
 	if (SkillManager)
 	{
 		SkillManager->TickActiveSkills(DeltaTime);
@@ -235,10 +230,10 @@ void AJujutsuKaisenCharacter::Dash(const FInputActionValue& Value)
 		bIsDashing = true;
 		GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
 		GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
-		if (_AnimInstance)
+		/*if (_AnimInstance)
 		{
 			_AnimInstance->SetState(EAnimState::Dash);
-		}
+		}*/
 	}
 }
 
@@ -250,21 +245,26 @@ void AJujutsuKaisenCharacter::StopDash()
 	bIsDashing = false;
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = DefaultSpeed;
-	if (_AnimInstance)
+	/*if (_AnimInstance)
 	{
 		_AnimInstance->SetState(EAnimState::Locomotion);
-	}
+	}*/
 }
 
 void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 {
 	if (SetState(ECharacterState::Locomotion))
 	{
-		Super::Jump(); // 기본 동작 수행
-		if (_AnimInstance)
+		if (JumpCount == 0)
 		{
-			_AnimInstance->SetState(EAnimState::Jump);
+			JumpCount++;
+			Super::Jump(); // 기본 동작 수행
+			//if (_AnimInstance)
+			//{
+			//	_AnimInstance->SetState(EAnimState::Jump);
+			//}
 		}
+		
 	}
 }
 
@@ -384,10 +384,19 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 
 ////  getter , setter methods
 ///////////////////////////////////////
+void AJujutsuKaisenCharacter::ForceState(ECharacterState InState)
+{
+	CurrentState = InState;
+}
+
 bool AJujutsuKaisenCharacter::SetState(ECharacterState InState)
 {
 	if (static_cast<uint8>(InState) >= static_cast<uint8>(CurrentState))
 	{
+		if (InState == ECharacterState::Skill && CurrentState == ECharacterState::Skill)
+		{
+			return false;
+		}
 		CurrentState = InState;
 		return true;
 	}
@@ -415,6 +424,10 @@ bool AJujutsuKaisenCharacter::GetBIsDashing() const
 	return bIsDashing;
 }
 
+uint8 AJujutsuKaisenCharacter::GetJumpCount() const
+{
+	return JumpCount;
+}
 
 
 

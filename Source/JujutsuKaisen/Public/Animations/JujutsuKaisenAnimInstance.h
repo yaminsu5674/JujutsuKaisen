@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "JujutsuKaisenAnimInstance.generated.h"
 
+class AJujutsuKaisenCharacter;
 
 UENUM(BlueprintType)
 enum class EAnimState : uint8
@@ -13,6 +14,7 @@ enum class EAnimState : uint8
 	Locomotion,
 	Dash,
 	Jump,
+	DoubleJump,
 	SuperJump,
 	Hit,
 	Dead,
@@ -25,6 +27,8 @@ UCLASS()
 class JUJUTSUKAISEN_API UJujutsuKaisenAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
+	UPROPERTY()
+	AJujutsuKaisenCharacter* Character;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
 	EAnimState State;
@@ -35,8 +39,13 @@ class JUJUTSUKAISEN_API UJujutsuKaisenAnimInstance : public UAnimInstance
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
 	bool bIsDashing;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
+	uint8 JumpCount;
+
 protected:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
+	void NativeInitializeAnimation();
 
 public:
 	UFUNCTION(BlueprintCallable)
