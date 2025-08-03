@@ -11,6 +11,7 @@ UENUM(BlueprintType)
 enum class ECharacterState : uint8
 {
 	Locomotion,
+	Dash,
 	Jump,
 	Hit,
 	Dead,
@@ -30,6 +31,12 @@ class JUJUTSUKAISEN_API UJujutsuKaisenAnimInstance : public UAnimInstance
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
 	float Speed;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
+	bool bIsDashing;
+
+protected:
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void OnStateAnimationEnds();
@@ -38,7 +45,9 @@ public:
 
 	FORCEINLINE ECharacterState GetState() const { return State; }
 
-	FORCEINLINE void SetSpeed(float InSpeed) { Speed = InSpeed; }
+	//FORCEINLINE void SetSpeed(float InSpeed) { Speed = InSpeed; }
+
+	//FORCEINLINE void SetBIsDahsing(bool result) { bIsDashing = result; }
 
 	FORCEINLINE float GetSpeed() const { return Speed; }
 

@@ -105,7 +105,7 @@ protected:
 	AActor* Weapon;
 
 	UPROPERTY(EditAnywhere, Category = "Character params")
-	float MaxHealth = 100;
+	float MaxHealth = 1000;
 
 	UPROPERTY(VisibleAnywhere)
 	float Health;
@@ -123,7 +123,7 @@ protected:
 
 	// Speed . It should be controlled on Character Not AnimationInstance
 	UPROPERTY(EditAnywhere, Category = "Character params")
-	float DashSpeed = 2000;
+	float DashSpeed = 1200;
 
 	// AnimInstance
 	UPROPERTY()
@@ -177,6 +177,8 @@ public:
 	AJujutsuKaisenCharacter* GetTargetCharacter () const;
 
 	void SetTargetCharacter(AJujutsuKaisenCharacter* NewTarget);
+
+	bool GetBIsDashing();
 	
 	void Hit();
 

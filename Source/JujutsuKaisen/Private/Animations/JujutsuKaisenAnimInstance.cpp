@@ -4,6 +4,21 @@
 #include "Animations/JujutsuKaisenAnimInstance.h"
 #include "Characters/JujutsuKaisenCharacter.h"
 
+
+void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+{
+    Super::NativeUpdateAnimation(DeltaSeconds);
+
+    APawn* OwnerPawn = TryGetPawnOwner();
+    if (!OwnerPawn) return;
+
+    AJujutsuKaisenCharacter* Character = Cast<AJujutsuKaisenCharacter>(OwnerPawn);
+    if (!Character) return;
+
+    Speed = OwnerPawn->GetVelocity().Size();
+    bIsDashing = Character->GetBIsDashing(); // 캐릭터에 bIsDashing 멤버 필요
+}
+
 void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
 {
     if (State == ECharacterState::Dead)

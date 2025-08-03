@@ -48,9 +48,11 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	bIsDashing = false;
 	Speed = DefaultSpeed;
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+	GetCharacterMovement()->MinAnalogWalkSpeed = DefaultSpeed;
+	/*GetCharacterMovement()->MaxAcceleration = 250000.f;
+	GetCharacterMovement()->BrakingFrictionFactor = 50000.f;*/
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
@@ -165,11 +167,11 @@ void AJujutsuKaisenCharacter::BeginPlay()
 void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (_AnimInstance)
+	/*if (_AnimInstance)
 	{
 		float SpeedAnimation = GetCharacterMovement()->Velocity.Size2D();
 		_AnimInstance->SetSpeed(SpeedAnimation);
-	}
+	}*/
 	if (SkillManager)
 	{
 		SkillManager->TickActiveSkills(DeltaTime);
@@ -223,6 +225,11 @@ void AJujutsuKaisenCharacter::Dash(const FInputActionValue& Value)
 
 	bIsDashing = true;
 	GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
+	GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
+	if (_AnimInstance)
+	{
+		_AnimInstance->SetState(ECharacterState::Dash);
+	}
 }
 
 void AJujutsuKaisenCharacter::StopDash()
@@ -232,6 +239,11 @@ void AJujutsuKaisenCharacter::StopDash()
 
 	bIsDashing = false;
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+	GetCharacterMovement()->MinAnalogWalkSpeed = DefaultSpeed;
+	if (_AnimInstance)
+	{
+		_AnimInstance->SetState(ECharacterState::Locomotion);
+	}
 }
 
 void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
@@ -365,6 +377,10 @@ void AJujutsuKaisenCharacter::SetTargetCharacter(AJujutsuKaisenCharacter* NewTar
 	TargetCharacter = NewTarget;
 }
 
+bool AJujutsuKaisenCharacter::GetBIsDashing()
+{
+	return bIsDashing;
+}
 
 
 
