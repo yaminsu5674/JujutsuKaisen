@@ -14,6 +14,8 @@ enum class EAnimState : uint8
 	Locomotion,
 	Dash,
 	Jump,
+	Falling,
+	Land,
 	DoubleJump,
 	SuperJump,
 	Hit,
@@ -40,7 +42,20 @@ class JUJUTSUKAISEN_API UJujutsuKaisenAnimInstance : public UAnimInstance
 	bool bIsDashing;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
+	bool bIsFalling;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
+	bool PrevIsFalling;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
 	uint8 JumpCount;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
+	bool bDidSuperJump;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
+	bool bDidDoubleJump;
+
 
 protected:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;

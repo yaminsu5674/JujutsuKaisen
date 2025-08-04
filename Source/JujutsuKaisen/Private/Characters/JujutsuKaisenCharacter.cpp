@@ -55,6 +55,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	GetCharacterMovement()->BrakingFrictionFactor = 50000.f;*/
 	GetCharacterMovement()->JumpZVelocity = DefaultJumpVelocity;
 	GetCharacterMovement()->AirControl = 0.35f;
+	GetCharacterMovement()->GravityScale = 2.0f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
@@ -258,6 +259,7 @@ void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 		if (JumpCount == 0 && bIsDashing)
 		{
 			LaunchCharacter(FVector(0, 0, SuperJumpVelocity), false, true);
+			bDidSuperJump = true;
 			//if (_AnimInstance)
 			//{
 			//	_AnimInstance->SetState(EAnimState::Jump);
@@ -270,6 +272,7 @@ void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 		else if (JumpCount == 1)
 		{
 			LaunchCharacter(FVector(0, 0, DefaultJumpVelocity), false, true);
+			bDidDoubleJump = true;
 		}
 		JumpCount++;
 	}
@@ -278,8 +281,9 @@ void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
-
 	JumpCount = 0;
+	bDidSuperJump = false;
+	bDidDoubleJump = false;
 }
 
 

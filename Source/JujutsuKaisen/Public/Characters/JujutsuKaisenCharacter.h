@@ -125,6 +125,14 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	uint8 JumpCount = 0;
 
+	// Header (.h)
+	UPROPERTY(VisibleAnywhere)
+	bool bDidSuperJump = false;
+
+	UPROPERTY(VisibleAnywhere)
+	bool bDidDoubleJump = false;
+
+
 	UPROPERTY(VisibleAnywhere)
 	bool bIsDashing = false;
 
@@ -210,6 +218,12 @@ public:
 	uint8 GetJumpCount() const;
 
 	bool GetBIsDashing() const;
+
+	bool GetBDidSuperJump() const { return bDidSuperJump; }
+	void SetBDidSuperJump(bool bValue) { bDidSuperJump = bValue; }
+	bool GetBDidDoubleJump() const { return bDidDoubleJump; }
+	void SetBDidDoubleJump(bool bValue) { bDidDoubleJump = bValue; }
+
 	
 	void Hit();
 
