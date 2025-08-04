@@ -20,7 +20,8 @@ enum class EAnimState : uint8
 	SuperJump,
 	Hit,
 	Dead,
-	Skill
+	Skill,
+	Guard
 };
 /**
  *

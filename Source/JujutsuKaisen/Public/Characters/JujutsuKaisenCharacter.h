@@ -21,9 +21,10 @@ enum class ECharacterState : uint8
 {
 	Locomotion = 0,
 	Land = 1,
-	Skill = 2,
-	Hit = 3,
-	Dead = 4
+	Guard = 2,
+	Skill = 3,
+	Hit = 4,
+	Dead = 5
 };
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -65,6 +66,10 @@ class AJujutsuKaisenCharacter : public ACharacter
 	// Dash
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* DashAction;
+
+	// Guard
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* GuardAction;
 
 	// Combo Attack
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -176,6 +181,10 @@ protected:
 	virtual void JumpCustom(const FInputActionValue& Value);
 
 	void Landed(const FHitResult& Hit);
+
+	virtual void Guard(const FInputActionValue& Value);
+
+	virtual void StopGuard();
 
 	void A_Pressed(const FInputActionValue& Value);
 

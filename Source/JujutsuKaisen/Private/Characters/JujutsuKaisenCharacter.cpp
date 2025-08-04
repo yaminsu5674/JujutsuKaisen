@@ -84,6 +84,8 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 
 	JumpAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_Jump.IA_Jump")));
 
+	GuardAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_Guard.IA_Guard")));
+
 	A_Pressed_Action = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_A_Pressed.IA_A_Pressed")));
 
 	R_Pressed_Action = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_R_Pressed.IA_R_Pressed")));
@@ -126,6 +128,11 @@ void AJujutsuKaisenCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 		// Dashing
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::Dash);
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Completed, this, &AJujutsuKaisenCharacter::StopDash);
+
+		// Dashing
+		EnhancedInputComponent->BindAction(GuardAction, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::Guard);
+		EnhancedInputComponent->BindAction(GuardAction, ETriggerEvent::Completed, this, &AJujutsuKaisenCharacter::StopGuard);
+
 		// A_Pressed
 		EnhancedInputComponent->BindAction(A_Pressed_Action, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::A_Pressed);
 
@@ -277,6 +284,52 @@ void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
 	}
 }
 
+void AJujutsuKaisenCharacter::Guard(const FInputActionValue& Value)
+{
+	if (SetState(ECharacterState::Guard))
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1, // Key (-1이면 항상 새 메시지)
+				2.0f, // 화면에 보여질 시간 (초)
+				FColor::Green, // 글씨 색상
+				TEXT("Guard on!") // 출력 메시지
+			);
+		}
+
+	}
+}
+
+void AJujutsuKaisenCharacter::StopGuard()
+{
+	if (CurrentState == ECharacterState::Guard)
+	{
+		ForceState(ECharacterState::Locomotion);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1, // Key (-1이면 항상 새 메시지)
+				2.0f, // 화면에 보여질 시간 (초)
+				FColor::Yellow, // 글씨 색상
+				TEXT("Guard Released!") // 출력 메시지
+			);
+		}
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1, // Key (-1이면 항상 새 메시지)
+				2.0f, // 화면에 보여질 시간 (초)
+				FColor::Red, // 글씨 색상
+				TEXT("Already Released!") // 출력 메시지
+			);
+		}
+	}
+}
+
 
 void AJujutsuKaisenCharacter::Hit()
 {
@@ -402,7 +455,8 @@ bool AJujutsuKaisenCharacter::SetState(ECharacterState InState)
 {
 	if (static_cast<uint8>(InState) >= static_cast<uint8>(CurrentState))
 	{
-		if (InState == ECharacterState::Skill && CurrentState == ECharacterState::Skill)
+		if ((InState == ECharacterState::Skill || InState == ECharacterState::Guard)
+			&& (CurrentState == ECharacterState::Skill || CurrentState == ECharacterState::Guard))
 		{
 			return false;
 		}

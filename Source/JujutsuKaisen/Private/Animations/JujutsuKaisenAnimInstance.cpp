@@ -60,6 +60,10 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         State = EAnimState::Land;
         break;
 
+    case ECharacterState::Guard:
+        State = EAnimState::Guard;
+        break;
+
     case ECharacterState::Skill:
         State = EAnimState::Skill;
         break;
