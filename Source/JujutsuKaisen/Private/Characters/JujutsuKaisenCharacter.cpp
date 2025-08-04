@@ -231,10 +231,6 @@ void AJujutsuKaisenCharacter::Dash(const FInputActionValue& Value)
 		bIsDashing = true;
 		GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
 		GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
-		/*if (_AnimInstance)
-		{
-			_AnimInstance->SetState(EAnimState::Dash);
-		}*/
 	}
 }
 
@@ -246,10 +242,6 @@ void AJujutsuKaisenCharacter::StopDash()
 	bIsDashing = false;
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = DefaultSpeed;
-	/*if (_AnimInstance)
-	{
-		_AnimInstance->SetState(EAnimState::Locomotion);
-	}*/
 }
 
 void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
@@ -260,10 +252,6 @@ void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 		{
 			LaunchCharacter(FVector(0, 0, SuperJumpVelocity), false, true);
 			bDidSuperJump = true;
-			//if (_AnimInstance)
-			//{
-			//	_AnimInstance->SetState(EAnimState::Jump);
-			//}
 		}
 		else if (JumpCount == 0)
 		{
@@ -440,15 +428,6 @@ void AJujutsuKaisenCharacter::SetTargetCharacter(AJujutsuKaisenCharacter* NewTar
 	TargetCharacter = NewTarget;
 }
 
-bool AJujutsuKaisenCharacter::GetBIsDashing() const
-{
-	return bIsDashing;
-}
-
-uint8 AJujutsuKaisenCharacter::GetJumpCount() const
-{
-	return JumpCount;
-}
 
 
 

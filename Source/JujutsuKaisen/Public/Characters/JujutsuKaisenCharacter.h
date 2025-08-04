@@ -216,10 +216,10 @@ public:
 
 	void SetTargetCharacter(AJujutsuKaisenCharacter* NewTarget);
 
-	uint8 GetJumpCount() const;
 
-	bool GetBIsDashing() const;
 
+	bool GetBIsDashing() const { return bIsDashing; }
+	uint8 GetJumpCount() const { return JumpCount; }
 	bool GetBDidSuperJump() const { return bDidSuperJump; }
 	void SetBDidSuperJump(bool bValue) { bDidSuperJump = bValue; }
 	bool GetBDidDoubleJump() const { return bDidDoubleJump; }

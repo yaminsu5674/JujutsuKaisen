@@ -14,30 +14,10 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     Speed = Character->GetVelocity().Size();
     bIsDashing = Character->GetBIsDashing();
     float VerticalSpeed = Character->GetVelocity().Z;
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(
-            -1,
-            0.f,
-            FColor::Cyan,
-            FString::Printf(TEXT("[VerticalSpeed] Z: %.2f"), VerticalSpeed)
-        );
-    }
     bIsFalling = VerticalSpeed < -1.f;
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(
-            -1,
-            0.f,
-            FColor::Cyan,
-            FString::Printf(TEXT("[bIsFalling] : %s"), bIsFalling ? TEXT("true") : TEXT("false"))
-        );
-    }
     JumpCount = Character->GetJumpCount();
     bDidSuperJump = Character->GetBDidSuperJump();
     bDidDoubleJump = Character->GetBDidDoubleJump();
-    float PrevVerticalSpeed = 0.f;
-    const bool bAboutToLand = !bIsFalling && VerticalSpeed <= -0.f;
 
     switch (Character->GetState())
     {
@@ -45,6 +25,7 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     {
         if (bIsFalling)
         {
+            // falling
             State = EAnimState::Falling;
         }
         else if (bDidDoubleJump)
@@ -95,40 +76,6 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         State = EAnimState::Locomotion;
         break;
     }
-    
-
-
-
-
-
-    // === DEBUG: 상태 표시 ===
-    if (GEngine)
-    {
-        FString StateString;
-
-        switch (State)
-        {
-        case EAnimState::Locomotion:   StateString = TEXT("Locomotion"); break;
-        case EAnimState::Dash:         StateString = TEXT("Dash");       break;
-        case EAnimState::Jump:         StateString = TEXT("Jump");       break;
-        case EAnimState::DoubleJump:   StateString = TEXT("DoubleJump"); break;
-        case EAnimState::SuperJump:    StateString = TEXT("SuperJump");  break;
-        case EAnimState::Falling:      StateString = TEXT("Falling");    break;
-        case EAnimState::Land:         StateString = TEXT("Land");       break;
-        case EAnimState::Skill:        StateString = TEXT("Skill");      break;
-        case EAnimState::Hit:          StateString = TEXT("Hit");        break;
-        case EAnimState::Dead:         StateString = TEXT("Dead");       break;
-        default:                       StateString = TEXT("Unknown");    break;
-        }
-
-        GEngine->AddOnScreenDebugMessage(
-            /* Key */ -1,
-            /* TimeToDisplay */ 0.f,
-            /* Color */ FColor::Green,
-            FString::Printf(TEXT("[AnimState] %s"), *StateString)
-        );
-    }
-
 
 }
 
