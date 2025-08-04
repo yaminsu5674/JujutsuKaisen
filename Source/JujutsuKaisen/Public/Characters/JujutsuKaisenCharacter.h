@@ -150,10 +150,13 @@ protected:
 	float DashSpeed = 1200;
 
 	UPROPERTY(EditAnywhere, Category = "Character params")
-	float DefaultJumpVelocity = 1200;
+	float DefaultJumpVelocity = 1800;
 
 	UPROPERTY(EditAnywhere, Category = "Character params")
-	float SuperJumpVelocity = 2300;
+	float DoubleJumpVelocity = 2400;
+
+	UPROPERTY(EditAnywhere, Category = "Character params")
+	float SuperJumpVelocity = 2400;
 
 	// AnimInstance
 	UPROPERTY()
