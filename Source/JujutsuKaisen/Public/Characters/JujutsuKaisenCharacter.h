@@ -20,9 +20,10 @@ UENUM(BlueprintType)
 enum class ECharacterState : uint8
 {
 	Locomotion = 0,
-	Skill = 1,
-	Hit = 2,
-	Dead = 3
+	Land = 1,
+	Skill = 2,
+	Hit = 3,
+	Dead = 4
 };
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);

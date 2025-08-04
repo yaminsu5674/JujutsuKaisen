@@ -14,6 +14,15 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     Speed = Character->GetVelocity().Size();
     bIsDashing = Character->GetBIsDashing();
     float VerticalSpeed = Character->GetVelocity().Z;
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(
+            -1,
+            0.f,
+            FColor::Cyan,
+            FString::Printf(TEXT("[VerticalSpeed] Z: %.2f"), VerticalSpeed)
+        );
+    }
     bIsFalling = VerticalSpeed < -1.f;
     JumpCount = Character->GetJumpCount();
     bDidSuperJump = Character->GetBDidSuperJump();
@@ -25,11 +34,11 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     {
     case ECharacterState::Locomotion:
     {
-        if (bAboutToLand)
+        /*if (bAboutToLand)
         {
             State = EAnimState::Land;
-        }
-        else if (bIsFalling)
+        }*/
+        if (bIsFalling)
         {
             State = EAnimState::Falling;
         }
@@ -60,6 +69,10 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         }
     }
     break;
+
+    case ECharacterState::Land:
+        State = EAnimState::Land;
+        break;
 
     case ECharacterState::Skill:
         State = EAnimState::Skill;

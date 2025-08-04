@@ -271,7 +271,7 @@ void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 		}
 		else if (JumpCount == 1)
 		{
-			LaunchCharacter(FVector(0, 0, DefaultJumpVelocity), false, true);
+			LaunchCharacter(FVector(0, 0, DefaultJumpVelocity*2), false, true);
 			bDidDoubleJump = true;
 		}
 		JumpCount++;
@@ -280,10 +280,13 @@ void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 
 void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
 {
-	Super::Landed(Hit);
-	JumpCount = 0;
-	bDidSuperJump = false;
-	bDidDoubleJump = false;
+	if (SetState(ECharacterState::Land))
+	{
+		Super::Landed(Hit);
+		JumpCount = 0;
+		bDidSuperJump = false;
+		bDidDoubleJump = false;
+	}
 }
 
 
