@@ -173,7 +173,7 @@ protected:
 
 	void StopDash();
 
-	void JumpCustom(const FInputActionValue& Value);
+	virtual void JumpCustom(const FInputActionValue& Value);
 
 	void Landed(const FHitResult& Hit);
 
