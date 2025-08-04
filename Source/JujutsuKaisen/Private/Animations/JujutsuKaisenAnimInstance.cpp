@@ -24,6 +24,15 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         );
     }
     bIsFalling = VerticalSpeed < -1.f;
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(
+            -1,
+            0.f,
+            FColor::Cyan,
+            FString::Printf(TEXT("[bIsFalling] : %s"), bIsFalling ? TEXT("true") : TEXT("false"))
+        );
+    }
     JumpCount = Character->GetJumpCount();
     bDidSuperJump = Character->GetBDidSuperJump();
     bDidDoubleJump = Character->GetBDidDoubleJump();
@@ -34,10 +43,6 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     {
     case ECharacterState::Locomotion:
     {
-        /*if (bAboutToLand)
-        {
-            State = EAnimState::Land;
-        }*/
         if (bIsFalling)
         {
             State = EAnimState::Falling;
