@@ -2,6 +2,7 @@
 
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "Animations/JujutsuKaisenAnimInstance.h"
+#include "Characters/CharacterStateManager.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -18,9 +19,10 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 {
-	// My Customize settings
-	CurrentState = ECharacterState::Locomotion;
+	// ìƒíƒœ ë§¤ë‹ˆì € ì´ˆê¸°í™”
+	StateManager = NewObject<UCharacterStateManager>(this);
 
+	// My Customize settings
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	AutoPossessAI = EAutoPossessAI::Disabled;
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
@@ -165,7 +167,7 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	SetActorLocation(NewLocation);
 
 	SkillManager = NewObject<USkillManager>(this);
-	SkillManager->RegisterOwner(this);  // ÇÊ¿äÇÏ¸é Ä³¸¯ÅÍ ÂüÁ¶ ³Ñ±â±â
+	SkillManager->RegisterOwner(this);  // ï¿½Ê¿ï¿½ï¿½Ï¸ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ±ï¿½ï¿½
 
 	// Attach CollisionBox to Fist, Foot
 	AttachHitBoxToBone(LeftFist, FString(TEXT("hand_l")));
@@ -177,7 +179,7 @@ void AJujutsuKaisenCharacter::BeginPlay()
 void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (SkillManager && CurrentState == ECharacterState::Skill)
+	if (SkillManager && StateManager && StateManager->IsInState(ECharacterState::Skill))
 	{
 		SkillManager->TickActiveSkills(DeltaTime);
 	}
@@ -266,7 +268,7 @@ void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 		}
 		else if (JumpCount == 0)
 		{
-			Super::Jump(); // ±âº» µ¿ÀÛ ¼öÇà
+			Super::Jump(); // ï¿½âº» ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		}
 		else if (JumpCount == 1)
 		{
@@ -295,10 +297,10 @@ void AJujutsuKaisenCharacter::Guard(const FInputActionValue& Value)
 		if (GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
-				-1, // Key (-1ÀÌ¸é Ç×»ó »õ ¸Ş½ÃÁö)
-				2.0f, // È­¸é¿¡ º¸¿©Áú ½Ã°£ (ÃÊ)
-				FColor::Green, // ±Û¾¾ »ö»ó
-				TEXT("Guard on!") // Ãâ·Â ¸Ş½ÃÁö
+				-1, // Key (-1ï¿½Ì¸ï¿½ ï¿½×»ï¿½ ï¿½ï¿½ ï¿½Ş½ï¿½ï¿½ï¿½)
+				2.0f, // È­ï¿½é¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ (ï¿½ï¿½)
+				FColor::Green, // ï¿½Û¾ï¿½ ï¿½ï¿½ï¿½ï¿½
+				TEXT("Guard on!") // ï¿½ï¿½ï¿½ ï¿½Ş½ï¿½ï¿½ï¿½
 			);
 		}
 
@@ -307,16 +309,16 @@ void AJujutsuKaisenCharacter::Guard(const FInputActionValue& Value)
 
 void AJujutsuKaisenCharacter::StopGuard()
 {
-	if (CurrentState == ECharacterState::Guard)
+	if (StateManager && StateManager->IsInState(ECharacterState::Guard))
 	{
 		ForceState(ECharacterState::Locomotion);
 		if (GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
-				-1, // Key (-1ÀÌ¸é Ç×»ó »õ ¸Ş½ÃÁö)
-				2.0f, // È­¸é¿¡ º¸¿©Áú ½Ã°£ (ÃÊ)
-				FColor::Yellow, // ±Û¾¾ »ö»ó
-				TEXT("Guard Released!") // Ãâ·Â ¸Ş½ÃÁö
+				-1, // Key (-1ï¿½Ì¸ï¿½ ï¿½×»ï¿½ ï¿½ï¿½ ï¿½Ş½ï¿½ï¿½ï¿½)
+				2.0f, // È­ï¿½é¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ (ï¿½ï¿½)
+				FColor::Yellow, // ï¿½Û¾ï¿½ ï¿½ï¿½ï¿½ï¿½
+				TEXT("Guard Released!") // ï¿½ï¿½ï¿½ ï¿½Ş½ï¿½ï¿½ï¿½
 			);
 		}
 	}
@@ -325,10 +327,10 @@ void AJujutsuKaisenCharacter::StopGuard()
 		if (GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
-				-1, // Key (-1ÀÌ¸é Ç×»ó »õ ¸Ş½ÃÁö)
-				2.0f, // È­¸é¿¡ º¸¿©Áú ½Ã°£ (ÃÊ)
-				FColor::Red, // ±Û¾¾ »ö»ó
-				TEXT("Already Released!") // Ãâ·Â ¸Ş½ÃÁö
+				-1, // Key (-1ï¿½Ì¸ï¿½ ï¿½×»ï¿½ ï¿½ï¿½ ï¿½Ş½ï¿½ï¿½ï¿½)
+				2.0f, // È­ï¿½é¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ (ï¿½ï¿½)
+				FColor::Red, // ï¿½Û¾ï¿½ ï¿½ï¿½ï¿½ï¿½
+				TEXT("Already Released!") // ï¿½ï¿½ï¿½ ï¿½Ş½ï¿½ï¿½ï¿½
 			);
 		}
 	}
@@ -420,19 +422,19 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 			DebugMesh->SetStaticMesh(SphereMesh);
 			DebugMesh->AttachToComponent(HitBox, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-			// ¸Ş½Ã Å©±â Á¶Àı (½ºÇÇ¾î ¹İÁö¸§ ±âÁØÀ¸·Î ºñ·Ê)
+			// ï¿½Ş½ï¿½ Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½)
 			float Scale = Radius / 50.f;
 			/*DebugMesh->SetRelativeScale3D(FVector(Scale));*/
 			DebugMesh->SetWorldScale3D(FVector(Scale));
 
-			// ¸ÓÆ¼¸®¾ó Àû¿ë
+			// ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			UMaterial* BaseMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Engine/EngineDebugMaterials/VertexColorMaterial.VertexColorMaterial"));
 			if (BaseMaterial)
 			{
 				UMaterialInstanceDynamic* DebugMat = UMaterialInstanceDynamic::Create(BaseMaterial, this);
 				if (DebugMat)
 				{
-					DebugMat->SetVectorParameterValue("Color", FLinearColor(1.f, 0.f, 0.f, 0.3f)); // »¡°£»ö
+					DebugMat->SetVectorParameterValue("Color", FLinearColor(1.f, 0.f, 0.f, 0.3f)); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					DebugMat->SetScalarParameterValue("Opacity", 0.3f);
 					DebugMesh->SetMaterial(0, DebugMat);
 				}
@@ -452,13 +454,13 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 //	FVector CameraLocation = FollowCamera->GetComponentLocation();
 //	FVector TargetLocation = TargetCharacter->GetActorLocation();
 //
-//	// ¹Ù¶óº¼ ¹æÇâ °è»ê
+//	// ï¿½Ù¶ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 //	FVector DirectionToTarget = (TargetLocation - CameraLocation).GetSafeNormal();
 //
-//	// È¸Àü°ªÀ¸·Î º¯È¯
+//	// È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
 //	FRotator TargetRotation = DirectionToTarget.Rotation();
 //
-//	// Ä«¸Ş¶ó¸¦ Á¡ÁøÀûÀ¸·Î È¸Àü (½º¹«µù)
+//	// Ä«ï¿½Ş¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 //	FRotator CurrentRotation = FollowCamera->GetComponentRotation();
 //	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 5.0f);
 //
@@ -472,21 +474,21 @@ void AJujutsuKaisenCharacter::UpdateLockOnCamera(float DeltaTime)
 	FVector MyLocation = GetActorLocation();
 	FVector TargetLocation = TargetCharacter->GetActorLocation();
 
-	// Å¸°Ù ¹æÇâ ±¸ÇÏ±â
+	// Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
 	FVector DirectionToTarget = (TargetLocation - MyLocation).GetSafeNormal();
 
-	// Ä³¸¯ÅÍ ±âÁØÀ¸·Î Ä«¸Ş¶ó À§Ä¡¸¦ Å¸°Ù ¹İ´ë ¹æÇâÀ¸·Î ¹èÄ¡
-	float DesiredDistance = 380.0f; // SpringArm ±æÀÌ
+	// Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Ş¶ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½İ´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
+	float DesiredDistance = 380.0f; // SpringArm ï¿½ï¿½ï¿½ï¿½
 	FVector DesiredCameraPosition = MyLocation - DirectionToTarget * DesiredDistance;
 
-	// SpringArm À§Ä¡¸¦ °­Á¦·Î º¸°£ÇØ¼­ ÀÌµ¿
+	// SpringArm ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½Ìµï¿½
 	FVector CurrentPosition = CameraBoom->GetComponentLocation();
 	FVector NewPosition = FMath::VInterpTo(CurrentPosition, DesiredCameraPosition, DeltaTime, 5.0f);
 
-	// Ä«¸Ş¶óºÕÀÇ À§Ä¡ Á÷Á¢ ¼³Á¤ (ÁÖÀÇ: ÀÌ ¹æ½ÄÀº ¾à°£ À§ÇèÇÒ ¼ö ÀÖÀ½)
+	// Ä«ï¿½Ş¶ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½à°£ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 	CameraBoom->SetWorldLocation(NewPosition);
 
-	// È¸Àüµµ Å¸°ÙÀ» º¸µµ·Ï
+	// È¸ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FRotator TargetRotation = (TargetLocation - NewPosition).Rotation();
 	CameraBoom->SetWorldRotation(TargetRotation);
 }
@@ -498,28 +500,28 @@ void AJujutsuKaisenCharacter::UpdateLockOnCamera(float DeltaTime)
 ///////////////////////////////////////
 void AJujutsuKaisenCharacter::ForceState(ECharacterState InState)
 {
-	CurrentState = InState;
+	if (StateManager)
+	{
+		StateManager->ForceState(InState);
+	}
 }
 
 bool AJujutsuKaisenCharacter::SetState(ECharacterState InState)
 {
-	if (static_cast<uint8>(InState) >= static_cast<uint8>(CurrentState))
+	if (StateManager)
 	{
-		if ((InState == ECharacterState::Skill || InState == ECharacterState::Guard)
-			&& (CurrentState == ECharacterState::Skill || CurrentState == ECharacterState::Guard))
-		{
-			return false;
-		}
-		CurrentState = InState;
-		return true;
+		return StateManager->SetState(InState);
 	}
 	return false;
 }
 
-
 ECharacterState AJujutsuKaisenCharacter::GetState() const
 {
-	return CurrentState;
+	if (StateManager)
+	{
+		return StateManager->GetCurrentState();
+	}
+	return ECharacterState::Locomotion;
 }
 
 AJujutsuKaisenCharacter* AJujutsuKaisenCharacter::GetTargetCharacter() const

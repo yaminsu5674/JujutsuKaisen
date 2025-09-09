@@ -8,6 +8,7 @@
 #include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
 #include "Attack/JujutsuKaisenHitBox.h"
 #include "Skills/SkillManager.h"
+#include "Characters/CharacterStateManager.h"
 #include "JujutsuKaisenCharacter.generated.h"
 
 class USpringArmComponent;
@@ -16,17 +17,6 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
-UENUM(BlueprintType)
-enum class ECharacterState : uint8
-{
-	Locomotion = 0,
-	Land = 1,
-	Guard = 2,
-	Skill = 3,
-	Hit = 4,
-	Dead = 5
-};
-
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(Blueprintable)
@@ -34,8 +24,9 @@ class AJujutsuKaisenCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
-	ECharacterState CurrentState = ECharacterState::Locomotion;
+	// 상태 관리
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State", meta = (AllowPrivateAccess = "true"))
+	UCharacterStateManager* StateManager;
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -216,6 +207,9 @@ public:
 	bool SetState(ECharacterState InState);
 
 	ECharacterState GetState() const;
+
+	// 상태 매니저 접근
+	UCharacterStateManager* GetStateManager() const { return StateManager; }
 
 	virtual void InitSkills();
 
