@@ -204,7 +204,7 @@ protected:
 
 	void AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, const FString& BoneNameStr);
 
-
+	virtual void UpdateLockOnCamera(float DeltaTime);
 
 public:
 	AJujutsuKaisenCharacter();

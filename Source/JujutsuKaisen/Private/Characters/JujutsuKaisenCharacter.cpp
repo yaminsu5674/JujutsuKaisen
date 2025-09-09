@@ -62,7 +62,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
+	CameraBoom->TargetArmLength = 380.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
 	// Create a follow camera
@@ -177,10 +177,14 @@ void AJujutsuKaisenCharacter::BeginPlay()
 void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (SkillManager)
+	if (SkillManager && CurrentState == ECharacterState::Skill)
 	{
 		SkillManager->TickActiveSkills(DeltaTime);
 	}
+	/*if (TargetCharacter)
+	{
+		UpdateLockOnCamera(DeltaTime);
+	}*/
 }
 
 
@@ -439,6 +443,52 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 			DebugMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
 	}
+}
+
+//void AJujutsuKaisenCharacter::UpdateLockOnCamera(float DeltaTime)
+//{
+//	if (!FollowCamera || !TargetCharacter) return;
+//
+//	FVector CameraLocation = FollowCamera->GetComponentLocation();
+//	FVector TargetLocation = TargetCharacter->GetActorLocation();
+//
+//	// 바라볼 방향 계산
+//	FVector DirectionToTarget = (TargetLocation - CameraLocation).GetSafeNormal();
+//
+//	// 회전값으로 변환
+//	FRotator TargetRotation = DirectionToTarget.Rotation();
+//
+//	// 카메라를 점진적으로 회전 (스무딩)
+//	FRotator CurrentRotation = FollowCamera->GetComponentRotation();
+//	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 5.0f);
+//
+//	FollowCamera->SetWorldRotation(NewRotation);
+//}
+
+void AJujutsuKaisenCharacter::UpdateLockOnCamera(float DeltaTime)
+{
+	if (!CameraBoom || !TargetCharacter) return;
+
+	FVector MyLocation = GetActorLocation();
+	FVector TargetLocation = TargetCharacter->GetActorLocation();
+
+	// 타겟 방향 구하기
+	FVector DirectionToTarget = (TargetLocation - MyLocation).GetSafeNormal();
+
+	// 캐릭터 기준으로 카메라 위치를 타겟 반대 방향으로 배치
+	float DesiredDistance = 380.0f; // SpringArm 길이
+	FVector DesiredCameraPosition = MyLocation - DirectionToTarget * DesiredDistance;
+
+	// SpringArm 위치를 강제로 보간해서 이동
+	FVector CurrentPosition = CameraBoom->GetComponentLocation();
+	FVector NewPosition = FMath::VInterpTo(CurrentPosition, DesiredCameraPosition, DeltaTime, 5.0f);
+
+	// 카메라붐의 위치 직접 설정 (주의: 이 방식은 약간 위험할 수 있음)
+	CameraBoom->SetWorldLocation(NewPosition);
+
+	// 회전도 타겟을 보도록
+	FRotator TargetRotation = (TargetLocation - NewPosition).Rotation();
+	CameraBoom->SetWorldRotation(TargetRotation);
 }
 
 
