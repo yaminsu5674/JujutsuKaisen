@@ -9,80 +9,67 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
-#include "DataAssets/JujutsuKaisenCharacterDataAsset.h"    
+#include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
+
+// ============================================================================
+// Constructor & Core Functions
+// ============================================================================
 
 AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 {
 	// 상태 매니저 초기화
 	StateManager = CreateDefaultSubobject<UCharacterStateManager>(TEXT("StateManager"));
 
-	// My Customize settings
+	// 기본 설정
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	AutoPossessAI = EAutoPossessAI::Disabled;
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
+	// 컴포넌트 초기화
 	InitHitBoxes();
 	if (bUsesWeapon)
 	{
 		InitWeapon();
 	}
 
-	// Set size for collision capsule
-	// GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-
-	// Don't rotate when the controller rotates. Let that just affect the camera.
+	// 회전 설정
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-
-	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
-
-	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
-	// instead of recompiling to adjust them
+	// 캐릭터 이동 설정
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+	
 	bIsDashing = false;
 	Speed = DefaultSpeed;
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = DefaultSpeed;
-	/*GetCharacterMovement()->MaxAcceleration = 250000.f;
-	GetCharacterMovement()->BrakingFrictionFactor = 50000.f;*/
 	GetCharacterMovement()->JumpZVelocity = DefaultJumpVelocity;
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->GravityScale = 2.8f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
-	// Create a camera boom (pulls in towards the player if there is a collision)
+	// 카메라 설정
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 380.0f; // The camera follows at this distance behind the character	
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+	CameraBoom->TargetArmLength = 380.0f;
+	CameraBoom->bUsePawnControlRotation = true;
 
-	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Input
-
-void AJujutsuKaisenCharacter::NotifyControllerChanged()
-{
-	Super::NotifyControllerChanged();
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->bUsePawnControlRotation = false;
 }
 
 void AJujutsuKaisenCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	// 기본값 설정
 	Health = MaxHealth;
 	_AnimInstance = Cast<UJujutsuKaisenAnimInstance>(GetMesh()->GetAnimInstance());
 	if (!_AnimInstance)
@@ -90,15 +77,17 @@ void AJujutsuKaisenCharacter::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("_AnimInstance not init!!!"));
 	}
 
+	// 위치 조정
 	float CapsuleHalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 	FVector NewLocation = GetActorLocation();
 	NewLocation.Z = CapsuleHalfHeight;
 	SetActorLocation(NewLocation);
 
+	// 스킬 매니저 초기화
 	SkillManager = NewObject<USkillManager>(this);
-	SkillManager->RegisterOwner(this);  // 필요하면 캐릭터 정보 전달
+	SkillManager->RegisterOwner(this);
 
-	// Attach CollisionBox to Fist, Foot
+	// 히트박스 부착
 	AttachHitBoxToBone(LeftFist, FString(TEXT("hand_l")));
 	AttachHitBoxToBone(RightFist, FString(TEXT("hand_r")));
 	AttachHitBoxToBone(LeftFoot, FString(TEXT("ball_l")));
@@ -108,38 +97,37 @@ void AJujutsuKaisenCharacter::BeginPlay()
 void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	if (SkillManager && StateManager && StateManager->IsInState(ECharacterState::Skill))
 	{
 		SkillManager->TickActiveSkills(DeltaTime);
 	}
-	/*if (TargetCharacter)
-	{
-		UpdateLockOnCamera(DeltaTime);
-	}*/
 }
 
+void AJujutsuKaisenCharacter::NotifyControllerChanged()
+{
+	Super::NotifyControllerChanged();
+}
+
+// ============================================================================
+// Public Interface - Controller Access
+// ============================================================================
 
 void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
 {
 	// Falling 또는 Locomotion 상태일 때만 이동 가능
 	if (StateManager && (StateManager->IsInState(ECharacterState::Falling) || StateManager->IsInState(ECharacterState::Locomotion)))
 	{
-		// input is a Vector2D
 		FVector2D MovementVector = Value.Get<FVector2D>();
 
 		if (Controller != nullptr)
 		{
-			// find out which way is forward
 			const FRotator Rotation = Controller->GetControlRotation();
 			const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-			// get forward vector
 			const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-			// get right vector 
 			const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-			// add movement 
 			AddMovementInput(ForwardDirection, MovementVector.Y);
 			AddMovementInput(RightDirection, MovementVector.X);
 		}
@@ -151,18 +139,15 @@ void AJujutsuKaisenCharacter::Look(const FInputActionValue& Value)
 	// Falling 또는 Locomotion 상태일 때만 시점 조작 가능
 	if (StateManager && (StateManager->IsInState(ECharacterState::Falling) || StateManager->IsInState(ECharacterState::Locomotion)))
 	{
-		// input is a Vector2D
 		FVector2D LookAxisVector = Value.Get<FVector2D>();
 
 		if (Controller != nullptr)
 		{
-			// add yaw and pitch input to controller
 			AddControllerYawInput(LookAxisVector.X);
 			AddControllerPitchInput(LookAxisVector.Y);
 		}
 	}
 }
-
 
 void AJujutsuKaisenCharacter::Dash()
 {
@@ -173,7 +158,7 @@ void AJujutsuKaisenCharacter::Dash()
 	GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
 
-	// Falling 상태인지 확인 후 앞으로 대시 로직 + 애님 몽타주 재생.
+	// Falling 상태인지 확인 후 앞으로 대시 로직 + 애님 몽타주 재생
 	if (StateManager && StateManager->IsInState(ECharacterState::Falling))
 	{
 		GetCharacterMovement()->Velocity = GetActorForwardVector() * DashSpeed * 3;
@@ -194,6 +179,47 @@ void AJujutsuKaisenCharacter::StopDash()
 	GetCharacterMovement()->MinAnalogWalkSpeed = DefaultSpeed;
 }
 
+void AJujutsuKaisenCharacter::JumpCustom()
+{
+	// 점프 시작 시 Falling 상태로 전환 시도
+	if (StateManager && StateManager->SetState(ECharacterState::Falling))
+	{
+		if (JumpCount == 0 && bIsDashing)
+		{
+			// 슈퍼 점프 (대시 중 점프)
+			LaunchCharacter(FVector(0, 0, SuperJumpVelocity), false, true);
+			bDidSuperJump = true;
+			
+			if (SuperJumpMontage && GetMesh() && GetMesh()->GetAnimInstance())
+			{
+				GetMesh()->GetAnimInstance()->Montage_Play(SuperJumpMontage);
+			}
+		}
+		else if (JumpCount == 0)
+		{
+			// 일반 점프
+			Super::Jump();
+			
+			if (NormalJumpMontage && GetMesh() && GetMesh()->GetAnimInstance())
+			{
+				GetMesh()->GetAnimInstance()->Montage_Play(NormalJumpMontage);
+			}
+		}
+		else if (JumpCount == 1)
+		{
+			// 이단 점프
+			LaunchCharacter(FVector(0, 0, DoubleJumpVelocity), false, true);
+			bDidDoubleJump = true;
+			
+			if (DoubleJumpMontage && GetMesh() && GetMesh()->GetAnimInstance())
+			{
+				GetMesh()->GetAnimInstance()->Montage_Play(DoubleJumpMontage);
+			}
+		}
+		JumpCount++;
+	}
+}
+
 void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
 {
 	// Falling 상태일 때만 착지 로직 수행
@@ -212,35 +238,26 @@ void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
 	}
 }
 
-void AJujutsuKaisenCharacter::Hit()
+void AJujutsuKaisenCharacter::Guard()
 {
-	if (SetState(ECharacterState::Hit))
+	// 가드는 액션이므로 상태 전환 없이 몽타주만 재생
+	// Falling 또는 Locomotion 상태일 때만 가드 가능
+	if (StateManager && (StateManager->IsInState(ECharacterState::Falling) || StateManager->IsInState(ECharacterState::Locomotion)))
 	{
-		if (GEngine)
+		bIsGuarding = true;
+		
+		if (GuardMontage && GetMesh() && GetMesh()->GetAnimInstance())
 		{
-			GEngine->AddOnScreenDebugMessage(
-				-1, // Key (-1은 항상 표시)
-				2.0f, // 화면에 표시되는 시간 (초)
-				FColor::Red, // 색상
-				TEXT("Hit!") // 메시지
-			);
+			GetMesh()->GetAnimInstance()->Montage_Play(GuardMontage);
 		}
 	}
 }
 
-void AJujutsuKaisenCharacter::Die()
+void AJujutsuKaisenCharacter::StopGuard()
 {
-	if (SetState(ECharacterState::Dead))
+	if (bIsGuarding)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(
-				-1, // Key (-1은 항상 표시)
-				2.0f, // 화면에 표시되는 시간 (초)
-				FColor::Red, // 색상
-				TEXT("Dead!") // 메시지
-			);
-		}
+		bIsGuarding = false;
 	}
 }
 
@@ -270,140 +287,17 @@ void AJujutsuKaisenCharacter::R_Released()
 {
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(
-				-1, // Key (-1은 항상 표시)
-				2.0f, // 화면에 표시되는 시간 (초)
-				FColor::Green, // 색상
-				TEXT("R_Released: Skill 상태 전환 성공!") // 메시지
-			);
-		}
-		
 		if (SkillManager)
 		{
 			SkillManager->HandleReleased("R");
 		}
 	}
-	else
-	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(
-				-1, // Key (-1은 항상 표시)
-				2.0f, // 화면에 표시되는 시간 (초)
-				FColor::Red, // 색상
-				TEXT("R_Released: Skill 상태 전환 실패!") // 메시지
-			);
-		}
-	}
 }
 
-// 점프 함수 (몽타주 재생 추가)
-void AJujutsuKaisenCharacter::JumpCustom()
-{
-	// 점프 시작 시 Falling 상태로 전환 시도
-	if (StateManager && StateManager->SetState(ECharacterState::Falling))
-	{
-		if (JumpCount == 0 && bIsDashing)
-		{
-			// 슈퍼 점프 (대시 중 점프)
-			LaunchCharacter(FVector(0, 0, SuperJumpVelocity), false, true);
-			bDidSuperJump = true;
-			
-			// 슈퍼 점프 몽타주 재생
-			if (SuperJumpMontage && GetMesh() && GetMesh()->GetAnimInstance())
-			{
-				GetMesh()->GetAnimInstance()->Montage_Play(SuperJumpMontage);
-			}
-		}
-		else if (JumpCount == 0)
-		{
-			// 일반 점프
-			Super::Jump(); // 기본 점프 실행
-			
-			// 일반 점프 몽타주 재생
-			if (NormalJumpMontage && GetMesh() && GetMesh()->GetAnimInstance())
-			{
-				GetMesh()->GetAnimInstance()->Montage_Play(NormalJumpMontage);
-			}
-		}
-		else if (JumpCount == 1)
-		{
-			// 이단 점프
-			LaunchCharacter(FVector(0, 0, DoubleJumpVelocity), false, true);
-			bDidDoubleJump = true;
-			
-			// 이단 점프 몽타주 재생
-			if (DoubleJumpMontage && GetMesh() && GetMesh()->GetAnimInstance())
-			{
-				GetMesh()->GetAnimInstance()->Montage_Play(DoubleJumpMontage);
-			}
-		}
-		JumpCount++;
-		
-	}
-}
+// ============================================================================
+// State Management
+// ============================================================================
 
-// 가드 함수 (몽타주 기반으로 변경)
-void AJujutsuKaisenCharacter::Guard()
-{
-	// 가드는 액션이므로 상태 전환 없이 몽타주만 재생
-	// Falling 또는 Locomotion 상태일 때만 가드 가능
-	if (StateManager && (StateManager->IsInState(ECharacterState::Falling) || StateManager->IsInState(ECharacterState::Locomotion)))
-	{
-		bIsGuarding = true;
-		
-		// 가드 몽타주 재생
-		if (GuardMontage && GetMesh() && GetMesh()->GetAnimInstance())
-		{
-			GetMesh()->GetAnimInstance()->Montage_Play(GuardMontage);
-		}
-		
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(
-				-1, // Key (-1은 항상 표시)
-				2.0f, // 화면에 표시되는 시간 (초)
-				FColor::Green, // 색상
-				TEXT("Guard Activated!") // 메시지
-			);
-		}
-	}
-}
-
-// 스탑 가드 함수 (몽타주 기반으로 변경)
-void AJujutsuKaisenCharacter::StopGuard()
-{
-	if (bIsGuarding)
-	{
-		bIsGuarding = false;
-		
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(
-				-1, // Key (-1은 항상 표시)
-				2.0f, // 화면에 표시되는 시간 (초)
-				FColor::Yellow, // 색상
-				TEXT("Guard Released!") // 메시지
-			);
-		}
-	}
-	else
-	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(
-				-1, // Key (-1은 항상 표시)
-				2.0f, // 화면에 표시되는 시간 (초)
-				FColor::Red, // 색상
-				TEXT("Already Released!") // 메시지
-			);
-		}
-	}
-}
-
-// 상태 관리 함수들
 void AJujutsuKaisenCharacter::ForceState(ECharacterState InState)
 {
 	if (StateManager)
@@ -430,7 +324,41 @@ ECharacterState AJujutsuKaisenCharacter::GetState() const
 	return ECharacterState::Locomotion;
 }
 
-// 누락된 함수들 복구
+// ============================================================================
+// Character Actions
+// ============================================================================
+
+void AJujutsuKaisenCharacter::Hit()
+{
+	if (SetState(ECharacterState::Hit))
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Hit!"));
+		}
+	}
+}
+
+void AJujutsuKaisenCharacter::Die()
+{
+	if (SetState(ECharacterState::Dead))
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Dead!"));
+		}
+	}
+}
+
+void AJujutsuKaisenCharacter::InitSkills()
+{
+	// 공통 스킬 초기화 로직
+}
+
+// ============================================================================
+// Target Management
+// ============================================================================
+
 AJujutsuKaisenCharacter* AJujutsuKaisenCharacter::GetTargetCharacter() const
 {
 	return TargetCharacter;
@@ -440,6 +368,19 @@ void AJujutsuKaisenCharacter::SetTargetCharacter(AJujutsuKaisenCharacter* NewTar
 {
 	TargetCharacter = NewTarget;
 }
+
+// ============================================================================
+// Character Mode
+// ============================================================================
+
+void AJujutsuKaisenCharacter::SetPlayerMode(bool bIsPlayer)
+{
+	bIsPlayerControlled = bIsPlayer;
+}
+
+// ============================================================================
+// Protected Helper Functions
+// ============================================================================
 
 void AJujutsuKaisenCharacter::InitHitBoxes()
 {
@@ -470,16 +411,13 @@ void AJujutsuKaisenCharacter::InitHitBoxes()
 
 void AJujutsuKaisenCharacter::InitWeapon()
 {
-	//
+	// 무기 초기화 로직
 }
 
 void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, const FString& BoneNameStr)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Try bone!!!"));
 	FName BoneName(*BoneNameStr);
 	if (!HitBox || BoneNameStr.IsEmpty() || !GetMesh() || !GetMesh()->DoesSocketExist(BoneName)) return;
-
-	UE_LOG(LogTemp, Warning, TEXT("success attach to bone"));
 
 	HitBox->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, BoneName);
 	const float Radius = 12.0f;
@@ -545,27 +483,4 @@ void AJujutsuKaisenCharacter::UpdateLockOnCamera(float DeltaTime)
 	// 회전도 타겟을 바라보도록
 	FRotator TargetRotation = (TargetLocation - NewPosition).Rotation();
 	CameraBoom->SetWorldRotation(TargetRotation);
-}
-
-// init common skills ex. guard, jump, ...
-void AJujutsuKaisenCharacter::InitSkills()
-{
-	// 공통 스킬 초기화 로직
-}
-
-// 플레이어/AI 모드 설정
-void AJujutsuKaisenCharacter::SetPlayerMode(bool bIsPlayer)
-{
-	bIsPlayerControlled = bIsPlayer;
-	
-	if (bIsPlayer)
-	{
-		// 플레이어 모드 설정
-		UE_LOG(LogTemp, Log, TEXT("Character set to Player Mode"));
-	}
-	else
-	{
-		// AI 모드 설정
-		UE_LOG(LogTemp, Log, TEXT("Character set to AI Mode"));
-	}
 }
