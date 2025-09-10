@@ -72,6 +72,7 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	
 	// 기본값 설정
 	Health = MaxHealth;
+	// bCanMove = true; // 게임 시작 시 이동 가능하도록 강제 설정
 	_AnimInstance = Cast<UJujutsuKaisenAnimInstance>(GetMesh()->GetAnimInstance());
 	if (!_AnimInstance)
 	{
@@ -116,8 +117,11 @@ void AJujutsuKaisenCharacter::NotifyControllerChanged()
 
 void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
 {
+
 	if (!GetCanMove())
+	{
 		return;
+	}
 
 	// Falling 또는 Locomotion 상태일 때만 이동 가능
 	if (StateManager && (StateManager->IsInState(ECharacterState::Falling) || StateManager->IsInState(ECharacterState::Locomotion)))
@@ -226,15 +230,14 @@ void AJujutsuKaisenCharacter::JumpCustom()
 
 void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
 {
+	Super::Landed(Hit);
+	JumpCount = 0;
+	bDidSuperJump = false;
+	bDidDoubleJump = false;
 	// Falling 상태일 때만 착지 로직 수행
 	if (StateManager && StateManager->IsInState(ECharacterState::Falling))
 	{
-		Super::Landed(Hit);
-		JumpCount = 0;
-		bDidSuperJump = false;
-		bDidDoubleJump = false;
-		SetCanMove(false);
-		
+		SetCanMove(false);	
 		// 착지 몽타주 재생
 		if (LandMontage && GetMesh() && GetMesh()->GetAnimInstance())
 		{

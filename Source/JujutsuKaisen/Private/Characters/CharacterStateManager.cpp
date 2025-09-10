@@ -77,6 +77,7 @@ void UCharacterStateManager::UpdateGravityForState(ECharacterState NewState)
 {
 	if (!OwnerCharacter)
 	{
+		UE_LOG(LogTemp, Error, TEXT("UpdateGravityForState: OwnerCharacter is NULL!"));
 		return;
 	}
 
@@ -84,10 +85,18 @@ void UCharacterStateManager::UpdateGravityForState(ECharacterState NewState)
 	if (NewState == ECharacterState::Skill)
 	{
 		OwnerCharacter->SetGravityEnabled(false);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("중력 끄기: Skill 상태"));
+		}
 	}
 	else
 	{
 		// 다른 모든 상태에서는 중력 켜기
 		OwnerCharacter->SetGravityEnabled(true);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("중력 켜기: 다른 상태"));
+		}
 	}
 }
