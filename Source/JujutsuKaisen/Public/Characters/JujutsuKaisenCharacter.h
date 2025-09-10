@@ -158,6 +158,23 @@ protected:
 	UPROPERTY()
 	class UJujutsuKaisenAnimInstance* _AnimInstance;
 
+	// 애니메이션 몽타주들 (블루프린트에서 초기화)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* NormalJumpMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* SuperJumpMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* DoubleJumpMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* GuardMontage;
+
+	// 가드 상태 플래그
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Character params", meta = (AllowPrivateAccess = "true"))
+	bool bIsGuarding = false;
+
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 

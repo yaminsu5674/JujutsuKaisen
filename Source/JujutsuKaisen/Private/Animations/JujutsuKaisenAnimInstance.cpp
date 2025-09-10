@@ -11,76 +11,22 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
     if (!Character) return;
 
-    Speed = Character->GetVelocity().Size();
-    bIsDashing = Character->GetBIsDashing();
     float VerticalSpeed = Character->GetVelocity().Z;
     bIsFalling = VerticalSpeed < -1.f;
-    JumpCount = Character->GetJumpCount();
-    bDidSuperJump = Character->GetBDidSuperJump();
-    bDidDoubleJump = Character->GetBDidDoubleJump();
 
-    switch (Character->GetState())
+
+    // 상태 매니저에서 상태들 가져오기
+    if (Character->GetStateManager())
     {
-    case ECharacterState::Locomotion:
-    {
-        if (bIsFalling)
+        CurrentState = Character->GetStateManager()->GetCurrentState();
+        CurrentHitSubState = Character->GetStateManager()->GetCurrentHitSubState();
+        
+        // 물리 기반 Falling 상태 전환
+        if (bIsFalling && CurrentState != ECharacterState::Falling)
         {
-            // falling
-            State = EAnimState::Falling;
-        }
-        else if (bDidDoubleJump)
-        {
-            // double Jump
-            State = EAnimState::DoubleJump;
-        }
-        else if (bDidSuperJump)
-        {
-            // Super Jump
-            State = EAnimState::SuperJump;
-        }
-        else if (JumpCount == 1)
-        {
-            // Jump
-            State = EAnimState::Jump;
-        }
-        else if (bIsDashing)
-        {
-            // Dashing
-            State = EAnimState::Dash;
-        }
-        else
-        {
-            // Locomotion
-            State = EAnimState::Locomotion;
+            Character->GetStateManager()->SetState(ECharacterState::Falling);
         }
     }
-    break;
-
-    case ECharacterState::Land:
-        State = EAnimState::Land;
-        break;
-
-    case ECharacterState::Guard:
-        State = EAnimState::Guard;
-        break;
-
-    case ECharacterState::Skill:
-        State = EAnimState::Skill;
-        break;
-
-    case ECharacterState::Hit:
-        State = EAnimState::Hit;
-        break;
-
-    case ECharacterState::Dead:
-        State = EAnimState::Dead;
-        break;
-
-    default:
-        State = EAnimState::Locomotion;
-        break;
-    }
-
 }
 
 void UJujutsuKaisenAnimInstance::NativeInitializeAnimation()
@@ -95,12 +41,16 @@ void UJujutsuKaisenAnimInstance::NativeInitializeAnimation()
 
 void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
 {
-    if (State == EAnimState::Dead)
+    if (CurrentState == ECharacterState::Dead)
     {
-        // do nothing
+        // 죽음 상태는 그대로 유지
     }
     else
     {
-        State = EAnimState::Locomotion;
+        // 다른 상태들은 로코모션으로 복귀
+        if (Character && Character->GetStateManager())
+        {
+            Character->GetStateManager()->SetState(ECharacterState::Locomotion);
+        }
     }
 }

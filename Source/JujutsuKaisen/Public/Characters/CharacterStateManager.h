@@ -12,10 +12,9 @@ enum class ECharacterState : uint8
 {
 	Dead = 0,           // 죽음 (최고 우선순위)
 	Hit = 1,            // 피격
-	Guard = 2,          // 가드
-	Skill = 3,          // 스킬 사용
-	Land = 4,           // 착지
-	Locomotion = 5      // 로코모션
+	Skill = 2,          // 스킬 사용
+	Falling = 3,        // 낙하
+	Locomotion = 4      // 로코모션
 };
 
 // 피격 하위 상태
@@ -26,15 +25,6 @@ enum class EHitSubState : uint8
 	LightHit = 1,       // 약한 피격
 	MediumHit = 2,      // 중간 피격
 	HeavyHit = 3,       // 강한 피격
-};
-
-// 가드 하위 상태
-UENUM(BlueprintType)
-enum class EGuardSubState : uint8
-{
-	None = 0,
-	Guarding = 1,       // 가드 중
-	GuardBreak = 2      // 가드 깨짐
 };
 
 
@@ -58,18 +48,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 	EHitSubState CurrentHitSubState = EHitSubState::None;
 
-	UPROPERTY(BlueprintReadOnly, Category = "State")
-	EGuardSubState CurrentGuardSubState = EGuardSubState::None;
-
 	// 상태 전환 함수들
 	UFUNCTION(BlueprintCallable)
 	bool SetState(ECharacterState NewState);
 
 	UFUNCTION(BlueprintCallable)
 	bool SetHitSubState(EHitSubState NewSubState);
-
-	UFUNCTION(BlueprintCallable)
-	bool SetGuardSubState(EGuardSubState NewSubState);
 
 	// 상태 체크 함수들
 	UFUNCTION(BlueprintCallable)
@@ -78,18 +62,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool CanTransitionTo(ECharacterState NewState) const;
 
-	UFUNCTION(BlueprintCallable)
-	bool CanPerformAction() const;
-
 	// Getter 함수들
 	UFUNCTION(BlueprintCallable)
 	ECharacterState GetCurrentState() const { return CurrentState; }
 
 	UFUNCTION(BlueprintCallable)
 	EHitSubState GetCurrentHitSubState() const { return CurrentHitSubState; }
-
-	UFUNCTION(BlueprintCallable)
-	EGuardSubState GetCurrentGuardSubState() const { return CurrentGuardSubState; }
 
 	// 강제 상태 설정 (우선순위 무시)
 	UFUNCTION(BlueprintCallable)
