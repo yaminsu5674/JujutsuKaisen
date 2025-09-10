@@ -267,14 +267,20 @@ void AJujutsuKaisenCharacter::StopDash()
 
 void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
 {
-	if (StateManager)
+	// Falling 상태일 때만 착지 로직 수행
+	if (StateManager && StateManager->IsInState(ECharacterState::Falling))
 	{
-		StateManager->ForceState(ECharacterState::Locomotion);
+		Super::Landed(Hit);
+		JumpCount = 0;
+		bDidSuperJump = false;
+		bDidDoubleJump = false;
+		
+		// 착지 몽타주 재생
+		if (LandMontage && GetMesh() && GetMesh()->GetAnimInstance())
+		{
+			GetMesh()->GetAnimInstance()->Montage_Play(LandMontage);
+		}
 	}
-	Super::Landed(Hit);
-	JumpCount = 0;
-	bDidSuperJump = false;
-	bDidDoubleJump = false;
 }
 
 void AJujutsuKaisenCharacter::Hit()
