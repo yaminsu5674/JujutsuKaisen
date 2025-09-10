@@ -3,6 +3,7 @@
 #include "Controllers/JujutsuKaisenAIController.h"
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "Engine/World.h"
+#include "InputActionValue.h"
 
 AJujutsuKaisenAIController::AJujutsuKaisenAIController()
 {
@@ -94,12 +95,15 @@ void AJujutsuKaisenAIController::UpdateAIBehavior(float DeltaTime)
 	}
 }
 
-// AI용 함수들 (캐릭터의 AI 래핑 함수 호출)
+// AI용 함수들 (캐릭터의 함수 직접 호출)
 void AJujutsuKaisenAIController::AI_Move()
 {
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
-		Char->AI_Move();
+		// AI용 이동 로직 (기본값으로 전진)
+		FVector2D MovementVector = FVector2D(1.0f, 0.0f);
+		FInputActionValue Value(MovementVector);
+		Char->Move(Value);
 	}
 }
 
@@ -107,7 +111,10 @@ void AJujutsuKaisenAIController::AI_Look()
 {
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
-		Char->AI_Look();
+		// AI용 시점 로직 (기본값으로 정면)
+		FVector2D LookVector = FVector2D(0.0f, 0.0f);
+		FInputActionValue Value(LookVector);
+		Char->Look(Value);
 	}
 }
 
@@ -115,7 +122,7 @@ void AJujutsuKaisenAIController::AI_JumpCustom()
 {
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
-		Char->AI_JumpCustom();
+		Char->JumpCustom();
 	}
 }
 
@@ -123,7 +130,7 @@ void AJujutsuKaisenAIController::AI_Dash()
 {
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
-		Char->AI_Dash();
+		Char->Dash();
 	}
 }
 
@@ -131,7 +138,7 @@ void AJujutsuKaisenAIController::AI_StopDash()
 {
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
-		Char->AI_StopDash();
+		Char->StopDash();
 	}
 }
 
@@ -139,7 +146,7 @@ void AJujutsuKaisenAIController::AI_Guard()
 {
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
-		Char->AI_Guard();
+		Char->Guard();
 	}
 }
 
@@ -147,7 +154,7 @@ void AJujutsuKaisenAIController::AI_StopGuard()
 {
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
-		Char->AI_StopGuard();
+		Char->StopGuard();
 	}
 }
 
@@ -155,7 +162,7 @@ void AJujutsuKaisenAIController::AI_A_Pressed()
 {
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
-		Char->AI_A_Pressed();
+		Char->A_Pressed();
 	}
 }
 
@@ -163,7 +170,7 @@ void AJujutsuKaisenAIController::AI_R_Pressed()
 {
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
-		Char->AI_R_Pressed();
+		Char->R_Pressed();
 	}
 }
 
@@ -171,7 +178,7 @@ void AJujutsuKaisenAIController::AI_R_Released()
 {
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
-		Char->AI_R_Released();
+		Char->R_Released();
 	}
 }
 

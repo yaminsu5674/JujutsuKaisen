@@ -16,8 +16,6 @@ void UJujutsuKaisenGameInstance::StartSingle()
         AWorldSettings* WorldSettings = world->GetWorldSettings();
         if (WorldSettings)
         {
-
-            WorldSettings->DefaultGameMode = ASinglePlayGameMode::StaticClass();
             UGameplayStatics::OpenLevel(world, "CityMap", true, TEXT("?game=/Script/JujutsuKaisen.SinglePlayGameMode"));
             
         }
@@ -34,8 +32,6 @@ void UJujutsuKaisenGameInstance::LeaveSingle()
         AWorldSettings* WorldSettings = world->GetWorldSettings();
         if (WorldSettings)
         {
-
-            WorldSettings->DefaultGameMode = ALobbyGameMode::StaticClass();
             UGameplayStatics::OpenLevel(world, "LobbyMap", true);
         }
     }

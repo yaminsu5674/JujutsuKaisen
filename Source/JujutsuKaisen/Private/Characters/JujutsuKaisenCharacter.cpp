@@ -9,11 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "InputActionValue.h"
-#include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
-#include "InputMappingContext.h"    
+#include "DataAssets/JujutsuKaisenCharacterDataAsset.h"    
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -74,25 +70,6 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
-	
-	// Input Mapping Actions below
-	DefaultMappingContext = Cast<UInputMappingContext>(StaticLoadObject(UInputMappingContext::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/IMC_Default.IMC_Default.IMC_Default")));
-
-	MoveAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_Move.IA_Move")));
-
-	LookAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_Look.IA_Look")));
-
-	DashAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_Dash.IA_Dash")));
-
-	JumpAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_Jump.IA_Jump")));
-
-	GuardAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_Guard.IA_Guard")));
-
-	A_Pressed_Action = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_A_Pressed.IA_A_Pressed")));
-
-	R_Pressed_Action = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_R_Pressed.IA_R_Pressed")));
-
-	R_Released_Action = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Dynamic/ThirdPerson/Input/Actions/IA_R_Released.IA_R_Released")));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -101,55 +78,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 void AJujutsuKaisenCharacter::NotifyControllerChanged()
 {
 	Super::NotifyControllerChanged();
-
-	// Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
 }
-
-void AJujutsuKaisenCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::JumpCustom);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
-		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AJujutsuKaisenCharacter::Move);
-
-		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJujutsuKaisenCharacter::Look);
-
-		// Dashing
-		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::Dash);
-		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Completed, this, &AJujutsuKaisenCharacter::StopDash);
-
-		// Guarding
-		EnhancedInputComponent->BindAction(GuardAction, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::Guard);
-		EnhancedInputComponent->BindAction(GuardAction, ETriggerEvent::Completed, this, &AJujutsuKaisenCharacter::StopGuard);
-
-		// A_Pressed
-		EnhancedInputComponent->BindAction(A_Pressed_Action, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::A_Pressed);
-
-		// R_Pressed
-		EnhancedInputComponent->BindAction(R_Pressed_Action, ETriggerEvent::Started, this, &AJujutsuKaisenCharacter::R_Pressed);
-
-		// R_Released
-		EnhancedInputComponent->BindAction(R_Released_Action, ETriggerEvent::Completed, this, &AJujutsuKaisenCharacter::R_Released);
-	}
-	else
-	{
-		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
-	}
-}
-
 
 void AJujutsuKaisenCharacter::BeginPlay()
 {
@@ -639,69 +568,4 @@ void AJujutsuKaisenCharacter::SetPlayerMode(bool bIsPlayer)
 		// AI 모드 설정
 		UE_LOG(LogTemp, Log, TEXT("Character set to AI Mode"));
 	}
-}
-
-// AI용 래핑 함수들
-void AJujutsuKaisenCharacter::AI_Move()
-{
-	// AI용 이동 로직 (기본값으로 전진)
-	FVector MovementVector = FVector(1.0f, 0.0f, 0.0f);
-	FInputActionValue Value(MovementVector);
-	Move(Value);
-}
-
-void AJujutsuKaisenCharacter::AI_Look()
-{
-	// AI용 시점 로직 (기본값으로 정면)
-	FVector2D LookVector = FVector2D(0.0f, 0.0f);
-	FInputActionValue Value(LookVector);
-	Look(Value);
-}
-
-void AJujutsuKaisenCharacter::AI_JumpCustom()
-{
-	// AI용 점프 로직 (인자 없음)
-	JumpCustom();
-}
-
-void AJujutsuKaisenCharacter::AI_Dash()
-{
-	// AI용 대시 로직 (인자 없음)
-	Dash();
-}
-
-void AJujutsuKaisenCharacter::AI_StopDash()
-{
-	// AI용 대시 해제 로직 (인자 없음)
-	StopDash();
-}
-
-void AJujutsuKaisenCharacter::AI_Guard()
-{
-	// AI용 가드 로직 (인자 없음)
-	Guard();
-}
-
-void AJujutsuKaisenCharacter::AI_StopGuard()
-{
-	// AI용 가드 해제 로직 (인자 없음)
-	StopGuard();
-}
-
-void AJujutsuKaisenCharacter::AI_A_Pressed()
-{
-	// AI용 A키 스킬 로직 (인자 없음)
-	A_Pressed();
-}
-
-void AJujutsuKaisenCharacter::AI_R_Pressed()
-{
-	// AI용 R키 스킬 로직 (인자 없음)
-	R_Pressed();
-}
-
-void AJujutsuKaisenCharacter::AI_R_Released()
-{
-	// AI용 R키 해제 로직 (인자 없음)
-	R_Released();
 }
