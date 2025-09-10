@@ -20,7 +20,7 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 {
 	// 상태 매니저 초기화
-	StateManager = NewObject<UCharacterStateManager>(this);
+	StateManager = CreateDefaultSubobject<UCharacterStateManager>(TEXT("StateManager"));
 
 	// My Customize settings
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
@@ -243,6 +243,16 @@ void AJujutsuKaisenCharacter::Dash(const FInputActionValue& Value)
 	bIsDashing = true;
 	GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
+
+	// Falling 상태인지 확인 후 앞으로 대시 로직 + 애님 몽타주 재생.
+	if (StateManager && StateManager->IsInState(ECharacterState::Falling))
+	{
+		GetCharacterMovement()->Velocity = GetActorForwardVector() * DashSpeed * 3;
+		if (DashMontage && GetMesh() && GetMesh()->GetAnimInstance())
+		{
+			GetMesh()->GetAnimInstance()->Montage_Play(DashMontage);
+		}
+	}
 }
 
 void AJujutsuKaisenCharacter::StopDash()
@@ -300,25 +310,56 @@ void AJujutsuKaisenCharacter::Die()
 
 void AJujutsuKaisenCharacter::A_Pressed(const FInputActionValue& Value)
 {
-	if (SkillManager)
+	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
-		SkillManager->HandlePressed("A");
+		if (SkillManager)
+		{
+			SkillManager->HandlePressed("A");
+		}
 	}
 }
 
 void AJujutsuKaisenCharacter::R_Pressed(const FInputActionValue& Value)
 {
-	if (SkillManager)
+	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
-		SkillManager->HandlePressed("R");
+		if (SkillManager)
+		{
+			SkillManager->HandlePressed("R");
+		}
 	}
 }
 
 void AJujutsuKaisenCharacter::R_Released(const FInputActionValue& Value)
 {
-	if (SkillManager)
+	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
-		SkillManager->HandleReleased("R");
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1, // Key (-1은 항상 표시)
+				2.0f, // 화면에 표시되는 시간 (초)
+				FColor::Green, // 색상
+				TEXT("R_Released: Skill 상태 전환 성공!") // 메시지
+			);
+		}
+		
+		if (SkillManager)
+		{
+			SkillManager->HandleReleased("R");
+		}
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1, // Key (-1은 항상 표시)
+				2.0f, // 화면에 표시되는 시간 (초)
+				FColor::Red, // 색상
+				TEXT("R_Released: Skill 상태 전환 실패!") // 메시지
+			);
+		}
 	}
 }
 

@@ -18,6 +18,40 @@ bool UCharacterStateManager::SetState(ECharacterState NewState)
 	CurrentState = NewState;
 	ResetSubStates(NewState);
 	
+	// 현재 상태 디버그 메시지 출력
+	if (GEngine)
+	{
+		FString StateName;
+		switch (CurrentState)
+		{
+		case ECharacterState::Dead:
+			StateName = TEXT("Dead");
+			break;
+		case ECharacterState::Hit:
+			StateName = TEXT("Hit");
+			break;
+		case ECharacterState::Skill:
+			StateName = TEXT("Skill");
+			break;
+		case ECharacterState::Falling:
+			StateName = TEXT("Falling");
+			break;
+		case ECharacterState::Locomotion:
+			StateName = TEXT("Locomotion");
+			break;
+		default:
+			StateName = TEXT("Unknown");
+			break;
+		}
+		
+		GEngine->AddOnScreenDebugMessage(
+			-1, // Key (-1은 항상 표시)
+			3.0f, // 화면에 표시되는 시간 (초)
+			FColor::Yellow, // 색상
+			FString::Printf(TEXT("현재 상태: %s"), *StateName) // 메시지
+		);
+	}
+	
 	return true;
 }
 
@@ -38,47 +72,7 @@ bool UCharacterStateManager::IsInState(ECharacterState State) const
 
 bool UCharacterStateManager::CanTransitionTo(ECharacterState NewState) const
 {
-	// 죽음 상태는 모든 상태를 덮어쓸 수 있음
-	if (NewState == ECharacterState::Dead)
-	{
-		return true;
-	}
 
-	// 현재 상태가 죽음이면 다른 상태로 전환 불가
-	if (CurrentState == ECharacterState::Dead)
-	{
-		return false;
-	}
-
-	// 피격 상태는 다른 모든 상태를 덮어쓸 수 있음 (죽음 제외)
-	if (NewState == ECharacterState::Hit)
-	{
-		return true;
-	}
-
-	// 현재 상태가 피격이면 다른 상태로 전환 불가 (죽음 제외)
-	if (CurrentState == ECharacterState::Hit)
-	{
-		return false;
-	}
-
-	// 스킬 상태는 로코모션, 낙하 상태를 덮어쓸 수 있음
-	if (NewState == ECharacterState::Skill)
-	{
-		return CurrentState == ECharacterState::Locomotion || CurrentState == ECharacterState::Falling;
-	}
-
-	// 로코모션 상태는 낙하 상태에서만 전환 가능
-	if (NewState == ECharacterState::Locomotion)
-	{
-		return CurrentState == ECharacterState::Falling;
-	}
-
-	// 낙하 상태는 로코모션 상태에서만 전환 가능
-	if (NewState == ECharacterState::Falling)
-	{
-		return CurrentState == ECharacterState::Locomotion;
-	}
 
 	// 기본적으로 우선순위가 높은 상태로만 전환 가능
 	return static_cast<uint8>(NewState) >= static_cast<uint8>(CurrentState);

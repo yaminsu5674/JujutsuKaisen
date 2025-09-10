@@ -171,6 +171,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
 	class UAnimMontage* GuardMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* DashMontage;
+
 	// 가드 상태 플래그
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Character params", meta = (AllowPrivateAccess = "true"))
 	bool bIsGuarding = false;
