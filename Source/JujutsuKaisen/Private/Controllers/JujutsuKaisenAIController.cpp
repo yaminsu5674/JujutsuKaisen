@@ -26,7 +26,7 @@ void AJujutsuKaisenAIController::BeginPlay()
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
 		Char->SetPlayerMode(false);
-		UE_LOG(LogTemp, Log, TEXT("AI Character set to AI Mode"));
+		UE_LOG(LogTemp, Warning, TEXT("AI Character set to AI Mode"));
 	}
 }
 
