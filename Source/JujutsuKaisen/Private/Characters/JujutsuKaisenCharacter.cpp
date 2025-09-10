@@ -235,7 +235,7 @@ void AJujutsuKaisenCharacter::Look(const FInputActionValue& Value)
 }
 
 
-void AJujutsuKaisenCharacter::Dash(const FInputActionValue& Value)
+void AJujutsuKaisenCharacter::Dash()
 {
 	if (bIsDashing)
 		return;
@@ -315,7 +315,7 @@ void AJujutsuKaisenCharacter::Die()
 	}
 }
 
-void AJujutsuKaisenCharacter::A_Pressed(const FInputActionValue& Value)
+void AJujutsuKaisenCharacter::A_Pressed()
 {
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
@@ -326,7 +326,7 @@ void AJujutsuKaisenCharacter::A_Pressed(const FInputActionValue& Value)
 	}
 }
 
-void AJujutsuKaisenCharacter::R_Pressed(const FInputActionValue& Value)
+void AJujutsuKaisenCharacter::R_Pressed()
 {
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
@@ -337,7 +337,7 @@ void AJujutsuKaisenCharacter::R_Pressed(const FInputActionValue& Value)
 	}
 }
 
-void AJujutsuKaisenCharacter::R_Released(const FInputActionValue& Value)
+void AJujutsuKaisenCharacter::R_Released()
 {
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
@@ -371,7 +371,7 @@ void AJujutsuKaisenCharacter::R_Released(const FInputActionValue& Value)
 }
 
 // 점프 함수 (몽타주 재생 추가)
-void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
+void AJujutsuKaisenCharacter::JumpCustom()
 {
 	// 점프 시작 시 Falling 상태로 전환 시도
 	if (StateManager && StateManager->SetState(ECharacterState::Falling))
@@ -417,7 +417,7 @@ void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 }
 
 // 가드 함수 (몽타주 기반으로 변경)
-void AJujutsuKaisenCharacter::Guard(const FInputActionValue& Value)
+void AJujutsuKaisenCharacter::Guard()
 {
 	// 가드는 액션이므로 상태 전환 없이 몽타주만 재생
 	// Falling 또는 Locomotion 상태일 때만 가드 가능
@@ -622,4 +622,86 @@ void AJujutsuKaisenCharacter::UpdateLockOnCamera(float DeltaTime)
 void AJujutsuKaisenCharacter::InitSkills()
 {
 	// 공통 스킬 초기화 로직
+}
+
+// 플레이어/AI 모드 설정
+void AJujutsuKaisenCharacter::SetPlayerMode(bool bIsPlayer)
+{
+	bIsPlayerControlled = bIsPlayer;
+	
+	if (bIsPlayer)
+	{
+		// 플레이어 모드 설정
+		UE_LOG(LogTemp, Log, TEXT("Character set to Player Mode"));
+	}
+	else
+	{
+		// AI 모드 설정
+		UE_LOG(LogTemp, Log, TEXT("Character set to AI Mode"));
+	}
+}
+
+// AI용 래핑 함수들
+void AJujutsuKaisenCharacter::AI_Move()
+{
+	// AI용 이동 로직 (기본값으로 전진)
+	FVector MovementVector = FVector(1.0f, 0.0f, 0.0f);
+	FInputActionValue Value(MovementVector);
+	Move(Value);
+}
+
+void AJujutsuKaisenCharacter::AI_Look()
+{
+	// AI용 시점 로직 (기본값으로 정면)
+	FVector2D LookVector = FVector2D(0.0f, 0.0f);
+	FInputActionValue Value(LookVector);
+	Look(Value);
+}
+
+void AJujutsuKaisenCharacter::AI_JumpCustom()
+{
+	// AI용 점프 로직 (인자 없음)
+	JumpCustom();
+}
+
+void AJujutsuKaisenCharacter::AI_Dash()
+{
+	// AI용 대시 로직 (인자 없음)
+	Dash();
+}
+
+void AJujutsuKaisenCharacter::AI_StopDash()
+{
+	// AI용 대시 해제 로직 (인자 없음)
+	StopDash();
+}
+
+void AJujutsuKaisenCharacter::AI_Guard()
+{
+	// AI용 가드 로직 (인자 없음)
+	Guard();
+}
+
+void AJujutsuKaisenCharacter::AI_StopGuard()
+{
+	// AI용 가드 해제 로직 (인자 없음)
+	StopGuard();
+}
+
+void AJujutsuKaisenCharacter::AI_A_Pressed()
+{
+	// AI용 A키 스킬 로직 (인자 없음)
+	A_Pressed();
+}
+
+void AJujutsuKaisenCharacter::AI_R_Pressed()
+{
+	// AI용 R키 스킬 로직 (인자 없음)
+	R_Pressed();
+}
+
+void AJujutsuKaisenCharacter::AI_R_Released()
+{
+	// AI용 R키 해제 로직 (인자 없음)
+	R_Released();
 }

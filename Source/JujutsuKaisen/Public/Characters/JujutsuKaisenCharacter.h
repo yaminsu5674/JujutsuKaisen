@@ -188,23 +188,23 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 	// Dash
-	void Dash(const FInputActionValue& Value);
+	void Dash();
 
 	void StopDash();
 
-	virtual void JumpCustom(const FInputActionValue& Value);
+	virtual void JumpCustom();
 
 	void Landed(const FHitResult& Hit);
 
-	virtual void Guard(const FInputActionValue& Value);
+	virtual void Guard();
 
 	virtual void StopGuard();
 
-	void A_Pressed(const FInputActionValue& Value);
+	void A_Pressed();
 
-	void R_Pressed(const FInputActionValue& Value);
+	void R_Pressed();
 
-	void R_Released(const FInputActionValue& Value);
+	void R_Released();
 
 	virtual void NotifyControllerChanged() override;
 
@@ -258,5 +258,44 @@ public:
 	void Hit();
 
 	void Die();
+
+	// 플레이어/AI 모드 구분
+	UPROPERTY(BlueprintReadOnly, Category = "Character Mode")
+	bool bIsPlayerControlled = true;
+
+	// AI용 래핑 함수들 (인자 없음)
+	UFUNCTION(BlueprintCallable, Category = "AI Functions")
+	void AI_Move();
+
+	UFUNCTION(BlueprintCallable, Category = "AI Functions")
+	void AI_Look();
+
+	UFUNCTION(BlueprintCallable, Category = "AI Functions")
+	void AI_JumpCustom();
+
+	UFUNCTION(BlueprintCallable, Category = "AI Functions")
+	void AI_Dash();
+
+	UFUNCTION(BlueprintCallable, Category = "AI Functions")
+	void AI_StopDash();
+
+	UFUNCTION(BlueprintCallable, Category = "AI Functions")
+	void AI_Guard();
+
+	UFUNCTION(BlueprintCallable, Category = "AI Functions")
+	void AI_StopGuard();
+
+	UFUNCTION(BlueprintCallable, Category = "AI Functions")
+	void AI_A_Pressed();
+
+	UFUNCTION(BlueprintCallable, Category = "AI Functions")
+	void AI_R_Pressed();
+
+	UFUNCTION(BlueprintCallable, Category = "AI Functions")
+	void AI_R_Released();
+
+	// 모드 설정
+	UFUNCTION(BlueprintCallable, Category = "Character Mode")
+	void SetPlayerMode(bool bIsPlayer);
 };
 
