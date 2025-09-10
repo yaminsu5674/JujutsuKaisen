@@ -267,13 +267,14 @@ void AJujutsuKaisenCharacter::StopDash()
 
 void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
 {
-	if (SetState(ECharacterState::Falling))
+	if (StateManager)
 	{
-		Super::Landed(Hit);
-		JumpCount = 0;
-		bDidSuperJump = false;
-		bDidDoubleJump = false;
+		StateManager->ForceState(ECharacterState::Locomotion);
 	}
+	Super::Landed(Hit);
+	JumpCount = 0;
+	bDidSuperJump = false;
+	bDidDoubleJump = false;
 }
 
 void AJujutsuKaisenCharacter::Hit()
@@ -366,8 +367,8 @@ void AJujutsuKaisenCharacter::R_Released(const FInputActionValue& Value)
 // 점프 함수 (몽타주 재생 추가)
 void AJujutsuKaisenCharacter::JumpCustom(const FInputActionValue& Value)
 {
-	// Falling 또는 Locomotion 상태일 때만 점프 가능
-	if (StateManager && (StateManager->IsInState(ECharacterState::Falling) || StateManager->IsInState(ECharacterState::Locomotion)))
+	// 점프 시작 시 Falling 상태로 전환 시도
+	if (StateManager && StateManager->SetState(ECharacterState::Falling))
 	{
 		if (JumpCount == 0 && bIsDashing)
 		{
