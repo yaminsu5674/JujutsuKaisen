@@ -8,24 +8,12 @@
 #include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
 #include "Attack/JujutsuKaisenHitBox.h"
 #include "Skills/SkillManager.h"
+#include "Characters/CharacterStateManager.h"
+#include "InputActionValue.h"
 #include "JujutsuKaisenCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
-class UInputMappingContext;
-class UInputAction;
-struct FInputActionValue;
-
-UENUM(BlueprintType)
-enum class ECharacterState : uint8
-{
-	Locomotion = 0,
-	Land = 1,
-	Guard = 2,
-	Skill = 3,
-	Hit = 4,
-	Dead = 5
-};
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -34,65 +22,104 @@ class AJujutsuKaisenCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
-	ECharacterState CurrentState = ECharacterState::Locomotion;
+public:
+	// ============================================================================
+	// Constructor & Core Functions
+	// ============================================================================
+	AJujutsuKaisenCharacter();
+	virtual void Tick(float DeltaTime) override;
+	virtual void BeginPlay() override;
+	virtual void NotifyControllerChanged() override;
 
-	/** Camera boom positioning the camera behind the character */
+	// ============================================================================
+	// Public Interface - Controller Access
+	// ============================================================================
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	void Dash();
+	void StopDash();
+	virtual void JumpCustom();
+	void Landed(const FHitResult& Hit);
+	virtual void Guard();
+	virtual void StopGuard();
+	void A_Pressed();
+	void R_Pressed();
+	void R_Released();
+
+	// ============================================================================
+	// State Management
+	// ============================================================================
+	void ForceState(ECharacterState InState);
+	bool SetState(ECharacterState InState);
+	ECharacterState GetState() const;
+	UCharacterStateManager* GetStateManager() const { return StateManager; }
+
+	// ============================================================================
+	// Character Actions
+	// ============================================================================
+	void Hit();
+	void Die();
+	virtual void InitSkills();
+
+	// ============================================================================
+	// Target Management
+	// ============================================================================
+	AJujutsuKaisenCharacter* GetTargetCharacter() const;
+	void SetTargetCharacter(AJujutsuKaisenCharacter* NewTarget);
+
+	// ============================================================================
+	// Getters & Setters
+	// ============================================================================
+	bool GetBIsDashing() const { return bIsDashing; }
+	uint8 GetJumpCount() const { return JumpCount; }
+	bool GetBDidSuperJump() const { return bDidSuperJump; }
+	void SetBDidSuperJump(bool bValue) { bDidSuperJump = bValue; }
+	bool GetBDidDoubleJump() const { return bDidDoubleJump; }
+	void SetBDidDoubleJump(bool bValue) { bDidDoubleJump = bValue; }
+
+	// ============================================================================
+	// Camera Access
+	// ============================================================================
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	// ============================================================================
+	// Character Mode
+	// ============================================================================
+	UFUNCTION(BlueprintCallable, Category = "Character Mode")
+	void SetPlayerMode(bool bIsPlayer);
+
+protected:
+	// ============================================================================
+	// Protected Virtual Functions
+	// ============================================================================
+	virtual void InitWeapon();
+	virtual void UpdateLockOnCamera(float DeltaTime);
+
+	// ============================================================================
+	// Protected Helper Functions
+	// ============================================================================
+	void InitHitBoxes();
+	void AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, const FString& BoneNameStr);
+
+	// ============================================================================
+	// Core Components
+	// ============================================================================
+	UPROPERTY()
+	UCharacterStateManager* StateManager;
+
+	UPROPERTY()
+	USkillManager* SkillManager;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
 
-	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
-	// Input Action--------------------------------------------------
-
-	/** MappingContext */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputMappingContext* DefaultMappingContext;
-
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* JumpAction;
-
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* MoveAction;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* LookAction;
-
-	// Dash
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* DashAction;
-
-	// Guard
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* GuardAction;
-
-	// Combo Attack
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* A_Pressed_Action;
-
-	// Active Skill
-
-	// Main Skill
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* R_Pressed_Action;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* R_Released_Action;
-
-	// Ultimate Skill
-
-
-
-	// Character Components --------------------------------------------------------
-
-	/*UPROPERTY(EditAnywhere,  Category = "Character components")
-	USkeletalMeshComponent* SubMesh;*/
-
+	// ============================================================================
+	// Character Components
+	// ============================================================================
 	UPROPERTY(VisibleAnywhere, Category = "Character components")
 	UJujutsuKaisenHitBox* LeftFist;
 
@@ -105,16 +132,11 @@ class AJujutsuKaisenCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, Category = "Character components")
 	UJujutsuKaisenHitBox* RightFoot;
 
-	// Character Params ---------------------------------------------------------
-	UPROPERTY()
-	AJujutsuKaisenCharacter* TargetCharacter = nullptr;
-
-protected:
+	// ============================================================================
+	// Character Parameters
+	// ============================================================================
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	bool bVisibleHitbox = false;
-
-	UPROPERTY()
-	USkillManager* SkillManager;
 
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	bool bUsesWeapon = false;
@@ -128,29 +150,27 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	float Health;
 
+	// ============================================================================
+	// Movement Parameters
+	// ============================================================================
 	UPROPERTY(VisibleAnywhere)
 	uint8 JumpCount = 0;
 
-	// Header (.h)
 	UPROPERTY(VisibleAnywhere)
 	bool bDidSuperJump = false;
 
 	UPROPERTY(VisibleAnywhere)
 	bool bDidDoubleJump = false;
 
-
 	UPROPERTY(VisibleAnywhere)
 	bool bIsDashing = false;
 
-	// Speed . It should be controlled on Character Not AnimationInstance
 	UPROPERTY(VisibleAnywhere)
 	float Speed;
 
-	// Speed . It should be controlled on Character Not AnimationInstance
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	float DefaultSpeed = 500;
 
-	// Speed . It should be controlled on Character Not AnimationInstance
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	float DashSpeed = 1200;
 
@@ -163,83 +183,43 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	float SuperJumpVelocity = 2400;
 
-	// AnimInstance
+	// ============================================================================
+	// Animation System
+	// ============================================================================
 	UPROPERTY()
 	class UJujutsuKaisenAnimInstance* _AnimInstance;
 
-	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* NormalJumpMontage;
 
-	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* SuperJumpMontage;
 
-	// Dash
-	void Dash(const FInputActionValue& Value);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* DoubleJumpMontage;
 
-	void StopDash();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* GuardMontage;
 
-	virtual void JumpCustom(const FInputActionValue& Value);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* DashMontage;
 
-	void Landed(const FHitResult& Hit);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* LandMontage;
 
-	virtual void Guard(const FInputActionValue& Value);
+	// ============================================================================
+	// Character State
+	// ============================================================================
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Character params", meta = (AllowPrivateAccess = "true"))
+	bool bIsGuarding = false;
 
-	virtual void StopGuard();
+	UPROPERTY(BlueprintReadOnly, Category = "Character Mode")
+	bool bIsPlayerControlled = true;
 
-	void A_Pressed(const FInputActionValue& Value);
-
-	void R_Pressed(const FInputActionValue& Value);
-
-	void R_Released(const FInputActionValue& Value);
-
-	virtual void NotifyControllerChanged() override;
-
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	virtual void BeginPlay() override;
-
-	void InitHitBoxes();
-
-	virtual void InitWeapon();
-
-	void AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, const FString& BoneNameStr);
-
-	virtual void UpdateLockOnCamera(float DeltaTime);
-
-public:
-	AJujutsuKaisenCharacter();
-
-	virtual void Tick(float DeltaTime) override;
-
-	void ForceState(ECharacterState InState);
-
-	bool SetState(ECharacterState InState);
-
-	ECharacterState GetState() const;
-
-	virtual void InitSkills();
-
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-	AJujutsuKaisenCharacter* GetTargetCharacter () const;
-
-	void SetTargetCharacter(AJujutsuKaisenCharacter* NewTarget);
-
-
-
-	bool GetBIsDashing() const { return bIsDashing; }
-	uint8 GetJumpCount() const { return JumpCount; }
-	bool GetBDidSuperJump() const { return bDidSuperJump; }
-	void SetBDidSuperJump(bool bValue) { bDidSuperJump = bValue; }
-	bool GetBDidDoubleJump() const { return bDidDoubleJump; }
-	void SetBDidDoubleJump(bool bValue) { bDidDoubleJump = bValue; }
-
-	
-	void Hit();
-
-	void Die();
+private:
+	// ============================================================================
+	// Private Members
+	// ============================================================================
+	UPROPERTY()
+	AJujutsuKaisenCharacter* TargetCharacter = nullptr;
 };
-

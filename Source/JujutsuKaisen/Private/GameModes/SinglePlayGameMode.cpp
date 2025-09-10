@@ -10,12 +10,19 @@
 #include "Controllers/JujutsuKaisenAIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
+#include "Engine/BlueprintGeneratedClass.h"
 
 
 ASinglePlayGameMode::ASinglePlayGameMode()
 {
-    DefaultPawnClass = nullptr; // ÀÚµ¿ ½ºÆù ¸·±â
-    PlayerControllerClass = AJujutsuKaisenPlayerController::StaticClass();
+    DefaultPawnClass = nullptr; // ì½”ë“œ ì§ì ‘ ìƒì„±
+    
+    // PlayerControllerClass ê°•ì œ ì„¤ì • (ë¸”ë£¨í”„ë¦°íŠ¸ ì„¤ì •ì´ ì•ˆë  ê²½ìš°)
+    static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Game/Dynamic/Blueprints/Controllers/BP_JujutsuKaisenPlayerController"));
+    if (PlayerControllerBPClass.Succeeded())
+    {
+        PlayerControllerClass = PlayerControllerBPClass.Class;
+    }
 }
 
 
@@ -35,7 +42,6 @@ void ASinglePlayGameMode::BeginPlay()
         UE_LOG(LogTemp, Error, TEXT("Character Data asset is empty"));
         return;
     }
-
 
     SpawnCharacterFromData(GameInstance->GetMyCharacterDataAsset(), PlayerSpawnLocation, PlayerSpawnRotation, true);
     SpawnCharacterFromData(GameInstance->GetEnemyCharacterDataAsset(), EnemySpawnLocation, EnemySpawnRotation, false);
@@ -71,8 +77,6 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-    // Ä³¸¯ÅÍ ½ºÆù
-
     FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 
     AJujutsuKaisenCharacter* SpawnedCharacter = Cast<AJujutsuKaisenCharacter>(
@@ -87,13 +91,11 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
 
     if (SpawnedCharacter)
     {
-        // ½ÇÁ¦ BeginPlay() È£ÃâµÊ
         UGameplayStatics::FinishSpawningActor(SpawnedCharacter, SpawnTransform);
 
         if (bIsPlayerCharacter)
         {
             PlayerCharacter = SpawnedCharacter;
-            UE_LOG(LogTemp, Log, TEXT("Player Character %s Spawn Complete"), *SpawnedCharacter->GetName());
         }
         else
         {
@@ -111,18 +113,18 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
 void ASinglePlayGameMode::PossessPlayer()
 {
     UWorld* World = GetWorld();
+    if (!World) 
+    {
+        UE_LOG(LogTemp, Error, TEXT("World is NULL"));
+        return;
+    }
 
-    if (!World) return;
+    APlayerController* RawPC = UGameplayStatics::GetPlayerController(World, 0);
+    AJujutsuKaisenPlayerController* PC = Cast<AJujutsuKaisenPlayerController>(RawPC);
 
-    AJujutsuKaisenPlayerController* PC = Cast<AJujutsuKaisenPlayerController>(UGameplayStatics::GetPlayerController(World, 0));
-    if (PC)
+    if (PC && PlayerCharacter)
     {
         PC->Possess(PlayerCharacter);
-        UE_LOG(LogTemp, Log, TEXT("Player Character Possessed"));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("PlayerController not found"));
     }
 }
 

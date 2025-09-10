@@ -4,38 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Characters/CharacterStateManager.h"
 #include "JujutsuKaisenAnimInstance.generated.h"
 
 class AJujutsuKaisenCharacter;
 
-UENUM(BlueprintType)
-enum class EAnimState : uint8
-{
-	Locomotion,
-	Dash,
-	Jump,
-	Falling,
-	Land,
-	DoubleJump,
-	SuperJump,
-	Hit,
-	Dead,
-	Skill,
-	Guard
-};
 /**
- *
+ * 애니메이션 인스턴스 클래스
+ * 상태 매니저의 상태들을 사용하여 애니메이션을 관리
  */
 UCLASS()
 class JUJUTSUKAISEN_API UJujutsuKaisenAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
+
 	UPROPERTY()
 	AJujutsuKaisenCharacter* Character;
 
+	// 상태 매니저의 상태들 (블루프린트에서 접근 가능)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
-	EAnimState State;
+	ECharacterState CurrentState = ECharacterState::Locomotion;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
+	EHitSubState CurrentHitSubState = EHitSubState::CustomHit;
+
+	// 기존 애니메이션 변수들
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
 	float Speed;
 
@@ -64,13 +57,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnStateAnimationEnds();
 
-	FORCEINLINE void SetState(EAnimState InState) { State = InState; }
-
-	FORCEINLINE EAnimState GetState() const { return State; }
-
-	//FORCEINLINE void SetSpeed(float InSpeed) { Speed = InSpeed; }
-
-	//FORCEINLINE void SetBIsDahsing(bool result) { bIsDashing = result; }
+	// 상태 관련 Getter 함수들
+	FORCEINLINE ECharacterState GetCurrentState() const { return CurrentState; }
+	FORCEINLINE EHitSubState GetCurrentHitSubState() const { return CurrentHitSubState; }
 
 	FORCEINLINE float GetSpeed() const { return Speed; }
 
