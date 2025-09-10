@@ -16,5 +16,15 @@ void UAnimEndStateNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
     AJujutsuKaisenCharacter* Character = Cast<AJujutsuKaisenCharacter>(Owner);
     if (!Character) return;
 
-    Character->ForceState(ECharacterState::Locomotion);
+    // 애니메이션 인스턴스를 통해 OnStateAnimationEnds 호출
+    UJujutsuKaisenAnimInstance* AnimInstance = Cast<UJujutsuKaisenAnimInstance>(MeshComp->GetAnimInstance());
+    if (AnimInstance)
+    {
+        AnimInstance->OnStateAnimationEnds();
+    }
+    else
+    {
+        // 애니메이션 인스턴스가 없으면 에러 로그
+        UE_LOG(LogTemp, Error, TEXT("AnimEndStateNotify: No AnimInstance found!"));
+    }
 }

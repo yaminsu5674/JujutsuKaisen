@@ -21,6 +21,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 {
 	// 상태 매니저 초기화
 	StateManager = CreateDefaultSubobject<UCharacterStateManager>(TEXT("StateManager"));
+	StateManager->SetOwnerCharacter(this);
 
 	// 기본 설정
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
@@ -115,6 +116,9 @@ void AJujutsuKaisenCharacter::NotifyControllerChanged()
 
 void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
 {
+	if (!GetCanMove())
+		return;
+
 	// Falling 또는 Locomotion 상태일 때만 이동 가능
 	if (StateManager && (StateManager->IsInState(ECharacterState::Falling) || StateManager->IsInState(ECharacterState::Locomotion)))
 	{
@@ -229,6 +233,7 @@ void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
 		JumpCount = 0;
 		bDidSuperJump = false;
 		bDidDoubleJump = false;
+		SetCanMove(false);
 		
 		// 착지 몽타주 재생
 		if (LandMontage && GetMesh() && GetMesh()->GetAnimInstance())
@@ -376,6 +381,35 @@ void AJujutsuKaisenCharacter::SetTargetCharacter(AJujutsuKaisenCharacter* NewTar
 void AJujutsuKaisenCharacter::SetPlayerMode(bool bIsPlayer)
 {
 	bIsPlayerControlled = bIsPlayer;
+}
+
+// ============================================================================
+// Gravity Control
+// ============================================================================
+
+void AJujutsuKaisenCharacter::SetGravityEnabled(bool bEnabled)
+{
+	if (bEnabled)
+	{
+		GetCharacterMovement()->GravityScale = 2.8f; // 기본값
+	}
+	else
+	{
+		// 중력 끄기 + 수직 속도도 0으로 만들어서 공중에서 멈춤
+		GetCharacterMovement()->GravityScale = 0.0f;
+		FVector CurrentVelocity = GetCharacterMovement()->Velocity;
+		CurrentVelocity.Z = 0.0f; // 수직 속도만 0으로
+		GetCharacterMovement()->Velocity = CurrentVelocity;
+	}
+}
+
+// ============================================================================
+// Movement Control
+// ============================================================================
+
+void AJujutsuKaisenCharacter::SetCanMove(bool bCanMoveValue)
+{
+	bCanMove = bCanMoveValue;
 }
 
 // ============================================================================

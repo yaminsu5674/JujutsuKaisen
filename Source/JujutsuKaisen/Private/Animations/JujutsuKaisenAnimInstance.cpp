@@ -47,6 +47,7 @@ void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
     if (CurrentState == ECharacterState::Dead)
     {
         // 죽음 상태는 그대로 유지
+        return;
     }
     else
     {
@@ -54,6 +55,12 @@ void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
         if (Character && Character->GetStateManager())
         {
             Character->GetStateManager()->ForceState(ECharacterState::Locomotion);
+        }
+        
+        // 이동 가능하도록 설정
+        if (Character)
+        {
+            Character->SetCanMove(true);
         }
     }
 }

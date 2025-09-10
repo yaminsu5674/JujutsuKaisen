@@ -6,6 +6,8 @@
 #include "UObject/NoExportTypes.h"
 #include "CharacterStateManager.generated.h"
 
+class AJujutsuKaisenCharacter;
+
 // 메인 상태 (우선순위 순서)
 UENUM(BlueprintType)
 enum class ECharacterState : uint8
@@ -39,6 +41,9 @@ class JUJUTSUKAISEN_API UCharacterStateManager : public UObject
 
 public:
 	UCharacterStateManager();
+
+	// 캐릭터 참조 설정
+	void SetOwnerCharacter(AJujutsuKaisenCharacter* Character);
 
 	// 메인 상태
 	UPROPERTY(BlueprintReadOnly, Category = "State")
@@ -74,9 +79,16 @@ public:
 	void ForceState(ECharacterState NewState);
 
 private:
+	// 캐릭터 참조
+	UPROPERTY()
+	AJujutsuKaisenCharacter* OwnerCharacter = nullptr;
+
 	// 상태 전환 시 하위 상태 리셋
 	void ResetSubStates(ECharacterState NewState);
 
 	// 상태 전환 우선순위 체크
 	bool CheckStatePriority(ECharacterState NewState) const;
+
+	// 중력 제어
+	void UpdateGravityForState(ECharacterState NewState);
 };

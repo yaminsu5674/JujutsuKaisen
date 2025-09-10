@@ -1,11 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Characters/CharacterStateManager.h"
+#include "Characters/JujutsuKaisenCharacter.h"
 
 UCharacterStateManager::UCharacterStateManager()
 {
 	CurrentState = ECharacterState::Locomotion;
 	CurrentHitSubState = EHitSubState::CustomHit;
+	OwnerCharacter = nullptr;
+}
+
+void UCharacterStateManager::SetOwnerCharacter(AJujutsuKaisenCharacter* Character)
+{
+	OwnerCharacter = Character;
 }
 
 bool UCharacterStateManager::SetState(ECharacterState NewState)
@@ -16,8 +23,8 @@ bool UCharacterStateManager::SetState(ECharacterState NewState)
 		return false;
 	}
 
-	CurrentState = NewState;
-	ResetSubStates(NewState);
+	ForceState(NewState);
+
 	
 	return true;
 }
@@ -47,6 +54,7 @@ void UCharacterStateManager::ForceState(ECharacterState NewState)
 {
 	CurrentState = NewState;
 	ResetSubStates(NewState);
+	UpdateGravityForState(NewState);
 }
 
 void UCharacterStateManager::ResetSubStates(ECharacterState NewState)
@@ -62,5 +70,24 @@ void UCharacterStateManager::ResetSubStates(ECharacterState NewState)
 	case ECharacterState::Skill:
 		// 하위 상태가 없는 상태들
 		break;
+	}
+}
+
+void UCharacterStateManager::UpdateGravityForState(ECharacterState NewState)
+{
+	if (!OwnerCharacter)
+	{
+		return;
+	}
+
+	// 스킬 상태일 때만 중력 끄기
+	if (NewState == ECharacterState::Skill)
+	{
+		OwnerCharacter->SetGravityEnabled(false);
+	}
+	else
+	{
+		// 다른 모든 상태에서는 중력 켜기
+		OwnerCharacter->SetGravityEnabled(true);
 	}
 }

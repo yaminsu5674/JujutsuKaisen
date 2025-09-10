@@ -89,6 +89,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character Mode")
 	void SetPlayerMode(bool bIsPlayer);
 
+	// ============================================================================
+	// Gravity Control
+	// ============================================================================
+	void SetGravityEnabled(bool bEnabled);
+
+	// ============================================================================
+	// Movement Control
+	// ============================================================================
+	void SetCanMove(bool bCanMove);
+	bool GetCanMove() const { return bCanMove; }
+
 protected:
 	// ============================================================================
 	// Protected Virtual Functions
@@ -149,6 +160,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	float Health;
+
+	UPROPERTY()
+	bool bCanMove = true;
 
 	// ============================================================================
 	// Movement Parameters
