@@ -11,8 +11,11 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
     if (!Character) return;
 
+    // 기존 애니메이션 변수들 업데이트
+    Speed = Character->GetVelocity().Size();
     float VerticalSpeed = Character->GetVelocity().Z;
     bIsFalling = VerticalSpeed < -1.f;
+
 
 
     // 상태 매니저에서 상태들 가져오기

@@ -5,7 +5,7 @@
 UCharacterStateManager::UCharacterStateManager()
 {
 	CurrentState = ECharacterState::Locomotion;
-	CurrentHitSubState = EHitSubState::None;
+	CurrentHitSubState = EHitSubState::CustomHit;
 }
 
 bool UCharacterStateManager::SetState(ECharacterState NewState)
@@ -122,7 +122,7 @@ void UCharacterStateManager::ResetSubStates(ECharacterState NewState)
 	switch (NewState)
 	{
 	case ECharacterState::Hit:
-		CurrentHitSubState = EHitSubState::None;
+		CurrentHitSubState = EHitSubState::CustomHit;
 		break;
 	case ECharacterState::Locomotion:
 	case ECharacterState::Falling:
