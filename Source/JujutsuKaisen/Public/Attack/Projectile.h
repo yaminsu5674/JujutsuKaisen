@@ -11,7 +11,8 @@ UENUM(BlueprintType)
 enum class EProjectileBehaviorType : uint8
 {
 	None,
-	Move
+	Move,
+	Place
 };
 
 UCLASS()
@@ -24,14 +25,17 @@ class JUJUTSUKAISEN_API AProjectile : public AActor
 
 	//bool bIsCharging = false;
 
-	UPROPERTY(EditAnywhere, Category = "Projectile Params")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	float Speed = 500.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Projectile Params")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	float Lifespan = 5.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Projectile Params")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	float Damage = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
+	float SphereRadius = 50.0f;
 
 	float _LifeCountingDown;
 
@@ -39,6 +43,9 @@ class JUJUTSUKAISEN_API AProjectile : public AActor
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Visual, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* _MeshComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
+	USphereComponent* CollisionSphere;
 	
 
 protected:
@@ -57,6 +64,10 @@ public:
 	void SetDirection(AJujutsuKaisenCharacter* InTarget = nullptr);
 
 	void SetBehaviorType(EProjectileBehaviorType NewType);
+
+	// 오버랩 이벤트 함수들
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 
 

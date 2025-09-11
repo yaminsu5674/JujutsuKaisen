@@ -2,6 +2,8 @@
 
 
 #include "Attack/Projectile.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -12,13 +14,18 @@ AProjectile::AProjectile()
 	_LifeCountingDown = Lifespan;
 	_MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
 	SetRootComponent(_MeshComponent);
+	
+	// 구체 충돌 컴포넌트 생성
+	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
+	CollisionSphere->SetupAttachment(_MeshComponent);
+	CollisionSphere->SetSphereRadius(SphereRadius);
+	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	CollisionSphere->SetCollisionObjectType(ECC_WorldDynamic);
+	CollisionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(false);
 	SetActorTickEnabled(true);
-
-	_MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	_MeshComponent->SetCollisionObjectType(ECC_WorldDynamic);
-	_MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 }
 
 // Called when the game starts or when spawned
@@ -41,6 +48,9 @@ void AProjectile::Tick(float DeltaTime)
 	{
 	case EProjectileBehaviorType::Move:
 		HandleMovement(DeltaTime);
+		break;
+	case EProjectileBehaviorType::Place:
+		// Place는 이동하지 않고 그 자리에 계속 존재
 		break;
 	default:
 		break;
@@ -71,13 +81,37 @@ void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 	case EProjectileBehaviorType::Move:
 	{
 		SetLifeSpan(Lifespan);
-		SetActorEnableCollision(true); 
+		SetActorEnableCollision(true);
+		// 오버랩 이벤트 바인딩
+		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
+		break;
+	}
+	case EProjectileBehaviorType::Place:
+	{
+		// Place는 수명이 없고 스폰된 곳에서 계속 존재
+		SetLifeSpan(0.0f);
+		SetActorEnableCollision(true);
+		// 오버랩 이벤트 바인딩
+		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 		break;
 	}
 	case EProjectileBehaviorType::None:
 	default:
-		SetActorEnableCollision(false); 
+		SetActorEnableCollision(false);
 		break;
+	}
+}
+
+void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	auto Target = Cast<AJujutsuKaisenCharacter>(OtherActor);
+	if (Target != nullptr)
+	{
+		// 캐릭터에게 데미지 적용
+		Target->Hit();
+		
+		PrimaryActorTick.bCanEverTick = false;
+		// Destroy();
 	}
 }
 
@@ -87,28 +121,5 @@ void AProjectile::HandleMovement(float DeltaTime)
 	FVector nextLocation = currentLocation + Direction * Speed * DeltaTime;
 	SetActorLocation(nextLocation);
 
-	// Line trace to detect collision
-	FHitResult hitResult;
-	FCollisionObjectQueryParams objCollisionQueryParams;
-	objCollisionQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
-
-	FCollisionQueryParams traceParams;
-	traceParams.AddIgnoredActor(this);
-	traceParams.AddIgnoredActor(GetOwner());
-
-	if (GetWorld()->LineTraceSingleByObjectType(hitResult,
-		currentLocation,
-		nextLocation,
-		objCollisionQueryParams))
-	{
-		auto Target = Cast<AJujutsuKaisenCharacter>(hitResult.GetActor());
-		if (Target != nullptr)
-		{
-			// Hit should be detected on Skill delegate function.
-			// Target->Hit(Damage);
-			PrimaryActorTick.bCanEverTick = false;
-			// Destroy();
-		}
-	}
 	_LifeCountingDown -= DeltaTime;
 }
