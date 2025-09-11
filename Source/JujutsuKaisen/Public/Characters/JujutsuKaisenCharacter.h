@@ -230,7 +230,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character Mode")
 	bool bIsPlayerControlled = true;
 
-private:
+protected:
 	// ============================================================================
 	// Private Members
 	// ============================================================================
