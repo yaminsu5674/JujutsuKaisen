@@ -105,7 +105,7 @@ protected:
 	// Protected Virtual Functions
 	// ============================================================================
 	virtual void InitWeapon();
-	virtual void UpdateLockOnCamera(float DeltaTime);
+	virtual void UpdateCameraMovement(float DeltaTime);
 
 	// ============================================================================
 	// Protected Helper Functions
@@ -127,6 +127,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+
+	// ============================================================================
+	// Camera Settings
+	// ============================================================================
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Settings", meta = (AllowPrivateAccess = "true"))
+	float SpringArmLength = 380.0f;
 
 	// ============================================================================
 	// Character Components
@@ -232,7 +238,7 @@ protected:
 
 protected:
 	// ============================================================================
-	// Private Members
+	// Target Members
 	// ============================================================================
 	UPROPERTY()
 	AJujutsuKaisenCharacter* TargetCharacter = nullptr;

@@ -66,7 +66,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	// 카메라 설정
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 380.0f;
+	CameraBoom->TargetArmLength = SpringArmLength;
 	CameraBoom->bUsePawnControlRotation = true;
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -126,6 +126,9 @@ void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 	{
 		SkillManager->TickActiveSkills(DeltaTime);
 	}
+	
+	// 카메라 무브 업데이트
+	UpdateCameraMovement(DeltaTime);
 }
 
 void AJujutsuKaisenCharacter::NotifyControllerChanged()
@@ -525,7 +528,7 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 	}
 }
 
-void AJujutsuKaisenCharacter::UpdateLockOnCamera(float DeltaTime)
+void AJujutsuKaisenCharacter::UpdateCameraMovement(float DeltaTime)
 {
 	if (!CameraBoom || !TargetCharacter) return;
 
@@ -535,18 +538,18 @@ void AJujutsuKaisenCharacter::UpdateLockOnCamera(float DeltaTime)
 	// 타겟 방향 계산
 	FVector DirectionToTarget = (TargetLocation - MyLocation).GetSafeNormal();
 
-	// 캐릭터 위치에서 카메라 위치로 타겟 바라보는 위치
-	float DesiredDistance = 380.0f; // SpringArm 거리
-	FVector DesiredCameraPosition = MyLocation - DirectionToTarget * DesiredDistance;
-
-	// SpringArm 위치를 부드럽게 보간하여 이동
-	FVector CurrentPosition = CameraBoom->GetComponentLocation();
-	FVector NewPosition = FMath::VInterpTo(CurrentPosition, DesiredCameraPosition, DeltaTime, 5.0f);
-
-	// 카메라붐의 위치 설정 (주의: 이 방법은 약간 부자연스러울 수 있음)
-	CameraBoom->SetWorldLocation(NewPosition);
-
-	// 회전도 타겟을 바라보도록
-	FRotator TargetRotation = (TargetLocation - NewPosition).Rotation();
-	CameraBoom->SetWorldRotation(TargetRotation);
+	// 타겟을 바라보는 회전 계산
+	FRotator TargetRotation = DirectionToTarget.Rotation();
+	
+	// 현재 스프링암 회전
+	FRotator CurrentRotation = CameraBoom->GetComponentRotation();
+	
+	// 부드럽게 회전 보간
+	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 5.0f);
+	
+	// 스프링암 회전 설정 (길이는 유지)
+	CameraBoom->SetWorldRotation(NewRotation);
+	
+	// 스프링암 길이를 설정된 값으로 유지
+	CameraBoom->TargetArmLength = SpringArmLength;
 }
