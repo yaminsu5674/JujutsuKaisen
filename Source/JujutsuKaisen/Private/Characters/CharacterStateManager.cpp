@@ -31,6 +31,7 @@ bool UCharacterStateManager::SetState(ECharacterState NewState)
 
 bool UCharacterStateManager::SetHitSubState(EHitSubState NewSubState)
 {
+	SetState(ECharacterState::Hit);
 	if (CurrentState == ECharacterState::Hit)
 	{
 		CurrentHitSubState = NewSubState;

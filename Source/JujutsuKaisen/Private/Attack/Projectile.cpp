@@ -104,6 +104,11 @@ void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 
 void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// 오버랩 상태를 true로 설정
+	bIsOverlapping = true;
+	
+	// 타겟 캐릭터 초기화
+	Target = Cast<AJujutsuKaisenCharacter>(OtherActor);
 }
 
 void AProjectile::HandleMovement(float DeltaTime)

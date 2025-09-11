@@ -47,6 +47,14 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 	USphereComponent* CollisionSphere;
+
+	// 오버랩 상태 확인 변수
+	UPROPERTY(BlueprintReadOnly, Category = "State")
+	bool bIsOverlapping = false;
+
+	// 오버랩된 타겟 캐릭터
+	UPROPERTY(BlueprintReadOnly, Category = "State")
+	AJujutsuKaisenCharacter* Target = nullptr;
 	
 
 protected:
