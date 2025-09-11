@@ -51,6 +51,10 @@ void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
     }
     else
     {
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, TEXT("OnStateAnimationEnds"));
+        }
         // 다른 상태들은 로코모션으로 복귀
         if (Character && Character->GetStateManager())
         {

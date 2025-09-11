@@ -377,7 +377,7 @@ void AJujutsuKaisenCharacter::Hit()
 	{
 		if (GEngine)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Hit!"));
+			GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Red, TEXT("Hit!"));
 		}
 	}
 }
