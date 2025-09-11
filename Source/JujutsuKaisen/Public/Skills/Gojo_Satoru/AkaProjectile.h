@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Attack/Projectile.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "AkaProjectile.generated.h"
 
 UCLASS()
@@ -19,4 +21,19 @@ public:
 
 	// 부모의 Tick 함수 오버라이드
 	virtual void Tick(float DeltaTime) override;
+
+	// BeginPlay 오버라이드
+	virtual void BeginPlay() override;
+
+protected:
+	// 파티클 시스템들
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* ChargingEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* ShotEffect;
+
+	// ChargingEffect 컴포넌트 참조 (제거용)
+	UPROPERTY()
+	UParticleSystemComponent* ChargingEffectComponent;
 };

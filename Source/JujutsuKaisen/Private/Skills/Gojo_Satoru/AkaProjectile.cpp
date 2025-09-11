@@ -2,10 +2,24 @@
 
 #include "Skills/Gojo_Satoru/AkaProjectile.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AAkaProjectile::AAkaProjectile()
 {
+	// 블루프린트에서 파티클 시스템을 할당할 예정이므로 생성자에서는 초기화하지 않음
+}
 
+void AAkaProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// 스폰 시 ChargingEffect 파티클 재생 (발사체에 붙어서 함께 움직임)
+	if (ChargingEffect)
+	{
+		// RootComponent에 부착하여 발사체와 함께 움직임
+		ChargingEffectComponent = UGameplayStatics::SpawnEmitterAttached(ChargingEffect, RootComponent, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
+	}
 }
 
 void AAkaProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -15,6 +29,12 @@ void AAkaProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	
 	if (Target != nullptr && !bIsOverlapping)
 	{
+		// ShotEffect 파티클 재생
+		if (ShotEffect)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation());
+		}
+
 		// 캐릭터에게 데미지 적용
 		if (Target->GetStateManager())
 		{
@@ -26,20 +46,18 @@ void AAkaProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
         {
             // Projectile의 방향 벡터 (정규화된)
             FVector LaunchDir = GetActorForwardVector();
-            
-            // 방법 1: LaunchCharacter (속도 기반)
-            // FVector KnockbackForce = LaunchDir * 1500.f + FVector(0, 0, 200.f);
-            // Target->LaunchCharacter(KnockbackForce, true, true);
-            
-            // 방법 2: AddImpulse (힘 기반) - 주석 해제하여 사용 가능
-            FVector ImpulseForce = LaunchDir * 4000.f + FVector(0, 0, 1000.f);
+            FVector ImpulseForce = LaunchDir * 400.f + FVector(0, 0, 200.f);
             Target->GetCharacterMovement()->AddImpulse(ImpulseForce, true);
-            
-            // 방법 3: Velocity 직접 설정 (가장 부드러움) - 주석 해제하여 사용 가능
-            // FVector NewVelocity = LaunchDir * 800.f + FVector(0, 0, 150.f);
-            // Target->GetCharacterMovement()->Velocity = NewVelocity;
+
         }
 		bIsOverlapping = true;
+		
+		// ChargingEffect 제거
+		if (ChargingEffectComponent)
+		{
+			ChargingEffectComponent->DestroyComponent();
+			ChargingEffectComponent = nullptr;
+		}
 	}
 }
 
