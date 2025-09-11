@@ -21,13 +21,6 @@ AJujutsuKaisenAIController::AJujutsuKaisenAIController()
 void AJujutsuKaisenAIController::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// 캐릭터를 AI 모드로 설정
-	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-	{
-		Char->SetPlayerMode(false);
-		UE_LOG(LogTemp, Warning, TEXT("AI Character set to AI Mode"));
-	}
 }
 
 void AJujutsuKaisenAIController::Tick(float DeltaTime)

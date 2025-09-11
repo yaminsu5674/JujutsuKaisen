@@ -56,6 +56,7 @@ void ASinglePlayGameMode::BeginPlay()
 
         PlayerCharacter->InitSkills();
         EnemyCharacter->InitSkills();
+        EnemyCharacter->SetPlayerMode(false);
     }
 }
 
@@ -139,7 +140,6 @@ void ASinglePlayGameMode::PossessAI()
         if (AIController)
         {
             AIController->Possess(EnemyCharacter);
-            UE_LOG(LogTemp, Log, TEXT("AI Possession Successful"));
         }
         else
         {

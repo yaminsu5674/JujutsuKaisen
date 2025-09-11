@@ -88,7 +88,6 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	if (StateManager)
 	{
 		StateManager->ForceState(ECharacterState::Locomotion);
-		UE_LOG(LogTemp, Log, TEXT("BeginPlay: StateManager is valid, ForceState called"));
 	}
 	else
 	{
@@ -131,7 +130,7 @@ void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 	
 	
 	// 플레이어가 제어하는 캐릭터만 카메라 무브 업데이트
-	if (IsPlayerControlled())
+	if (bIsPlayerControlled)
 	{
 		UpdateCameraMovement(DeltaTime);
 	}
@@ -538,9 +537,9 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 void AJujutsuKaisenCharacter::UpdateCameraMovement(float DeltaTime)
 {
 	// 플레이어가 제어하는 캐릭터만 카메라 무브먼트 실행
-	if (!IsPlayerControlled() || !CameraBoom || !TargetCharacter)
+	if (!bIsPlayerControlled || !CameraBoom || !TargetCharacter)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UpdateCameraMovement: IsPlayerControlled() is FALSE or CameraBoom or TargetCharacter is NULL!"));
+		UE_LOG(LogTemp, Error, TEXT("UpdateCameraMovement: bIsPlayerControlled is FALSE or CameraBoom or TargetCharacter is NULL!"));
 		return;
 	}
 	
