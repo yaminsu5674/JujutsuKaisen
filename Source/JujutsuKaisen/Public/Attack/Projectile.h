@@ -20,6 +20,7 @@ class JUJUTSUKAISEN_API AProjectile : public AActor
 {
 	GENERATED_BODY()
 
+protected:
 	UPROPERTY(EditAnywhere, Category = "Projectile Params")
 	EProjectileBehaviorType BehaviorType = EProjectileBehaviorType::None;
 
@@ -67,7 +68,7 @@ public:
 
 	// 오버랩 이벤트 함수들
 	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 
 

@@ -104,15 +104,6 @@ void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 
 void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	auto Target = Cast<AJujutsuKaisenCharacter>(OtherActor);
-	if (Target != nullptr)
-	{
-		// 캐릭터에게 데미지 적용
-		Target->Hit();
-		
-		PrimaryActorTick.bCanEverTick = false;
-		// Destroy();
-	}
 }
 
 void AProjectile::HandleMovement(float DeltaTime)
