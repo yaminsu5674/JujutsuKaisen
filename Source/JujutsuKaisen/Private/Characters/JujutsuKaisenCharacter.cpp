@@ -127,8 +127,12 @@ void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 		SkillManager->TickActiveSkills(DeltaTime);
 	}
 	
-	// 카메라 무브 업데이트
-	UpdateCameraMovement(DeltaTime);
+	
+	// 플레이어가 제어하는 캐릭터만 카메라 무브 업데이트
+	if (IsPlayerControlled())
+	{
+		UpdateCameraMovement(DeltaTime);
+	}
 }
 
 void AJujutsuKaisenCharacter::NotifyControllerChanged()
@@ -530,26 +534,40 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 
 void AJujutsuKaisenCharacter::UpdateCameraMovement(float DeltaTime)
 {
-	if (!CameraBoom || !TargetCharacter) return;
+	// 플레이어가 제어하는 캐릭터만 카메라 무브먼트 실행
+	if (!IsPlayerControlled())
+	{
+		return;
+	}
+	
+	
+	if (!CameraBoom)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UpdateCameraMovement: CameraBoom is NULL!"));
+		return;
+	}
+	
+	if (!TargetCharacter)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UpdateCameraMovement: TargetCharacter is NULL!"));
+		return;
+	}
 
 	FVector MyLocation = GetActorLocation();
-	FVector TargetLocation = TargetCharacter->GetActorLocation();
+    FVector TargetLocation = TargetCharacter->GetActorLocation();
 
-	// 타겟 방향 계산
-	FVector DirectionToTarget = (TargetLocation - MyLocation).GetSafeNormal();
+    // 타겟을 바라보는 전체 회전 계산 (Pitch 포함)
+    FRotator TargetRotation = (TargetLocation - MyLocation).Rotation();
 
-	// 타겟을 바라보는 회전 계산
-	FRotator TargetRotation = DirectionToTarget.Rotation();
+    // 보간 회전
+    FRotator CurrentRotation = CameraBoom->GetComponentRotation();
+    FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 5.0f);
+
+    // 스프링암은 항상 코드로만 회전 제어
+    CameraBoom->bUsePawnControlRotation = false;
+    CameraBoom->SetWorldRotation(NewRotation);
+
+    // 길이는 고정
+    CameraBoom->TargetArmLength = SpringArmLength;
 	
-	// 현재 스프링암 회전
-	FRotator CurrentRotation = CameraBoom->GetComponentRotation();
-	
-	// 부드럽게 회전 보간
-	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 5.0f);
-	
-	// 스프링암 회전 설정 (길이는 유지)
-	CameraBoom->SetWorldRotation(NewRotation);
-	
-	// 스프링암 길이를 설정된 값으로 유지
-	CameraBoom->TargetArmLength = SpringArmLength;
 }
