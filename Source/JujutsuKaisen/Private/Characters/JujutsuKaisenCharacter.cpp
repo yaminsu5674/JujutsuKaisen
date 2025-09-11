@@ -424,18 +424,10 @@ void AJujutsuKaisenCharacter::SetGravityEnabled(bool bEnabled)
 {
 	if (bEnabled)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("중력 On"));
-		}
 		GetCharacterMovement()->GravityScale = 2.8f; // 기본값
 	}
 	else
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("중력 Off"));
-		}
 		// 중력 끄기 + 수직 속도도 0으로 만들어서 공중에서 멈춤
 		GetCharacterMovement()->GravityScale = 0.0f;
 		FVector CurrentVelocity = GetCharacterMovement()->Velocity;
