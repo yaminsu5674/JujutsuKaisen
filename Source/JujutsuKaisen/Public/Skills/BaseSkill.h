@@ -12,13 +12,13 @@
  */
 class AJujutsuKaisenCharacter;
 
-UCLASS()
+UCLASS(Blueprintable, BlueprintType, EditInlineNew)
 class JUJUTSUKAISEN_API UBaseSkill : public UObject
 {
 	GENERATED_BODY()
 
 protected:
-	bool bWantsTick = false; // ÇÊ¿äÇÒ ¶§¸¸ Tick
+	bool bWantsTick = false; // ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Tick
 
 	UPROPERTY()
 	AJujutsuKaisenCharacter* Owner;

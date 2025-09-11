@@ -21,8 +21,3 @@ void AGojoSatoruCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 }
-
-void AGojoSatoruCharacter::InitSkills()
-{
-    SkillManager->RegisterSkill("R", NewObject<UAka>(this));  
-}

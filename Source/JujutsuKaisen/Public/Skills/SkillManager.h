@@ -13,19 +13,19 @@
 class AJujutsuKaisenCharacter;
 
 
-UCLASS()
+UCLASS(Blueprintable, BlueprintType, EditInlineNew)
 class JUJUTSUKAISEN_API USkillManager : public UObject
 {
 	GENERATED_BODY()
 
-    UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced, Category = "Skill", meta = (AllowPrivateAccess = "true"))
     TMap<FName, UBaseSkill*> BoundSkills;
 
     UPROPERTY()
     AJujutsuKaisenCharacter* Owner;
 
 public:
-    void RegisterSkill(FName Key, UBaseSkill* Skill);
+    void InitAllSkillOwner();
 
     void RegisterOwner(AJujutsuKaisenCharacter* InOwner);
 

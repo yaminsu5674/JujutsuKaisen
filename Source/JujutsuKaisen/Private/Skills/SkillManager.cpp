@@ -9,23 +9,27 @@ void USkillManager::RegisterOwner(AJujutsuKaisenCharacter* InOwner)
     Owner = InOwner;
 }
 
-void USkillManager::RegisterSkill(FName Key, UBaseSkill* Skill) 
+void USkillManager::InitAllSkillOwner() 
 { 
     if (Owner)
     {
-        Skill->SetOwner(Owner);
-        if (Owner->GetTargetCharacter())
+        for (auto& SkillPair : BoundSkills)
         {
-            UE_LOG(LogTemp, Warning, TEXT("Target init on Skill"));
-            Skill->SetTarget(Owner->GetTargetCharacter());
+            UBaseSkill* Skill = SkillPair.Value;
+            if (Skill)
+            {
+                Skill->SetOwner(Owner);
+                if (Owner->GetTargetCharacter())
+                {
+                    Skill->SetTarget(Owner->GetTargetCharacter());
+                }
+                else
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("Owner has no target when InitAllSkillOwner is called for: %s"), *SkillPair.Key.ToString());
+                }
+            }
         }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Owner has no target when RegisterSkill is called"));
-        }
-        
     }
-    BoundSkills.Add(Key, Skill); 
 }
 
 void USkillManager::HandlePressed(FName Key)

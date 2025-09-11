@@ -119,7 +119,7 @@ protected:
 	UPROPERTY()
 	UCharacterStateManager* StateManager;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced, Category = "Skill")
 	USkillManager* SkillManager;
 
 	// ============================================================================

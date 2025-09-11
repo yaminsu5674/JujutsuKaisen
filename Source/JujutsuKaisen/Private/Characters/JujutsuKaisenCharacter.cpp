@@ -83,6 +83,11 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	// 기본값 설정
 	Health = MaxHealth;
 	bCanMove = true; // 게임 시작 시 이동 가능하도록 강제 설정
+
+	if (SkillManager)
+	{
+		SkillManager->RegisterOwner(this);
+	}
 	
 	// StateManager 초기 상태 설정
 	if (StateManager)
@@ -108,9 +113,6 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	NewLocation.Z = CapsuleHalfHeight;
 	SetActorLocation(NewLocation);
 
-	// 스킬 매니저 초기화
-	SkillManager = NewObject<USkillManager>(this);
-	SkillManager->RegisterOwner(this);
 
 	// 히트박스 부착
 	AttachHitBoxToBone(LeftFist, FString(TEXT("hand_l")));
@@ -391,6 +393,10 @@ void AJujutsuKaisenCharacter::Die()
 void AJujutsuKaisenCharacter::InitSkills()
 {
 	// 공통 스킬 초기화 로직
+	if (SkillManager)
+	{
+		SkillManager->InitAllSkillOwner();
+	}
 }
 
 // ============================================================================

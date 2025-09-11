@@ -15,8 +15,6 @@ class JUJUTSUKAISEN_API AGojoSatoruCharacter : public AJujutsuKaisenCharacter
 	GENERATED_BODY()
 
 protected:
-	virtual void InitSkills() override;
-
 	virtual void BeginPlay() override;
 
 public:

@@ -8,7 +8,7 @@
 #include "Animation/AnimMontage.h"
 #include "Aka.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable, BlueprintType, EditInlineNew)
 class JUJUTSUKAISEN_API UAka : public UBaseSkill
 {
 	GENERATED_BODY()
@@ -16,17 +16,19 @@ class JUJUTSUKAISEN_API UAka : public UBaseSkill
 	UPROPERTY()
 	uint8 state;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AkaEarlyMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* AkaLateMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AProjectile> ProjectileClass;
 
 	UPROPERTY()
 	AProjectile* AkaProjectile;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	TSubclassOf<AProjectile> ProjectileClass;
+	
 
 public:
 	UAka();
@@ -37,16 +39,16 @@ public:
 
 	virtual void OnReleased() override;
 
-	// ÃÊ±âÈ­ ¹× ¹ÙÀÎµù °ü¸®
+	// ï¿½Ê±ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½
 	virtual void ResetSkill() override;
 	void BindMontageNotifies();
 	void UnbindMontageNotifies();
 
-	// ¹ß»çÃ¼ »ý¼º ¹× ¹ß»ç Ã³¸®
+	// ï¿½ß»ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ß»ï¿½ Ã³ï¿½ï¿½
 	void SpawnProjectile();
 	void LaunchProjectile();
 
-	// ³ëÆ¼ÆÄÀÌ ÇÚµé·¯
+	// ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ ï¿½Úµé·¯
 	UFUNCTION()
 	void OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
