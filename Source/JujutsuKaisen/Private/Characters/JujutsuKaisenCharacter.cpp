@@ -373,7 +373,7 @@ ECharacterState AJujutsuKaisenCharacter::GetState() const
 
 void AJujutsuKaisenCharacter::Hit()
 {
-	if (SetState(ECharacterState::Hit))
+	if (StateManager && StateManager->IsInState(ECharacterState::Hit))
 	{
 		if (GEngine)
 		{

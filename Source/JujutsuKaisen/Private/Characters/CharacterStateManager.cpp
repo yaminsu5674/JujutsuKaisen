@@ -54,7 +54,6 @@ bool UCharacterStateManager::CanTransitionTo(ECharacterState NewState) const
 void UCharacterStateManager::ForceState(ECharacterState NewState)
 {
 	CurrentState = NewState;
-	ResetSubStates(NewState);
 	UpdateGravityForState(NewState);
 }
 
