@@ -36,6 +36,9 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	AutoPossessAI = EAutoPossessAI::Disabled;
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	
+	// 메시 충돌 비활성화 (캡슐 컴포넌트만 충돌 사용)
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// 컴포넌트 초기화
 	InitHitBoxes();
