@@ -19,11 +19,11 @@ public:
 	// 부모의 OnOverlapBegin 함수 오버라이드
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 
-	// 부모의 Tick 함수 오버라이드
-	virtual void Tick(float DeltaTime) override;
-
 	// BeginPlay 오버라이드
 	virtual void BeginPlay() override;
+
+	// Tick 오버라이드
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	// 파티클 시스템들
