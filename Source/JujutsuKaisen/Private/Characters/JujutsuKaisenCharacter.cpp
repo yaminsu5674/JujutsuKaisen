@@ -158,10 +158,11 @@ void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
 	{
 		FVector2D MovementVector = Value.Get<FVector2D>();
 
-		if (Controller != nullptr)
+		if (Controller != nullptr && CameraBoom != nullptr)
 		{
-			const FRotator Rotation = Controller->GetControlRotation();
-			const FRotator YawRotation(0, Rotation.Yaw, 0);
+			// 카메라 회전을 기준으로 이동 방향 계산
+			const FRotator CameraRotation = CameraBoom->GetComponentRotation();
+			const FRotator YawRotation(0, CameraRotation.Yaw, 0);
 
 			const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 			const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
