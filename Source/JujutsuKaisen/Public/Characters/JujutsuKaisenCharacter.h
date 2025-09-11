@@ -122,6 +122,9 @@ protected:
 	UPROPERTY()
 	USkillManager* SkillManager;
 
+	// ============================================================================
+	// Camera Components
+	// ============================================================================
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
 

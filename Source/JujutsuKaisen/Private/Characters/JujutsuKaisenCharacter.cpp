@@ -68,6 +68,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = SpringArmLength;
 	CameraBoom->bUsePawnControlRotation = true;
+	CameraBoom->SetAbsolute(false, true, false);
 	
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -547,19 +548,17 @@ void AJujutsuKaisenCharacter::UpdateCameraMovement(float DeltaTime)
 
     // 타겟을 바라보는 전체 회전 계산 (Pitch 포함)
     FRotator TargetRotation = (TargetLocation - MyLocation).Rotation();
+    
+    // Z축 기준으로 시계방향으로 10도 추가 회전
+    TargetRotation.Yaw -= 10.0f;
 
     // 보간 회전
     FRotator CurrentRotation = CameraBoom->GetComponentRotation();
-    FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 0.2f);
+    FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 2.0f);
 
      // 스프링암은 항상 코드로만 회전 제어
      CameraBoom->bUsePawnControlRotation = false;
      CameraBoom->SetWorldRotation(NewRotation);
-
-	// if (APlayerController* PC = Cast<APlayerController>(GetController()))
-    //  {
-    //      PC->SetControlRotation(NewRotation);
-    //  }
 
      // 길이는 고정
      CameraBoom->TargetArmLength = SpringArmLength;
