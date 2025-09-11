@@ -18,14 +18,10 @@ void AAkaProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 		// 물리 충돌로 캐릭터 날리기
 		if (Target->GetCharacterMovement())
 		{
-			FVector KnockbackDirection = Direction; // 발사체 방향으로 날리기
-			FVector KnockbackForce = KnockbackDirection * 2000.0f;
-			
-			// LaunchCharacter로 캐릭터 발사 (수평으로만)
-			Target->LaunchCharacter(KnockbackForce, false, true);
+			// FVector KnockbackDirection = Direction; // 발사체 방향으로 날리기
+			// FVector KnockbackForce = KnockbackDirection * 2000.0f;
+
+			// Target->LaunchCharacter(KnockbackForce, true, true);
 		}
-		
-		PrimaryActorTick.bCanEverTick = false;
-		Destroy();
 	}
 }
