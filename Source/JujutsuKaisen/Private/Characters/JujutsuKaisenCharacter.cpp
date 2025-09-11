@@ -21,7 +21,15 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 {
 	// 상태 매니저 초기화
 	StateManager = CreateDefaultSubobject<UCharacterStateManager>(TEXT("StateManager"));
-	StateManager->SetOwnerCharacter(this);
+	if (StateManager)
+	{
+		StateManager->SetOwnerCharacter(this);
+		UE_LOG(LogTemp, Log, TEXT("Constructor: StateManager created successfully"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Constructor: StateManager creation failed!"));
+	}
 
 	// 기본 설정
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
@@ -73,7 +81,20 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	// 기본값 설정
 	Health = MaxHealth;
 	bCanMove = true; // 게임 시작 시 이동 가능하도록 강제 설정
-	StateManager->ForceState(ECharacterState::Locomotion);
+	
+	// StateManager 초기 상태 설정
+	if (StateManager)
+	{
+		StateManager->ForceState(ECharacterState::Locomotion);
+		UE_LOG(LogTemp, Log, TEXT("BeginPlay: StateManager is valid, ForceState called"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("BeginPlay: StateManager is NULL!"));
+		UE_LOG(LogTemp, Error, TEXT("Character: %s"), *GetName());
+		UE_LOG(LogTemp, Error, TEXT("Class: %s"), *GetClass()->GetName());
+	}
+	
 	_AnimInstance = Cast<UJujutsuKaisenAnimInstance>(GetMesh()->GetAnimInstance());
 	if (!_AnimInstance)
 	{
@@ -118,7 +139,6 @@ void AJujutsuKaisenCharacter::NotifyControllerChanged()
 
 void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
 {
-
 	if (!GetCanMove())
 	{
 		return;

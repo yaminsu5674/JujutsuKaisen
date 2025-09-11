@@ -80,19 +80,15 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
     FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 
     AJujutsuKaisenCharacter* SpawnedCharacter = Cast<AJujutsuKaisenCharacter>(
-        UGameplayStatics::BeginDeferredActorSpawnFromClass(
-            World,
+        World->SpawnActor(
             DataAsset->GetCharacterClass(),
-            SpawnTransform,
-            ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn,
-            nullptr
+            &SpawnTransform,
+            SpawnParams
         )
     );
 
     if (SpawnedCharacter)
     {
-        UGameplayStatics::FinishSpawningActor(SpawnedCharacter, SpawnTransform);
-
         if (bIsPlayerCharacter)
         {
             PlayerCharacter = SpawnedCharacter;
