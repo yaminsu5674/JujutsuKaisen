@@ -68,6 +68,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = SpringArmLength;
 	CameraBoom->bUsePawnControlRotation = true;
+	
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -93,8 +94,8 @@ void AJujutsuKaisenCharacter::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("BeginPlay: StateManager is NULL!"));
 		UE_LOG(LogTemp, Error, TEXT("Character: %s"), *GetName());
 		UE_LOG(LogTemp, Error, TEXT("Class: %s"), *GetClass()->GetName());
-	}
-	
+}
+
 	_AnimInstance = Cast<UJujutsuKaisenAnimInstance>(GetMesh()->GetAnimInstance());
 	if (!_AnimInstance)
 	{
@@ -186,13 +187,13 @@ void AJujutsuKaisenCharacter::Look(const FInputActionValue& Value)
 }
 
 void AJujutsuKaisenCharacter::Dash()
-{
-	if (bIsDashing)
-		return;
+	{
+		if (bIsDashing)
+			return;
 
-	bIsDashing = true;
-	GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
-	GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
+		bIsDashing = true;
+		GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
+		GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
 
 	// Falling 상태인지 확인 후 앞으로 대시 로직 + 애님 몽타주 재생
 	if (StateManager && StateManager->IsInState(ECharacterState::Falling))
@@ -257,11 +258,11 @@ void AJujutsuKaisenCharacter::JumpCustom()
 }
 
 void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
-{
-	Super::Landed(Hit);
-	JumpCount = 0;
-	bDidSuperJump = false;
-	bDidDoubleJump = false;
+	{
+		Super::Landed(Hit);
+		JumpCount = 0;
+		bDidSuperJump = false;
+		bDidDoubleJump = false;
 	// Falling 상태일 때만 착지 로직 수행
 	if (StateManager && StateManager->IsInState(ECharacterState::Falling))
 	{
@@ -535,25 +536,13 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 void AJujutsuKaisenCharacter::UpdateCameraMovement(float DeltaTime)
 {
 	// 플레이어가 제어하는 캐릭터만 카메라 무브먼트 실행
-	if (!IsPlayerControlled())
+	if (!IsPlayerControlled() || !CameraBoom || !TargetCharacter)
 	{
+		UE_LOG(LogTemp, Error, TEXT("UpdateCameraMovement: IsPlayerControlled() is FALSE or CameraBoom or TargetCharacter is NULL!"));
 		return;
 	}
 	
-	
-	if (!CameraBoom)
-	{
-		UE_LOG(LogTemp, Error, TEXT("UpdateCameraMovement: CameraBoom is NULL!"));
-		return;
-	}
-	
-	if (!TargetCharacter)
-	{
-		UE_LOG(LogTemp, Error, TEXT("UpdateCameraMovement: TargetCharacter is NULL!"));
-		return;
-	}
-
-	FVector MyLocation = GetActorLocation();
+	FVector MyLocation = CameraBoom->GetComponentLocation();
     FVector TargetLocation = TargetCharacter->GetActorLocation();
 
     // 타겟을 바라보는 전체 회전 계산 (Pitch 포함)
@@ -561,13 +550,18 @@ void AJujutsuKaisenCharacter::UpdateCameraMovement(float DeltaTime)
 
     // 보간 회전
     FRotator CurrentRotation = CameraBoom->GetComponentRotation();
-    FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 5.0f);
+    FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 0.2f);
 
-    // 스프링암은 항상 코드로만 회전 제어
-    CameraBoom->bUsePawnControlRotation = false;
-    CameraBoom->SetWorldRotation(NewRotation);
+     // 스프링암은 항상 코드로만 회전 제어
+     CameraBoom->bUsePawnControlRotation = false;
+     CameraBoom->SetWorldRotation(NewRotation);
 
-    // 길이는 고정
-    CameraBoom->TargetArmLength = SpringArmLength;
+	// if (APlayerController* PC = Cast<APlayerController>(GetController()))
+    //  {
+    //      PC->SetControlRotation(NewRotation);
+    //  }
+
+     // 길이는 고정
+     CameraBoom->TargetArmLength = SpringArmLength;
 	
 }
