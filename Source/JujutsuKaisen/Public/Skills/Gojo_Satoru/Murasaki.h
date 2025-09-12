@@ -26,6 +26,22 @@ class JUJUTSUKAISEN_API UMurasaki : public UBaseSkill
 	UPROPERTY()
 	AProjectile* MurasakiProjectile;
 
+	// 크기 증가 관련 변수들
+	UPROPERTY()
+	bool bIsGrowing = false;
+
+	UPROPERTY()
+	float GrowthTimer = 0.0f;
+
+	UPROPERTY()
+	float GrowthDuration = 1.0f;
+
+	UPROPERTY()
+	float GrowthRate = 1.0f;
+
+	UPROPERTY()
+	FTimerHandle GrowthTimerHandle;
+
 	
 
 public:
@@ -47,4 +63,8 @@ public:
 	// 몽타주 노티파이
 	UFUNCTION()
 	void OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
+
+	// 크기 증가 관련 함수들
+	void StartGrowth();
+	void StopGrowth();
 };

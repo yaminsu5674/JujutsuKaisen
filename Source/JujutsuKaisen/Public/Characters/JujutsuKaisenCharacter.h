@@ -80,9 +80,9 @@ public:
 	void ResetSkillVariables();
 
 	// 스킬 상태 관리 헬퍼 함수들
-	bool IsOtherSkillInUse(::ESkillIndex CurrentSkillIndex) const;
-	void SetSkillInUse(::ESkillIndex SkillIndex, bool bInUse);
-	bool IsSkillInUse(::ESkillIndex SkillIndex) const;
+	bool IsOtherSkillInUse(ESkillIndex CurrentSkillIndex) const;
+	void SetSkillInUse(ESkillIndex SkillIndex, bool bInUse);
+	bool IsSkillInUse(ESkillIndex SkillIndex) const;
 
 	// ============================================================================
 	// Target Management

@@ -4,21 +4,30 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 AMurasakiProjectile::AMurasakiProjectile()
 {
-	// 블루프린트에서 파티클 시스템을 할당할 예정이므로 생성자에서는 초기화하지 않음
+	// 나이아가라 컴포넌트 생성 (차징 이펙트용)
+	ChargingNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ChargingNiagaraComponent"));
+	ChargingNiagaraComponent->SetupAttachment(RootComponent);
+	ChargingNiagaraComponent->SetAutoActivate(false);
+
+	// 초기 스케일 설정
+	CurrentScale = 1.0f;
 }
 
 void AMurasakiProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 스폰 시 ChargingEffect 파티클 재생 (발사체에 붙어서 함께 움직임)
-	if (ChargingEffect)
+	// 스폰 시 ChargingNiagaraEffect 재생
+	if (ChargingNiagaraEffect && ChargingNiagaraComponent)
 	{
-		// RootComponent에 부착하여 발사체와 함께 움직임
-		ChargingEffectComponent = UGameplayStatics::SpawnEmitterAttached(ChargingEffect, RootComponent, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
+		ChargingNiagaraComponent->SetAsset(ChargingNiagaraEffect);
+		ChargingNiagaraComponent->Activate();
+		UE_LOG(LogTemp, Log, TEXT("MurasakiProjectile: Charging Niagara Effect 시작"));
 	}
 }
 
@@ -29,10 +38,11 @@ void AMurasakiProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponen
 	
 	if (Target != nullptr && !bIsOverlapping)
 	{
-		// ShotEffect 파티클 재생
+		// ShotEffect 파티클 재생 (기존 파티클 시스템 유지)
 		if (ShotEffect)
 		{
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation());
+			UE_LOG(LogTemp, Log, TEXT("MurasakiProjectile: Shot Particle Effect 시작"));
 		}
 
 		// 캐릭터에게 데미지 적용
@@ -52,11 +62,10 @@ void AMurasakiProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponen
         }
 		bIsOverlapping = true;
 		
-		// ChargingEffect 제거
-		if (ChargingEffectComponent)
+		// ChargingNiagaraEffect 비활성화
+		if (ChargingNiagaraComponent)
 		{
-			ChargingEffectComponent->DestroyComponent();
-			ChargingEffectComponent = nullptr;
+			ChargingNiagaraComponent->Deactivate();
 		}
 	}
 }
@@ -73,10 +82,11 @@ void AMurasakiProjectile::Tick(float DeltaTime)
 		Target->Hit();
 	}
 
-	// Move 상태일 때 ShotEffect 생성
+	// Move 상태일 때 ShotEffect 파티클 생성 (기존 파티클 시스템 유지)
 	if (BehaviorType == EProjectileBehaviorType::Move && ShotEffect && !bIsOverlapping)
 	{
 		// 현재 위치에서 ShotEffect 파티클 생성
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation());
 	}
 }
+

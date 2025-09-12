@@ -10,11 +10,31 @@ UMurasaki::UMurasaki()
 	bWantsTick = true;
 	MurasakiProjectile = nullptr;
 	state = 0;
+	bIsGrowing = false;
+	GrowthTimer = 0.0f;
+	GrowthDuration = 1.0f;
+	GrowthRate = 1.0f;
 }
 
 void UMurasaki::TickSkill(float DeltaTime)
 {
-	// 스킬 틱 로직
+	// 크기 증가 중일 때 프로젝타일 크기 증가
+	if (bIsGrowing && MurasakiProjectile)
+	{
+		GrowthTimer += DeltaTime;
+		
+		// 크기 증가 (1초 동안 지속적으로 증가)
+		float GrowthProgress = GrowthTimer / GrowthDuration;
+		float CurrentScale = 1.0f + (GrowthRate * GrowthProgress);
+		
+		MurasakiProjectile->SetActorScale3D(FVector(CurrentScale, CurrentScale, CurrentScale));
+		
+		// 1초가 지나면 크기 증가 중단
+		if (GrowthTimer >= GrowthDuration)
+		{
+			StopGrowth();
+		}
+	}
 }
 
 void UMurasaki::OnPressed()
@@ -35,6 +55,14 @@ void UMurasaki::OnPressed()
 void UMurasaki::ResetSkill()
 {
 	state = 0;
+	bIsGrowing = false;
+	GrowthTimer = 0.0f;
+
+	// 타이머 클리어
+	if (Owner && Owner->GetWorld())
+	{
+		Owner->GetWorld()->GetTimerManager().ClearTimer(GrowthTimerHandle);
+	}
 
 	if (MurasakiProjectile)
 	{
@@ -65,12 +93,29 @@ void UMurasaki::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNot
 {
 	if (NotifyName == FName("MurasakiNotify1"))
 	{
-		if (!MurasakiProjectile)
+		// 몽타주 일시정지
+		if (AnimInstance && MurasakiMontage)
 		{
-			UE_LOG(LogTemp, Error, TEXT("SpawnProjectile()"));
-			SpawnProjectile();
+			AnimInstance->Montage_Pause(MurasakiMontage);
+			UE_LOG(LogTemp, Log, TEXT("Murasaki: 몽타주 일시정지"));
 		}
-		LaunchProjectile();
+		
+		// 프로젝타일이 없거나 파괴된 상태인지 확인
+		if (!MurasakiProjectile || !IsValid(MurasakiProjectile))
+		{
+			UE_LOG(LogTemp, Log, TEXT("Murasaki: 프로젝타일 스폰"));
+			SpawnProjectile();
+			
+			// 프로젝타일이 스폰되면 크기 증가 시작
+			if (MurasakiProjectile)
+			{
+				StartGrowth();
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Murasaki: 프로젝타일이 이미 존재함 - 스폰 건너뜀"));
+		}
 	}
 }
 
@@ -81,9 +126,10 @@ void UMurasaki::SpawnProjectile()
 	UWorld* World = Owner->GetWorld();
 	if (!World) return;
 
-	const FVector ForwardOffset = FVector(60.f, 0.f, 0.f);
+	// 캐릭터 기준 전방 1000, 높이 500 위치에 스폰
+	const FVector ForwardOffset = FVector(300.f, 0.f, 100.f);
 	const FRotator SpawnRotation = Owner->GetActorRotation();
-	const FVector SpawnLocation = Owner->GetMesh()->GetSocketLocation(FName("index_03_r")) + Owner->GetActorForwardVector();
+	const FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * ForwardOffset.X + FVector(0.f, 0.f, ForwardOffset.Z);
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = Owner;
@@ -110,6 +156,42 @@ void UMurasaki::LaunchProjectile()
 	{
 		MurasakiProjectile->SetDirection(Target);
 		MurasakiProjectile->SetBehaviorType(EProjectileBehaviorType::Move);
+		UE_LOG(LogTemp, Log, TEXT("Murasaki: 프로젝타일 발사"));
+		
+		// 발사 후 참조 정리 (다음 스킬 사용을 위해)
 		MurasakiProjectile = nullptr;
 	}
+	
+	// 몽타주 재개
+	if (AnimInstance && MurasakiMontage)
+	{
+		AnimInstance->Montage_Resume(MurasakiMontage);
+		UE_LOG(LogTemp, Log, TEXT("Murasaki: 몽타주 재개"));
+	}
 }
+
+// ============================================================================
+// 크기 증가 관련 함수들
+// ============================================================================
+
+void UMurasaki::StartGrowth()
+{
+	bIsGrowing = true;
+	GrowthTimer = 0.0f;
+	
+	UE_LOG(LogTemp, Log, TEXT("Murasaki: 크기 증가 시작"));
+}
+
+void UMurasaki::StopGrowth()
+{
+	bIsGrowing = false;
+	
+	UE_LOG(LogTemp, Log, TEXT("Murasaki: 크기 증가 중단"));
+	
+	// 크기 증가가 완료되면 발사
+	if (MurasakiProjectile)
+	{
+		LaunchProjectile();
+	}
+}
+
