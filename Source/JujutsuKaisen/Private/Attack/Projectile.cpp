@@ -98,8 +98,10 @@ void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 		// Place는 수명이 없고 스폰된 곳에서 계속 존재
 		SetLifeSpan(0.0f);
 		SetActorEnableCollision(true);
+
 		// 오버랩 이벤트 바인딩
 		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
+		CollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AProjectile::OnOverlapEnd);
 		break;
 	}
 	case EProjectileBehaviorType::None:
@@ -127,4 +129,25 @@ void AProjectile::HandleMovement(float DeltaTime)
 	SetActorLocation(nextLocation);
 
 	_LifeCountingDown -= DeltaTime;
+}
+
+
+void AProjectile::CheckOverlap()
+{
+	if (Target)
+	{
+		if (CollisionSphere->IsOverlappingActor(Target))
+		{
+			bIsOverlapping = true;
+			if (Target->GetStateManager())
+			{
+				Target->GetStateManager()->SetHitSubState(EHitSubState::LightHit);
+			}	
+			UE_LOG(LogTemp, Error, TEXT("이미 겹쳐 있음: %s"), *Target->GetName());
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("PalProjectile: 타겟도 없노 ㅋ"));
+	}
 }

@@ -8,6 +8,7 @@
 #include "Engine/World.h"
 #include "TimerManager.h"
 #include "Skills/Sukuna/PalProjectile.h"
+#include "Library/SkillLibrary.h"
 
 UPal::UPal()
 {
@@ -22,6 +23,10 @@ void UPal::TickSkill(float DeltaTime)
 void UPal::OnPressed()
 {
 	Super::OnPressed();
+    if (Owner && Target)
+    {
+        USkillLibrary::RotateActorToFaceTarget(Owner, Target);
+    }
 
     if (AnimInstance && PalMontage)
 	{
@@ -52,7 +57,6 @@ void UPal::BindMontageNotifies()
 		// Pal 몽타주 노티파이 바인딩
 		if (PalMontage)
 		{
-			UE_LOG(LogTemp, Log, TEXT("Pal: 노티파이 바인딩 시작"));
 			AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &UPal::OnMontageNotify1Begin);
 		}
 		else
@@ -82,7 +86,7 @@ void UPal::SpawnProjectile()
 	if (!World) return;
 
 	// 캐릭터 기준 전방 300, 높이 100 위치에 스폰
-	const FVector ForwardOffset = FVector(100.f, 0.f, 88.f);
+	const FVector ForwardOffset = FVector(200.f, 0.f, 88.f);
 	const FRotator SpawnRotation = Owner->GetActorRotation();
 	const FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * ForwardOffset.X + FVector(0.f, 0.f, ForwardOffset.Z);
 
@@ -99,29 +103,27 @@ void UPal::SpawnProjectile()
 
 	PalProjectile->SetTarget(Target);
 	PalProjectile->SetBehaviorType(EProjectileBehaviorType::Place);
+    PalProjectile->CheckOverlap();
 }
 
 
 
 void UPal::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
 {
-	UE_LOG(LogTemp, Log, TEXT("Pal: 노티파이 수신됨 - %s"), *NotifyName.ToString());
-	
+
 	if (NotifyName == FName("PalNotify1"))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Pal: PalNotify1 노티파이 처리 시작"));
-		
+
 		// 몽타주 일시정지
 		if (AnimInstance && PalMontage)
 		{
 			AnimInstance->Montage_Pause(PalMontage);
-			UE_LOG(LogTemp, Log, TEXT("Pal: 몽타주 일시정지"));
+
 		}
 		
 		// 프로젝타일이 없거나 파괴된 상태인지 확인
 		if (!PalProjectile || !IsValid(PalProjectile))
 		{
-			UE_LOG(LogTemp, Log, TEXT("Pal: 프로젝타일 스폰 시작"));
 			SpawnProjectile();
 		}
 		else
@@ -132,7 +134,7 @@ void UPal::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNotifyPa
 		// 2초 후 EndPal 호출
 		if (Owner)
 		{
-			UE_LOG(LogTemp, Log, TEXT("Pal: 2초 타이머 설정"));
+			
 			FTimerHandle TimerHandle;
 			Owner->GetWorldTimerManager().SetTimer(TimerHandle, [this]()
 			{
@@ -142,7 +144,7 @@ void UPal::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNotifyPa
 					APalProjectile* PalProj = Cast<APalProjectile>(PalProjectile);
 					if (PalProj)
 					{
-						UE_LOG(LogTemp, Log, TEXT("Pal: EndPal 호출"));
+						
 						PalProj->EndPal();
 					}
 				}

@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Characters/JujutsuKaisenCharacter.h"
 
 APalProjectile::APalProjectile()
 {
@@ -26,22 +27,28 @@ void APalProjectile::BeginPlay()
 		ChargingNiagaraComponent->Activate();
 		UE_LOG(LogTemp, Log, TEXT("PalProjectile: Charging Niagara Effect 시작"));
 	}
+
+	
 }
 
 void APalProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	UE_LOG(LogTemp, Log, TEXT("PalProjectile: OnOverlapBegin 호출됨!"));
+	
 	// 부모의 OnOverlapBegin 호출 (Target 초기화)
 	Super::OnOverlapBegin(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	
 	if (Target != nullptr && !bIsOverlapping)
 	{
+		UE_LOG(LogTemp, Log, TEXT("PalProjectile: 오버랩 처리 성공!"));
 		// ShotEffect 파티클 재생
 
 		bIsOverlapping = true;
 	}
-    if (Target->GetStateManager())
+    if (Target && Target->GetStateManager())
     {
         Target->GetStateManager()->SetHitSubState(EHitSubState::LightHit);
+        UE_LOG(LogTemp, Log, TEXT("PalProjectile: LightHit 설정 완료!"));
     }
 }
 
@@ -64,17 +71,9 @@ void APalProjectile::Tick(float DeltaTime)
 	// Pal 전용 Tick 로직
 	if (bIsOverlapping && Target != nullptr)
 	{
-		// 오버랩 중일 때의 로직
-		// 필요시 여기에 지속적인 데미지나 효과 추가 가능
 		Target->Hit();
 	}
 
-	// Move 상태일 때 ShotEffect 파티클 생성
-	if (BehaviorType == EProjectileBehaviorType::Move && ShotEffect && !bIsOverlapping)
-	{
-		// 이동 중 파티클 이펙트 (선택적)
-		// UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation());
-	}
 }
 
 void APalProjectile::EndPal()
@@ -98,10 +97,11 @@ void APalProjectile::EndPal()
         {
             // Projectile의 방향 벡터 (정규화된)
             FVector LaunchDir = GetActorForwardVector();
-            FVector ImpulseForce = LaunchDir * 400.f + FVector(0, 0, 200.f);
+            FVector ImpulseForce = LaunchDir * 2000.f + FVector(0, 0, 600.f);
             Target->GetCharacterMovement()->AddImpulse(ImpulseForce, true);
 
         }
     }
     Destroy();
 }
+
