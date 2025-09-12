@@ -62,7 +62,10 @@ void AProjectile::SetDirection(AJujutsuKaisenCharacter* InTarget)
 
 	if (InTarget)
 	{
-		Direction = (InTarget->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		// 타겟의 Z축을 30 더한 위치로 발사
+		FVector TargetLocation = InTarget->GetActorLocation();
+		TargetLocation.Z += 30.0f;
+		Direction = (TargetLocation - GetActorLocation()).GetSafeNormal();
 		SetActorRotation(Direction.Rotation()); 
 	}
 	else
