@@ -13,5 +13,13 @@ UCLASS()
 class JUJUTSUKAISEN_API ASukunaRyomenCharacter : public AJujutsuKaisenCharacter
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	ASukunaRyomenCharacter();
+
+	virtual void Tick(float DeltaTime) override;
 	
 };

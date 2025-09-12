@@ -74,6 +74,10 @@ void AProjectile::SetDirection(AJujutsuKaisenCharacter* InTarget)
 	}
 }
 
+void AProjectile::SetTarget(AJujutsuKaisenCharacter* InTarget)
+{
+	Target = InTarget;
+}
 
 void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 {
@@ -109,6 +113,11 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 {
 	// 타겟 캐릭터 초기화
 	Target = Cast<AJujutsuKaisenCharacter>(OtherActor);
+}
+
+void AProjectile::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// 기본 오버랩 종료 처리 (자식 클래스에서 오버라이드 가능)
 }
 
 void AProjectile::HandleMovement(float DeltaTime)

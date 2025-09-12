@@ -14,7 +14,6 @@ AGojoSatoruCharacter::AGojoSatoruCharacter()
 void AGojoSatoruCharacter::BeginPlay()
 {
     Super::BeginPlay();
-    InitSkills();
 }
 
 void AGojoSatoruCharacter::Tick(float DeltaTime)

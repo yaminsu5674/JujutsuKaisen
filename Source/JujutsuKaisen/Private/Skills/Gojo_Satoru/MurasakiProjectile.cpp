@@ -75,12 +75,5 @@ void AMurasakiProjectile::Tick(float DeltaTime)
 		// 필요시 여기에 지속적인 데미지나 효과 추가 가능
 		Target->Hit();
 	}
-
-	// Move 상태일 때 ShotEffect 파티클 생성 (기존 파티클 시스템 유지)
-	if (BehaviorType == EProjectileBehaviorType::Move && ShotEffect && !bIsOverlapping)
-	{
-		// 현재 위치에서 ShotEffect 파티클 생성
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation());
-	}
 }
 

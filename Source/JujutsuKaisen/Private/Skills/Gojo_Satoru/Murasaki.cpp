@@ -97,13 +97,11 @@ void UMurasaki::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNot
 		if (AnimInstance && MurasakiMontage)
 		{
 			AnimInstance->Montage_Pause(MurasakiMontage);
-			UE_LOG(LogTemp, Log, TEXT("Murasaki: 몽타주 일시정지"));
 		}
 		
 		// 프로젝타일이 없거나 파괴된 상태인지 확인
 		if (!MurasakiProjectile || !IsValid(MurasakiProjectile))
 		{
-			UE_LOG(LogTemp, Log, TEXT("Murasaki: 프로젝타일 스폰"));
 			SpawnProjectile();
 			
 			// 프로젝타일이 스폰되면 크기 증가 시작
@@ -156,7 +154,6 @@ void UMurasaki::LaunchProjectile()
 	{
 		MurasakiProjectile->SetDirection(Target);
 		MurasakiProjectile->SetBehaviorType(EProjectileBehaviorType::Move);
-		UE_LOG(LogTemp, Log, TEXT("Murasaki: 프로젝타일 발사"));
 		
 		// 발사 후 참조 정리 (다음 스킬 사용을 위해)
 		MurasakiProjectile = nullptr;
@@ -166,7 +163,6 @@ void UMurasaki::LaunchProjectile()
 	if (AnimInstance && MurasakiMontage)
 	{
 		AnimInstance->Montage_Resume(MurasakiMontage);
-		UE_LOG(LogTemp, Log, TEXT("Murasaki: 몽타주 재개"));
 	}
 }
 
@@ -178,15 +174,11 @@ void UMurasaki::StartGrowth()
 {
 	bIsGrowing = true;
 	GrowthTimer = 0.0f;
-	
-	UE_LOG(LogTemp, Log, TEXT("Murasaki: 크기 증가 시작"));
 }
 
 void UMurasaki::StopGrowth()
 {
 	bIsGrowing = false;
-	
-	UE_LOG(LogTemp, Log, TEXT("Murasaki: 크기 증가 중단"));
 	
 	// 크기 증가가 완료되면 발사
 	if (MurasakiProjectile)

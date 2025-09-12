@@ -72,11 +72,16 @@ public:
 
 	void SetDirection(AJujutsuKaisenCharacter* InTarget = nullptr);
 
+	void SetTarget(AJujutsuKaisenCharacter* InTarget);
+
 	void SetBehaviorType(EProjectileBehaviorType NewType);
 
 	// 오버랩 이벤트 함수들
 	UFUNCTION()
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 
 
