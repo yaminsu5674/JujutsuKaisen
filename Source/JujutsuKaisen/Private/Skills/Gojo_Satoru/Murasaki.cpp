@@ -40,6 +40,7 @@ void UMurasaki::TickSkill(float DeltaTime)
 void UMurasaki::OnPressed()
 {
 	state = 1;
+	GrowthDuration = 1.5f;
 
 	if (Owner && Target)
 	{
@@ -125,7 +126,7 @@ void UMurasaki::SpawnProjectile()
 	if (!World) return;
 
 	// 캐릭터 기준 전방 1000, 높이 500 위치에 스폰
-	const FVector ForwardOffset = FVector(300.f, 0.f, 100.f);
+	const FVector ForwardOffset = FVector(300.f, 0.f, 80.f);
 	const FRotator SpawnRotation = Owner->GetActorRotation();
 	const FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * ForwardOffset.X + FVector(0.f, 0.f, ForwardOffset.Z);
 
