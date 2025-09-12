@@ -75,6 +75,8 @@ void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
         if (Character)
         {
             Character->SetCanMove(true);
+            // 스킬 변수들 리셋
+            Character->ResetSkillVariables();
         }
         else
         {

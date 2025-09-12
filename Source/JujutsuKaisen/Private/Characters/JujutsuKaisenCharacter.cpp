@@ -36,6 +36,9 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	AutoPossessAI = EAutoPossessAI::Disabled;
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+
+	// 스킬 상태 배열 초기화 (Q, E, R, A, S, D, ER, QR 순서)
+	bIsUsingSkills.Init(false, 8);
 	
 	// 메시 충돌 비활성화 (캡슐 컴포넌트만 충돌 사용)
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -283,29 +286,64 @@ void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
 
 void AJujutsuKaisenCharacter::Guard()
 {
-	// 가드는 액션이므로 상태 전환 없이 몽타주만 재생
-	// Falling 또는 Locomotion 상태일 때만 가드 가능
-	if (StateManager && (StateManager->IsInState(ECharacterState::Falling) || StateManager->IsInState(ECharacterState::Locomotion)))
+	// 다른 스킬이 사용 중인지 확인
+	if (IsOtherSkillInUse(ESkillIndex::Q))
 	{
-		bIsGuarding = true;
-		
-		if (GuardMontage && GetMesh() && GetMesh()->GetAnimInstance())
+		return; // 다른 스킬 사용 중이면 실행하지 않음
+	}
+
+	// Q 스킬 사용 시작
+	SetSkillInUse(ESkillIndex::Q, true);
+	
+	if (StateManager && StateManager->SetState(ECharacterState::Skill))
+	{
+		if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Q_Pressed Called!"));
+			}
+		if (StateManager && (StateManager->IsInState(ECharacterState::Falling) || StateManager->IsInState(ECharacterState::Locomotion)))
 		{
-			GetMesh()->GetAnimInstance()->Montage_Play(GuardMontage);
+			bIsGuarding = true;
+			
+			if (GuardMontage && GetMesh() && GetMesh()->GetAnimInstance())
+			{
+				GetMesh()->GetAnimInstance()->Montage_Play(GuardMontage);
+			}
 		}
 	}
 }
 
 void AJujutsuKaisenCharacter::StopGuard()
 {
-	if (bIsGuarding)
+	// Q 스킬이 사용 중일 때만 Released 처리
+	if (IsSkillInUse(ESkillIndex::Q))
 	{
-		bIsGuarding = false;
+		if (StateManager && StateManager->IsInState(ECharacterState::Skill))
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Q_Released Called!"));
+			}
+			if (bIsGuarding)
+				{
+					bIsGuarding = false;
+
+				}
+		}
 	}
 }
 
 void AJujutsuKaisenCharacter::A_Pressed()
 {
+	// 다른 스킬이 사용 중인지 확인
+	if (IsOtherSkillInUse(ESkillIndex::A))
+	{
+		return; // 다른 스킬 사용 중이면 실행하지 않음
+	}
+
+	// A 스킬 사용 시작
+	SetSkillInUse(ESkillIndex::A, true);
+	
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
 		if (SkillManager)
@@ -317,13 +355,21 @@ void AJujutsuKaisenCharacter::A_Pressed()
 
 void AJujutsuKaisenCharacter::R_Pressed()
 {
-	if (GEngine)
+	// 다른 스킬이 사용 중인지 확인
+	if (IsOtherSkillInUse(ESkillIndex::R))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("R_Pressed Called!"));
+		return; // 다른 스킬 사용 중이면 실행하지 않음
 	}
+
+	// R 스킬 사용 시작
+	SetSkillInUse(ESkillIndex::R, true);
 	
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("R_Pressed Called!"));
+		}
 		if (SkillManager)
 		{
 			SkillManager->HandlePressed("R");
@@ -333,24 +379,42 @@ void AJujutsuKaisenCharacter::R_Pressed()
 
 void AJujutsuKaisenCharacter::R_Released()
 {
-	if (StateManager && StateManager->SetState(ECharacterState::Skill))
+	// R 스킬이 사용 중일 때만 Released 처리
+	if (IsSkillInUse(ESkillIndex::R))
 	{
-		if (SkillManager)
+		if (StateManager && StateManager->IsInState(ECharacterState::Skill))
 		{
-			SkillManager->HandleReleased("R");
+			if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("R_Released Called!"));
+				}
+
+			if (SkillManager)
+			{
+				SkillManager->HandleReleased("R");
+			}
 		}
 	}
+	
 }
 
 void AJujutsuKaisenCharacter::E_Pressed()
 {
-	if (GEngine)
+	// 다른 스킬이 사용 중인지 확인
+	if (IsOtherSkillInUse(ESkillIndex::E))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("E_Pressed Called!"));
+		return; // 다른 스킬 사용 중이면 실행하지 않음
 	}
+
+	// E 스킬 사용 시작
+	SetSkillInUse(ESkillIndex::E, true);
 	
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("E_Pressed Called!"));
+		}
 		if (SkillManager)
 		{
 			SkillManager->HandlePressed("E");
@@ -361,8 +425,21 @@ void AJujutsuKaisenCharacter::E_Pressed()
 
 void AJujutsuKaisenCharacter::QR_Pressed()
 {
+	// 다른 스킬이 사용 중인지 확인
+	if (IsOtherSkillInUse(ESkillIndex::QR))
+	{
+		return; // 다른 스킬 사용 중이면 실행하지 않음
+	}
+
+	// QR 콤보 스킬 사용 시작
+	SetSkillInUse(ESkillIndex::QR, true);
+	
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("QR_Pressed Called!"));
+		}
 		if (SkillManager)
 		{
 			SkillManager->HandlePressed("QR");
@@ -372,13 +449,21 @@ void AJujutsuKaisenCharacter::QR_Pressed()
 
 void AJujutsuKaisenCharacter::ER_Pressed()
 {
-	if (GEngine)
+	// 다른 스킬이 사용 중인지 확인
+	if (IsOtherSkillInUse(ESkillIndex::ER))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("ER_Pressed Called!"));
+		return; // 다른 스킬 사용 중이면 실행하지 않음
 	}
+
+	// ER 콤보 스킬 사용 시작
+	SetSkillInUse(ESkillIndex::ER, true);
 	
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("ER_Pressed Called!"));
+		}
 		if (SkillManager)
 		{
 			SkillManager->HandlePressed("ER");
@@ -613,4 +698,51 @@ void AJujutsuKaisenCharacter::UpdateCameraMovement(float DeltaTime)
      // 길이는 고정
      CameraBoom->TargetArmLength = SpringArmLength;
 	
+}
+
+void AJujutsuKaisenCharacter::ResetSkillVariables()
+{
+	// 모든 스킬 상태를 false로 리셋
+	for (int32 i = 0; i < bIsUsingSkills.Num(); i++)
+	{
+		bIsUsingSkills[i] = false;
+	}
+}
+
+// ============================================================================
+// 스킬 상태 관리 헬퍼 함수들
+// ============================================================================
+
+bool AJujutsuKaisenCharacter::IsOtherSkillInUse(ESkillIndex CurrentSkillIndex) const
+{
+	uint8 CurrentIndex = static_cast<uint8>(CurrentSkillIndex);
+	
+	// 현재 스킬을 제외한 다른 스킬들이 사용 중인지 확인
+	for (int32 i = 0; i < bIsUsingSkills.Num(); i++)
+	{
+		if (i != CurrentIndex && bIsUsingSkills[i])
+		{
+			return true; // 다른 스킬이 사용 중
+		}
+	}
+	return false; // 다른 스킬이 사용 중이 아님
+}
+
+void AJujutsuKaisenCharacter::SetSkillInUse(ESkillIndex SkillIndex, bool bInUse)
+{
+	uint8 Index = static_cast<uint8>(SkillIndex);
+	if (Index < bIsUsingSkills.Num())
+	{
+		bIsUsingSkills[Index] = bInUse;
+	}
+}
+
+bool AJujutsuKaisenCharacter::IsSkillInUse(ESkillIndex SkillIndex) const
+{
+	uint8 Index = static_cast<uint8>(SkillIndex);
+	if (Index < bIsUsingSkills.Num())
+	{
+		return bIsUsingSkills[Index];
+	}
+	return false;
 }

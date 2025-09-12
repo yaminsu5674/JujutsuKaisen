@@ -71,6 +71,13 @@ public:
 	UPROPERTY()
 	bool bQKeyPressed;
 
+	// 콤보 실행 상태 추적 변수들
+	UPROPERTY()
+	bool bERComboExecuted;
+
+	UPROPERTY()
+	bool bQRComboExecuted;
+
 	// 콤보 시스템을 위한 타이머 핸들들
 	UPROPERTY()
 	FTimerHandle EKeyTimer;

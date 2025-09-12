@@ -15,6 +15,19 @@
 class USpringArmComponent;
 class UCameraComponent;
 
+// 스킬 인덱스 열거형
+enum class ESkillIndex : uint8
+{
+	Q = 0,
+	E = 1,
+	R = 2,
+	A = 3,
+	S = 4,
+	D = 5,
+	ER = 6,
+	QR = 7
+};
+
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(Blueprintable)
@@ -64,6 +77,12 @@ public:
 	void Hit();
 	void Die();
 	virtual void InitSkills();
+	void ResetSkillVariables();
+
+	// 스킬 상태 관리 헬퍼 함수들
+	bool IsOtherSkillInUse(::ESkillIndex CurrentSkillIndex) const;
+	void SetSkillInUse(::ESkillIndex SkillIndex, bool bInUse);
+	bool IsSkillInUse(::ESkillIndex SkillIndex) const;
 
 	// ============================================================================
 	// Target Management
@@ -242,6 +261,11 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Character Mode")
 	bool bIsPlayerControlled = true;
+
+	// 스킬 사용 상태 추적 배열 (Q, E, R, A, S, D, ER, QR 순서)
+	UPROPERTY(BlueprintReadOnly, Category = "Skill States")
+	TArray<bool> bIsUsingSkills;
+
 
 protected:
 	// ============================================================================

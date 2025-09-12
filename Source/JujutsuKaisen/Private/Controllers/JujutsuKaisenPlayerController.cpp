@@ -11,6 +11,9 @@ AJujutsuKaisenPlayerController::AJujutsuKaisenPlayerController()
 
 	bEKeyPressed = false;
 	bRKeyPressed = false;
+	bQKeyPressed = false;
+	bERComboExecuted = false;
+	bQRComboExecuted = false;
 }
 
 void AJujutsuKaisenPlayerController::BeginPlay()
@@ -150,10 +153,19 @@ void AJujutsuKaisenPlayerController::Q_Released()
 {
 	GetWorld()->GetTimerManager().SetTimer(QKeyTimer, [this]() {
 		bQKeyPressed = false;
-		if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+		
+		// ER 콤보가 실행되지 않았을 때만 R_Released 호출
+		if (!bERComboExecuted && !bQRComboExecuted)
 		{
-			Char->StopGuard();
+			if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+			{
+				Char->StopGuard();
+			}
 		}
+		
+		// 플래그 리셋
+		//bERComboExecuted = false;
+		bQRComboExecuted = false;
 	}, KeyReleaseDelay, false);
 }
 
@@ -175,10 +187,19 @@ void AJujutsuKaisenPlayerController::R_Released()
 {
 	GetWorld()->GetTimerManager().SetTimer(RKeyTimer, [this]() {
 		bRKeyPressed = false;
-		if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+		
+		// ER 콤보가 실행되지 않았을 때만 R_Released 호출
+		if (!bERComboExecuted && !bQRComboExecuted)
 		{
-			Char->R_Released();
+			if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+			{
+				Char->R_Released();
+			}
 		}
+		
+		// 플래그 리셋
+		// bERComboExecuted = false;
+		//bQRComboExecuted = false;
 	}, KeyReleaseDelay, false);
 }
 
@@ -192,6 +213,7 @@ void AJujutsuKaisenPlayerController::E_Released()
 {
 	GetWorld()->GetTimerManager().SetTimer(EKeyTimer, [this]() {
 		bEKeyPressed = false;
+		bERComboExecuted = false;
 	}, KeyReleaseDelay, false);
 
 }
@@ -216,6 +238,7 @@ void AJujutsuKaisenPlayerController::JudgeJujutsuCombo()
     // ER 콤보 우선
     if (bEKeyPressed && bRKeyPressed)
     {
+        bERComboExecuted = true;
         if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
         {
             Char->ER_Pressed();
@@ -224,6 +247,7 @@ void AJujutsuKaisenPlayerController::JudgeJujutsuCombo()
     // QR 콤보 우선
     else if (bQKeyPressed && bRKeyPressed)
     {
+        bQRComboExecuted = true;
         if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
         {
             Char->QR_Pressed();
