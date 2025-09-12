@@ -8,7 +8,9 @@
 
 AJujutsuKaisenPlayerController::AJujutsuKaisenPlayerController()
 {
-	// 생성자에서는 초기화하지 않음 - 블루프린트에서 설정
+
+	bEKeyPressed = false;
+	bRKeyPressed = false;
 }
 
 void AJujutsuKaisenPlayerController::BeginPlay()
@@ -72,18 +74,20 @@ void AJujutsuKaisenPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &AJujutsuKaisenPlayerController::Dash);
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Completed, this, &AJujutsuKaisenPlayerController::StopDash);
 
-		// Guarding
-		EnhancedInputComponent->BindAction(GuardAction, ETriggerEvent::Started, this, &AJujutsuKaisenPlayerController::Guard);
-		EnhancedInputComponent->BindAction(GuardAction, ETriggerEvent::Completed, this, &AJujutsuKaisenPlayerController::StopGuard);
+		// Q_Pressed
+		EnhancedInputComponent->BindAction(Q_Pressed_Action, ETriggerEvent::Started, this, &AJujutsuKaisenPlayerController::Q_Pressed);
+		EnhancedInputComponent->BindAction(Q_Pressed_Action, ETriggerEvent::Completed, this, &AJujutsuKaisenPlayerController::Q_Released);
 
 		// A_Pressed
 		EnhancedInputComponent->BindAction(A_Pressed_Action, ETriggerEvent::Started, this, &AJujutsuKaisenPlayerController::A_Pressed);
 
-		// R_Pressed
+		// R_Pressed (Started/Completed 트리거 사용)
 		EnhancedInputComponent->BindAction(R_Pressed_Action, ETriggerEvent::Started, this, &AJujutsuKaisenPlayerController::R_Pressed);
-
-		// R_Released
-		EnhancedInputComponent->BindAction(R_Released_Action, ETriggerEvent::Completed, this, &AJujutsuKaisenPlayerController::R_Released);
+		EnhancedInputComponent->BindAction(R_Pressed_Action, ETriggerEvent::Completed, this, &AJujutsuKaisenPlayerController::R_Released);
+	
+		// E_Pressed (Started/Completed 트리거 사용)
+		EnhancedInputComponent->BindAction(E_Pressed_Action, ETriggerEvent::Started, this, &AJujutsuKaisenPlayerController::E_Pressed);
+		EnhancedInputComponent->BindAction(E_Pressed_Action, ETriggerEvent::Completed, this, &AJujutsuKaisenPlayerController::E_Released);
 	}
 }
 
@@ -136,20 +140,21 @@ void AJujutsuKaisenPlayerController::StopDash()
 	}
 }
 
-void AJujutsuKaisenPlayerController::Guard()
+void AJujutsuKaisenPlayerController::Q_Pressed()
 {
-	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-	{
-		Char->Guard();
-	}
+	bQKeyPressed = true;
+    StartJujutsuComboTimer();
 }
 
-void AJujutsuKaisenPlayerController::StopGuard()
+void AJujutsuKaisenPlayerController::Q_Released()
 {
-	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-	{
-		Char->StopGuard();
-	}
+	GetWorld()->GetTimerManager().SetTimer(QKeyTimer, [this]() {
+		bQKeyPressed = false;
+		if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+		{
+			Char->StopGuard();
+		}
+	}, KeyReleaseDelay, false);
 }
 
 void AJujutsuKaisenPlayerController::A_Pressed()
@@ -162,19 +167,95 @@ void AJujutsuKaisenPlayerController::A_Pressed()
 
 void AJujutsuKaisenPlayerController::R_Pressed()
 {
-	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-	{
-		Char->R_Pressed();
-	}
+	bRKeyPressed = true;
+    StartJujutsuComboTimer();
 }
 
 void AJujutsuKaisenPlayerController::R_Released()
 {
-	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-	{
-		Char->R_Released();
-	}
+	GetWorld()->GetTimerManager().SetTimer(RKeyTimer, [this]() {
+		bRKeyPressed = false;
+		if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+		{
+			Char->R_Released();
+		}
+	}, KeyReleaseDelay, false);
 }
+
+void AJujutsuKaisenPlayerController::E_Pressed()
+{
+	bEKeyPressed = true;
+    StartJujutsuComboTimer();
+}
+
+void AJujutsuKaisenPlayerController::E_Released()
+{
+	GetWorld()->GetTimerManager().SetTimer(EKeyTimer, [this]() {
+		bEKeyPressed = false;
+	}, KeyReleaseDelay, false);
+
+}
+
+void AJujutsuKaisenPlayerController::StartJujutsuComboTimer()
+{
+    // 이전 타이머 있으면 리셋
+    GetWorld()->GetTimerManager().ClearTimer(JujutsuComboTimer);
+
+    // 새로 타이머 등록
+    GetWorld()->GetTimerManager().SetTimer(
+        JujutsuComboTimer,
+        this,
+        &AJujutsuKaisenPlayerController::JudgeJujutsuCombo,
+        JujutsuComboDelay,
+        false
+    );
+}
+
+void AJujutsuKaisenPlayerController::JudgeJujutsuCombo()
+{
+    // ER 콤보 우선
+    if (bEKeyPressed && bRKeyPressed)
+    {
+        if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+        {
+            Char->ER_Pressed();
+        }
+    }
+    // QR 콤보 우선
+    else if (bQKeyPressed && bRKeyPressed)
+    {
+        if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+        {
+            Char->QR_Pressed();
+        }
+    }
+    // 단독 E
+    else if (bEKeyPressed)
+    {
+        if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+        {
+            Char->E_Pressed();
+        }
+    }
+    // 단독 Q
+    else if (bQKeyPressed)
+    {
+        if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+        {
+            Char->Guard();
+        }
+    }
+    // 단독 R
+    else if (bRKeyPressed)
+    {
+        if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+        {
+            Char->R_Pressed();
+        }
+    }
+}
+
+
 
 void AJujutsuKaisenPlayerController::OnPossess(APawn* InPawn)
 {

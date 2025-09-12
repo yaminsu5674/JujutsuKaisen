@@ -58,31 +58,13 @@ void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
         return;
     }
     else
-    {
-        // 디버그 로그 추가
-        UE_LOG(LogTemp, Warning, TEXT("OnStateAnimationEnds called. CurrentState: %d"), (int32)CurrentState);
-        
-        if (GEngine)
-        {
-            FString StateString = FString::Printf(TEXT("OnStateAnimationEnds - CurrentState: %d"), (int32)CurrentState);
-            GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, StateString);
-        }
-        
+    {   
         // 다른 상태들은 로코모션으로 복귀
         if (Character && Character->GetStateManager())
         {
             ECharacterState PreviousState = CurrentState;
             Character->GetStateManager()->ForceState(ECharacterState::Locomotion);
             
-            // 상태 변경 확인 - 한 줄로 전후 비교
-            ECharacterState NewState = Character->GetStateManager()->GetCurrentState();
-            UE_LOG(LogTemp, Warning, TEXT("State transition: %d -> %d (Hit to Locomotion)"), (int32)PreviousState, (int32)NewState);
-            
-            if (GEngine)
-            {
-                FString TransitionString = FString::Printf(TEXT("State: %d -> %d"), (int32)PreviousState, (int32)NewState);
-                GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, TransitionString);
-            }
         }
         else
         {
@@ -93,7 +75,6 @@ void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
         if (Character)
         {
             Character->SetCanMove(true);
-            UE_LOG(LogTemp, Warning, TEXT("SetCanMove(true) called"));
         }
         else
         {

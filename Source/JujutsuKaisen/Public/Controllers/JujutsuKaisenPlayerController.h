@@ -47,7 +47,7 @@ public:
 
 	/** Guard Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* GuardAction;
+	UInputAction* Q_Pressed_Action;
 
 	/** A_Pressed Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -57,9 +57,39 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* R_Pressed_Action;
 
-	/** R_Released Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* R_Released_Action;
+	UInputAction* E_Pressed_Action;
+
+
+	// 키 상태 추적 변수들
+	UPROPERTY()
+	bool bEKeyPressed;
+
+	UPROPERTY()
+	bool bRKeyPressed;
+
+	UPROPERTY()
+	bool bQKeyPressed;
+
+	// 콤보 시스템을 위한 타이머 핸들들
+	UPROPERTY()
+	FTimerHandle EKeyTimer;
+
+	UPROPERTY()
+	FTimerHandle QKeyTimer;
+
+	UPROPERTY()
+	FTimerHandle RKeyTimer;
+
+	UPROPERTY()
+	FTimerHandle JujutsuComboTimer;
+
+	// 콤보 딜레이 (100ms 안에 두 키 같이 눌리면 콤보로 처리)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo", meta = (AllowPrivateAccess = "true"))
+	float JujutsuComboDelay = 0.1f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo", meta = (AllowPrivateAccess = "true"))
+	float KeyReleaseDelay = 0.2f;
 
 	// Input Action Functions (래핑 함수들)
 	void Move(const FInputActionValue& Value);
@@ -68,11 +98,17 @@ public:
 	void StopJumping();
 	void Dash();
 	void StopDash();
-	void Guard();
-	void StopGuard();
+	void Q_Pressed();
+	void Q_Released();
 	void A_Pressed();
 	void R_Pressed();
 	void R_Released();
+	void E_Pressed();
+	void E_Released();
+
+	// 키 상태 관리 함수들
+	void JudgeJujutsuCombo();
+	void StartJujutsuComboTimer();
 
 protected:
 	virtual void BeginPlay() override;

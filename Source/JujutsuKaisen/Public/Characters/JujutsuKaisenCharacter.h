@@ -45,6 +45,10 @@ public:
 	void A_Pressed();
 	void R_Pressed();
 	void R_Released();
+	void E_Pressed();
+	void QR_Pressed();
+	void ER_Pressed();
+
 
 	// ============================================================================
 	// State Management

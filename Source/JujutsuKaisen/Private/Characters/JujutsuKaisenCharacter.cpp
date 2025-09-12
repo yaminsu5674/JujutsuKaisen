@@ -317,6 +317,11 @@ void AJujutsuKaisenCharacter::A_Pressed()
 
 void AJujutsuKaisenCharacter::R_Pressed()
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("R_Pressed Called!"));
+	}
+	
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
 		if (SkillManager)
@@ -333,6 +338,50 @@ void AJujutsuKaisenCharacter::R_Released()
 		if (SkillManager)
 		{
 			SkillManager->HandleReleased("R");
+		}
+	}
+}
+
+void AJujutsuKaisenCharacter::E_Pressed()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("E_Pressed Called!"));
+	}
+	
+	if (StateManager && StateManager->SetState(ECharacterState::Skill))
+	{
+		if (SkillManager)
+		{
+			SkillManager->HandlePressed("E");
+		}
+	}
+}
+
+
+void AJujutsuKaisenCharacter::QR_Pressed()
+{
+	if (StateManager && StateManager->SetState(ECharacterState::Skill))
+	{
+		if (SkillManager)
+		{
+			SkillManager->HandlePressed("QR");
+		}
+	}
+}
+
+void AJujutsuKaisenCharacter::ER_Pressed()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("ER_Pressed Called!"));
+	}
+	
+	if (StateManager && StateManager->SetState(ECharacterState::Skill))
+	{
+		if (SkillManager)
+		{
+			SkillManager->HandlePressed("ER");
 		}
 	}
 }
