@@ -4,30 +4,23 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "NiagaraComponent.h"
-#include "NiagaraFunctionLibrary.h"
 
 AMurasakiProjectile::AMurasakiProjectile()
 {
-	// 나이아가라 컴포넌트 생성 (차징 이펙트용)
-	ChargingNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ChargingNiagaraComponent"));
-	ChargingNiagaraComponent->SetupAttachment(RootComponent);
-	ChargingNiagaraComponent->SetAutoActivate(false);
-
-	// 초기 스케일 설정
-	CurrentScale = 1.0f;
+	// 블루프린트에서 파티클 시스템을 할당할 예정이므로 생성자에서는 초기화하지 않음
 }
 
 void AMurasakiProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 스폰 시 ChargingNiagaraEffect 재생
-	if (ChargingNiagaraEffect && ChargingNiagaraComponent)
+	// 스폰 시 ChargingEffect 파티클 재생 (발사체에 붙어서 함께 움직임)
+	if (ChargingEffect)
 	{
-		ChargingNiagaraComponent->SetAsset(ChargingNiagaraEffect);
-		ChargingNiagaraComponent->Activate();
-		UE_LOG(LogTemp, Log, TEXT("MurasakiProjectile: Charging Niagara Effect 시작"));
+		// RootComponent에 부착하여 발사체와 함께 움직임
+		ChargingEffectComponent = UGameplayStatics::SpawnEmitterAttached(ChargingEffect, RootComponent, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
+		ChargingEffectComponent->SetAbsolute(false, false, false); // 위치/회전/스케일 전부 부모 따라감
+		ChargingEffectComponent->SetWorldScale3D(GetActorScale3D());
 	}
 }
 
@@ -62,10 +55,11 @@ void AMurasakiProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponen
         }
 		bIsOverlapping = true;
 		
-		// ChargingNiagaraEffect 비활성화
-		if (ChargingNiagaraComponent)
+		// ChargingEffect 제거
+		if (ChargingEffectComponent)
 		{
-			ChargingNiagaraComponent->Deactivate();
+			ChargingEffectComponent->DestroyComponent();
+			ChargingEffectComponent = nullptr;
 		}
 	}
 }
