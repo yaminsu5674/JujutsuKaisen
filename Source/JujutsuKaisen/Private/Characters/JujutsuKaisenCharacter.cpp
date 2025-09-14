@@ -366,10 +366,10 @@ void AJujutsuKaisenCharacter::R_Pressed()
 	
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("R_Pressed Called!"));
-		}
+		// if (GEngine)
+		// {
+		// 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("R_Pressed Called!"));
+		// }
 		if (SkillManager)
 		{
 			SkillManager->HandlePressed("R");
@@ -384,10 +384,10 @@ void AJujutsuKaisenCharacter::R_Released()
 	{
 		if (StateManager && StateManager->IsInState(ECharacterState::Skill))
 		{
-			if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("R_Released Called!"));
-				}
+			// if (GEngine)
+			// 	{
+			// 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("R_Released Called!"));
+			// 	}
 
 			if (SkillManager)
 			{
@@ -411,10 +411,10 @@ void AJujutsuKaisenCharacter::E_Pressed()
 	
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("E_Pressed Called!"));
-		}
+		// if (GEngine)
+		// {
+		// 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("E_Pressed Called!"));
+		// }
 		if (SkillManager)
 		{
 			SkillManager->HandlePressed("E");
@@ -460,10 +460,10 @@ void AJujutsuKaisenCharacter::ER_Pressed()
 	
 	if (StateManager && StateManager->SetState(ECharacterState::Skill))
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("ER_Pressed Called!"));
-		}
+		// if (GEngine)
+		// {
+		// 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("ER_Pressed Called!"));
+		// }
 		if (SkillManager)
 		{
 			SkillManager->HandlePressed("ER");
@@ -509,10 +509,10 @@ void AJujutsuKaisenCharacter::Hit()
 {
 	if (StateManager && StateManager->IsInState(ECharacterState::Hit))
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Red, TEXT("Hit!"));
-		}
+		// if (GEngine)
+		// {
+		// 	GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Red, TEXT("Hit!"));
+		// }
 	}
 }
 
