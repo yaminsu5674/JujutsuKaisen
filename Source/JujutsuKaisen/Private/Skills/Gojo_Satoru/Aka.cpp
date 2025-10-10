@@ -30,7 +30,6 @@ void UAka::OnPressed()
 		BindMontageNotifies();
 		AnimInstance->Montage_Play(AkaLateMontage);
 	}
-
 }
 
 void UAka::OnReleased()
@@ -39,23 +38,22 @@ void UAka::OnReleased()
 	{
 		AnimInstance->Montage_Stop(0.2f);
 
-		if ( AkaEarlyMontage)
+		if (AkaEarlyMontage)
 		{
 			AnimInstance->Montage_Play(AkaEarlyMontage);
 			if (!AkaProjectile)
 			{
-				UE_LOG(LogTemp, Error, TEXT("SpawnProjectile()"));
 				SpawnProjectile();
 			}
 		}
 		return;
 	}
-	if (AnimInstance && state == 2)
+	else if (AnimInstance && state == 2)
 	{
-		UnbindMontageNotifies();
+		//UnbindMontageNotifies();
 		AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &UAka::OnMontageNotify3Begin);
 		AnimInstance->Montage_Resume(AkaLateMontage);
-		LaunchProjectile();
+		//LaunchProjectile();
 	}
 }
 
@@ -110,7 +108,6 @@ void UAka::OnMontageNotify2Begin(FName NotifyName, const FBranchingPointNotifyPa
 		AnimInstance->Montage_Pause(AkaLateMontage);
 		if (!AkaProjectile)
 		{
-			UE_LOG(LogTemp, Error, TEXT("SpawnProjectile()"));
 			SpawnProjectile();
 		}
 	}
@@ -120,7 +117,7 @@ void UAka::OnMontageNotify3Begin(FName NotifyName, const FBranchingPointNotifyPa
 {
 	if (NotifyName == FName("AkaNotify3"))
 	{
-
+		LaunchProjectile();
 	}
 }
 
@@ -158,8 +155,11 @@ void UAka::LaunchProjectile()
 	}
 	if (AkaProjectile)
 	{
+		// 먼저 방향 설정
 		AkaProjectile->SetDirection(Target);
+		// 그 다음 Move 상태로 전환 (Velocity 활성화)
 		AkaProjectile->SetBehaviorType(EProjectileBehaviorType::Move);
+		// 중복 호출 제거
 		AkaProjectile = nullptr;
 	}
 }

@@ -36,4 +36,10 @@ protected:
 	// ChargingEffect 컴포넌트 참조 (제거용)
 	UPROPERTY()
 	UParticleSystemComponent* ChargingEffectComponent;
+
+	// ShotEffect 생성 간격 타이머
+	UPROPERTY()
+	float ShotEffectTimer;
+	UPROPERTY()
+	float ShotEffectInterval;
 };

@@ -8,6 +8,8 @@
 AAkaProjectile::AAkaProjectile()
 {
 	// 블루프린트에서 파티클 시스템을 할당할 예정이므로 생성자에서는 초기화하지 않음
+	ShotEffectTimer = 0.0f;
+	ShotEffectInterval = 0.2f; // 0.2초 간격
 }
 
 void AAkaProjectile::BeginPlay()
@@ -73,10 +75,16 @@ void AAkaProjectile::Tick(float DeltaTime)
 		Target->Hit();
 	}
 
-	// Move 상태일 때 ShotEffect 생성
+	// Move 상태일 때 ShotEffect를 0.2초마다 생성
 	if (BehaviorType == EProjectileBehaviorType::Move && ShotEffect && !bIsOverlapping)
 	{
-		// 현재 위치에서 ShotEffect 파티클 생성
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation());
+		ShotEffectTimer += DeltaTime;
+		
+		if (ShotEffectTimer >= ShotEffectInterval)
+		{
+			// 현재 위치에서 ShotEffect 파티클 생성
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation());
+			ShotEffectTimer = 0.0f; // 타이머 리셋
+		}
 	}
 }

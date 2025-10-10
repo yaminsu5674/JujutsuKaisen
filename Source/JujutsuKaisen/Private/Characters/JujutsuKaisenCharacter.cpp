@@ -509,10 +509,10 @@ void AJujutsuKaisenCharacter::Hit()
 {
 	if (StateManager && StateManager->IsInState(ECharacterState::Hit))
 	{
-		// if (GEngine)
-		// {
-		// 	GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Red, TEXT("Hit!"));
-		// }
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Red, TEXT("Hit!"));
+		}
 	}
 }
 
