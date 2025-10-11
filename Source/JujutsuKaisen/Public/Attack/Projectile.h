@@ -39,8 +39,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	float SphereRadius = 50.0f;
 
+	UPROPERTY()
 	float _LifeCountingDown;
 
+	UPROPERTY()
 	FVector Direction;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Visual, meta = (AllowPrivateAccess = "true"))

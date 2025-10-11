@@ -27,12 +27,13 @@ AProjectile::AProjectile()
 	// ProjectileMovement 컴포넌트 생성
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->SetUpdatedComponent(_MeshComponent);
-	ProjectileMovement->InitialSpeed = Speed;
+	ProjectileMovement->InitialSpeed = 0.0f; // 초기 속도 0 (발사 전까지 정지)
 	ProjectileMovement->MaxSpeed = Speed;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = false;
 	ProjectileMovement->ProjectileGravityScale = 0.0f; // 중력 비활성화
-	ProjectileMovement->bAutoActivate = false; // 초기에는 비활성화
+	ProjectileMovement->bAutoActivate = true; // BeginPlay에서 자동 활성화 (이후 Velocity로 제어)
+	ProjectileMovement->Velocity = FVector::ZeroVector; // 초기 Velocity 0 (정지 상태)
 	
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(false);
@@ -47,10 +48,6 @@ void AProjectile::BeginPlay()
 	if (ProjectileMovement && _MeshComponent)
 	{
 		ProjectileMovement->SetUpdatedComponent(_MeshComponent);
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Orange, FString::Printf(TEXT("Tick - UpdatedComponent: %s"), ProjectileMovement->UpdatedComponent ? TEXT("Valid") : TEXT("nullptr")));
-		}
 	}
 }
 
@@ -88,11 +85,6 @@ void AProjectile::SetDirection(AJujutsuKaisenCharacter* InTarget)
 	else
 	{
 		Direction = GetActorForwardVector();
-		
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("타겟 없음 - Direction: %s"), *Direction.ToString()));
-		}
 	}
 	
 	// ProjectileMovement에 방향과 속도 설정
@@ -117,20 +109,21 @@ void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 	{
 	case EProjectileBehaviorType::Move:
 	{
-		ProjectileMovement->bAutoActivate = true;
 		SetLifeSpan(Lifespan);
 		SetActorEnableCollision(true);
-		
-		// Velocity 재설정
-		if (ProjectileMovement)
+		if (GEngine && ProjectileMovement)
 		{
-			ProjectileMovement->Velocity = Direction * Speed;
-			ProjectileMovement->InitialSpeed = Speed;
-			ProjectileMovement->MaxSpeed = Speed;
+			GEngine->AddOnScreenDebugMessage(-1, 3.5f, FColor::Red, FString::Printf(TEXT("SetBehaviorType - UpdatedComponent: %s"), ProjectileMovement->UpdatedComponent ? TEXT("Valid") : TEXT("nullptr")));
+			GEngine->AddOnScreenDebugMessage(-1, 3.5f, FColor::Red, FString::Printf(TEXT("SetBehaviorType - Velocity: %s"), *ProjectileMovement->Velocity.ToString()));
 		}
 		
-		// ProjectileMovement 활성화
-		ProjectileMovement->Activate();
+		// Velocity 설정으로 발사 (bAutoActivate = true이므로 이미 활성화 상태)
+		// if (ProjectileMovement)
+		// {
+		// 	ProjectileMovement->Velocity = Direction * Speed;
+		// 	ProjectileMovement->InitialSpeed = Speed;
+		// 	ProjectileMovement->MaxSpeed = Speed;
+		// }
 		
 		// 오버랩 이벤트 바인딩
 		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
@@ -141,8 +134,13 @@ void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 		// Place는 수명이 없고 스폰된 곳에서 계속 존재
 		SetLifeSpan(0.0f);
 		SetActorEnableCollision(true);
-		// ProjectileMovement 비활성화 (움직이지 않음)
-		ProjectileMovement->Deactivate();
+		
+		// Velocity를 0으로 설정하여 정지 (Deactivate 사용 안 함)
+		if (ProjectileMovement)
+		{
+			ProjectileMovement->Velocity = FVector::ZeroVector;
+		}
+		
 		// 오버랩 이벤트 바인딩
 		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 		CollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AProjectile::OnOverlapEnd);
@@ -151,12 +149,12 @@ void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 	case EProjectileBehaviorType::None:
 	default:
 		SetActorEnableCollision(false);
-		if (GEngine)
+		
+		// Velocity를 0으로 설정하여 정지 (Deactivate 사용 안 함)
+		if (ProjectileMovement)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, TEXT("ProjectileMovement 비활성화"));
+			ProjectileMovement->Velocity = FVector::ZeroVector;
 		}
-		// ProjectileMovement 비활성화
-		ProjectileMovement->Deactivate();
 		break;
 	}
 
