@@ -44,7 +44,14 @@ AProjectile::AProjectile()
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	//Reset();
+	
+	// Owner는 무시하도록 설정 (Owner와 충돌 및 물리 영향 안받음)
+	if (GetOwner())
+	{	
+		CollisionSphere->IgnoreActorWhenMoving(GetOwner(), true);
+		_MeshComponent->IgnoreActorWhenMoving(GetOwner(), true);
+	}
+	
 	if (ProjectileMovement && _MeshComponent)
 	{
 		ProjectileMovement->SetUpdatedComponent(_MeshComponent);
@@ -111,20 +118,6 @@ void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 	{
 		SetLifeSpan(Lifespan);
 		SetActorEnableCollision(true);
-		if (GEngine && ProjectileMovement)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 3.5f, FColor::Red, FString::Printf(TEXT("SetBehaviorType - UpdatedComponent: %s"), ProjectileMovement->UpdatedComponent ? TEXT("Valid") : TEXT("nullptr")));
-			GEngine->AddOnScreenDebugMessage(-1, 3.5f, FColor::Red, FString::Printf(TEXT("SetBehaviorType - Velocity: %s"), *ProjectileMovement->Velocity.ToString()));
-		}
-		
-		// Velocity 설정으로 발사 (bAutoActivate = true이므로 이미 활성화 상태)
-		// if (ProjectileMovement)
-		// {
-		// 	ProjectileMovement->Velocity = Direction * Speed;
-		// 	ProjectileMovement->InitialSpeed = Speed;
-		// 	ProjectileMovement->MaxSpeed = Speed;
-		// }
-		
 		// 오버랩 이벤트 바인딩
 		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 		break;
@@ -175,24 +168,7 @@ void AProjectile::HandleMovement(float DeltaTime)
 {
 	// ProjectileMovement가 활성화되어 있으면 자동으로 이동 처리
 	// 수명만 관리하면 됨
-	_LifeCountingDown -= DeltaTime;
-	
-	// 매 0.5초마다 상태 확인
-	static float DebugTimer = 0.0f;
-	DebugTimer += DeltaTime;
-	
-	if (DebugTimer >= 0.5f)
-	{
-		DebugTimer = 0.0f;
-		
-		if (GEngine && ProjectileMovement)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Orange, FString::Printf(TEXT("Tick - 위치: %s"), *GetActorLocation().ToString()));
-			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Orange, FString::Printf(TEXT("Tick - Velocity: %s"), *ProjectileMovement->Velocity.ToString()));
-			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Orange, FString::Printf(TEXT("Tick - IsActive: %s"), ProjectileMovement->IsActive() ? TEXT("true") : TEXT("false")));
-			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Orange, FString::Printf(TEXT("Tick - UpdatedComponent: %s"), ProjectileMovement->UpdatedComponent ? TEXT("Valid") : TEXT("nullptr")));
-		}
-	}
+	//_LifeCountingDown -= DeltaTime;
 }
 
 
