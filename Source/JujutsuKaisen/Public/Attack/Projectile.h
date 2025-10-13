@@ -91,13 +91,6 @@ public:
 	UFUNCTION()
 	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	// ProjectileMovement 충돌 이벤트 함수들
-	UFUNCTION()
-	void OnProjectileHit(const FHitResult& ImpactResult);
-	
-	UFUNCTION()
-	void OnProjectileBounced(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
-
 
 
 	FORCEINLINE UStaticMeshComponent* GetMeshComponent() const

@@ -67,6 +67,49 @@ void AAkaProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	// ProjectileMovement가 충돌했는지 체크 (Velocity가 급격히 감소하면 충돌로 간주)
+	if (ProjectileMovement && BehaviorType == EProjectileBehaviorType::Move && !bIsOverlapping)
+	{
+		// Sweep으로 전방 충돌 체크
+		FHitResult HitResult;
+		FVector Start = GetActorLocation();
+		FVector End = Start + (Direction * 50.0f); // 50 유닛 앞 체크
+		
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+		if (GetOwner())
+		{
+			QueryParams.AddIgnoredActor(GetOwner());
+		}
+		
+		// Sphere Sweep으로 충돌 체크
+		bool bHit = GetWorld()->SweepSingleByChannel(
+			HitResult,
+			Start,
+			End,
+			FQuat::Identity,
+			ECC_Pawn,
+			FCollisionShape::MakeSphere(CollisionSphere->GetScaledSphereRadius()),
+			QueryParams
+		);
+		
+		// 충돌한 대상이 있으면 밀어내기
+		if (bHit && HitResult.GetActor())
+		{
+			AActor* HitActor = HitResult.GetActor();
+			AJujutsuKaisenCharacter* HitCharacter = Cast<AJujutsuKaisenCharacter>(HitActor);
+			
+			if (HitCharacter && HitCharacter->GetCharacterMovement())
+			{
+				// 충돌 방향으로 강한 힘 적용
+				FVector PushDirection = Direction;
+				FVector ImpulseForce = PushDirection * 5000.0f + FVector(0, 0, 500.0f);
+				HitCharacter->GetCharacterMovement()->AddImpulse(ImpulseForce, true);
+
+			}
+		}
+	}
+	
 	// Aka 전용 Tick 로직
 	if (bIsOverlapping && Target != nullptr)
 	{

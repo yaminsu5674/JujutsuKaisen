@@ -119,7 +119,7 @@ void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 		SetLifeSpan(Lifespan);
 		SetActorEnableCollision(true);
 		// 오버랩 이벤트 바인딩
-		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
+		//CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 		break;
 	}
 	case EProjectileBehaviorType::Place:
