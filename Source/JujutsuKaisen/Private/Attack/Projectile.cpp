@@ -3,7 +3,7 @@
 
 #include "Attack/Projectile.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
+#include "Attack/CustomProjectileMovement.h"
 #include "Components/SphereComponent.h"
 
 // Sets default values
@@ -24,8 +24,8 @@ AProjectile::AProjectile()
 	CollisionSphere->SetCollisionObjectType(ECC_WorldDynamic);
 	CollisionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	
-	// ProjectileMovement 컴포넌트 생성
-	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
+	// ProjectileMovement 컴포넌트 생성 (커스텀 버전)
+	ProjectileMovement = CreateDefaultSubobject<UCustomProjectileMovement>(TEXT("ProjectileMovement"));
 	ProjectileMovement->SetUpdatedComponent(_MeshComponent);
 	ProjectileMovement->InitialSpeed = 0.0f; // 초기 속도 0 (발사 전까지 정지)
 	ProjectileMovement->MaxSpeed = Speed;

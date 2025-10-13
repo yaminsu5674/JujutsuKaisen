@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GameFramework/ProjectileMovementComponent.h"
+#include "Attack/CustomProjectileMovement.h"
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "Projectile.generated.h"
 
@@ -52,7 +52,7 @@ protected:
 	USphereComponent* CollisionSphere;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	UProjectileMovementComponent* ProjectileMovement;
+	UCustomProjectileMovement* ProjectileMovement;
 
 	// 오버랩 상태 확인 변수
 	UPROPERTY(BlueprintReadOnly, Category = "State")
