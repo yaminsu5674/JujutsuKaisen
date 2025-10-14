@@ -20,3 +20,29 @@ bool USkillLibrary::SimpleLineTrace(UObject* WorldContextObject, FVector Start, 
 {
 	return true;
 }
+
+AJujutsuKaisenCharacter* USkillLibrary::GetOwnerRecursive(UObject* Object)
+{
+	if (!Object)
+	{
+		return nullptr;
+	}
+	
+	// 이미 JujutsuKaisenCharacter인지 확인
+	AJujutsuKaisenCharacter* Character = Cast<AJujutsuKaisenCharacter>(Object);
+	if (Character)
+	{
+		return Character;
+	}
+	
+	// GetOuter()로 타고 올라감
+	UObject* Outer = Object->GetOuter();
+	if (Outer)
+	{
+		// 재귀 호출
+		return GetOwnerRecursive(Outer);
+	}
+	
+	// 찾지 못함
+	return nullptr;
+}

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Characters/JujutsuKaisenCharacter.h"
 #include "SkillLibrary.generated.h"
 
 /**
@@ -16,12 +17,16 @@ class JUJUTSUKAISEN_API USkillLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	// Å¸°ÙÀ» ¹Ù¶óº¸µµ·Ï È¸Àü
+	// Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¶óº¸µï¿½ï¿½ï¿½ È¸ï¿½ï¿½
 	UFUNCTION(BlueprintCallable, Category = "Skill|Utility")
 	static void RotateActorToFaceTarget(AActor* Source, AActor* Target);
 
-	// ¶óÀÎÆ®·¹ÀÌ½º ÃßÈÄ ¿¹Á¤.
+	// ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 	UFUNCTION(BlueprintPure, Category = "Skill|Utility")
 	static bool SimpleLineTrace(UObject* WorldContextObject, FVector Start, FVector End, FHitResult& OutHit);
+	
+	// ì¬ê·€ì ìœ¼ë¡œ Ownerë¥¼ íƒ€ê³  ì˜¬ë¼ê°€ì„œ JujutsuKaisenCharacter ì°¾ê¸°
+	UFUNCTION(BlueprintCallable, Category = "Skill|Utility")
+	static AJujutsuKaisenCharacter* GetOwnerRecursive(UObject* Object);
 	
 };
