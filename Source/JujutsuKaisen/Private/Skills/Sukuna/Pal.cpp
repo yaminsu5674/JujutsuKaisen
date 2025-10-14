@@ -23,11 +23,15 @@ void UPal::TickSkill(float DeltaTime)
 void UPal::OnPressed()
 {
 	Super::OnPressed();
+	
+	AJujutsuKaisenCharacter* Owner = GetOwner();
+	AJujutsuKaisenCharacter* Target = GetTarget();
     if (Owner && Target)
     {
         USkillLibrary::RotateActorToFaceTarget(Owner, Target);
     }
 
+	UAnimInstance* AnimInstance = GetAnimInstance();
     if (AnimInstance && PalMontage)
 	{
 		BindMontageNotifies();
@@ -52,6 +56,7 @@ void UPal::ResetSkill()
 
 void UPal::BindMontageNotifies()
 {
+	UAnimInstance* AnimInstance = GetAnimInstance();
 	if (AnimInstance)
 	{
 		// Pal 몽타주 노티파이 바인딩
@@ -72,6 +77,7 @@ void UPal::BindMontageNotifies()
 
 void UPal::UnbindMontageNotifies()
 {
+	UAnimInstance* AnimInstance = GetAnimInstance();
 	if (AnimInstance)
 	{
 		AnimInstance->OnPlayMontageNotifyBegin.RemoveDynamic(this, &UPal::OnMontageNotify1Begin);
@@ -80,6 +86,7 @@ void UPal::UnbindMontageNotifies()
 
 void UPal::SpawnProjectile()
 {
+	AJujutsuKaisenCharacter* Owner = GetOwner();
 	if (!ProjectileClass || !Owner) return;
 
 	UWorld* World = Owner->GetWorld();
@@ -112,12 +119,11 @@ void UPal::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNotifyPa
 
 	if (NotifyName == FName("PalNotify1"))
 	{
-
 		// 몽타주 일시정지
+		UAnimInstance* AnimInstance = GetAnimInstance();
 		if (AnimInstance && PalMontage)
 		{
 			AnimInstance->Montage_Pause(PalMontage);
-
 		}
 		
 		// 프로젝타일이 없거나 파괴된 상태인지 확인
@@ -131,9 +137,9 @@ void UPal::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNotifyPa
 		}
 
 		// 2초 후 EndPal 호출
+		AJujutsuKaisenCharacter* Owner = GetOwner();
 		if (Owner)
 		{
-			
 			FTimerHandle TimerHandle;
 			Owner->GetWorldTimerManager().SetTimer(TimerHandle, [this]()
 			{
@@ -143,13 +149,14 @@ void UPal::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNotifyPa
 					APalProjectile* PalProj = Cast<APalProjectile>(PalProjectile);
 					if (PalProj)
 					{
-						
 						PalProj->EndPal();
 					}
 				}
-                if (AnimInstance && PalMontage)
+				
+				UAnimInstance* AnimInst = GetAnimInstance();
+                if (AnimInst && PalMontage)
                 {
-                    AnimInstance->Montage_Resume(PalMontage);
+                    AnimInst->Montage_Resume(PalMontage);
                 }
                 PalProjectile = nullptr;    
 			}, 2.0f, false);

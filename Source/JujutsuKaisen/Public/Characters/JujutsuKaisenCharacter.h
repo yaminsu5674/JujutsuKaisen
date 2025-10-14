@@ -76,7 +76,6 @@ public:
 	// ============================================================================
 	void Hit();
 	void Die();
-	virtual void InitSkills();
 	void ResetSkillVariables();
 
 	// 스킬 상태 관리 헬퍼 함수들

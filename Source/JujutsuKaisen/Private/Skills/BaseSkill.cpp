@@ -3,24 +3,23 @@
 
 #include "Skills/BaseSkill.h"
 #include "Characters/JujutsuKaisenCharacter.h"
+#include "Library/SkillLibrary.h"
 
-
-void UBaseSkill::SetOwner(AJujutsuKaisenCharacter* NewOwner)
+AJujutsuKaisenCharacter* UBaseSkill::GetOwner() const
 {
-	Owner = NewOwner;
-	if (Owner)
-	{
-		AnimInstance = Owner->GetMesh()->GetAnimInstance();
-	}
+	return USkillLibrary::GetOwnerRecursive(const_cast<UBaseSkill*>(this));
 }
 
-void UBaseSkill::SetTarget(AJujutsuKaisenCharacter* NewTarget)
+AJujutsuKaisenCharacter* UBaseSkill::GetTarget() const
 {
-	Target = NewTarget;
-	/*if (Owner)
-	{
-		AnimInstance = Owner->GetMesh()->GetAnimInstance();
-	}*/
+	AJujutsuKaisenCharacter* Owner = GetOwner();
+	return Owner ? Owner->GetTargetCharacter() : nullptr;
+}
+
+UAnimInstance* UBaseSkill::GetAnimInstance() const
+{
+	AJujutsuKaisenCharacter* Owner = GetOwner();
+	return Owner ? Owner->GetMesh()->GetAnimInstance() : nullptr;
 }
 
 bool UBaseSkill::GetBWantsTick()

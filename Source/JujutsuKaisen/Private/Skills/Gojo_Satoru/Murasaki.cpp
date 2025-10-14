@@ -42,10 +42,14 @@ void UMurasaki::OnPressed()
 	state = 1;
 	GrowthDuration = 1.5f;
 
+	AJujutsuKaisenCharacter* Owner = GetOwner();
+	AJujutsuKaisenCharacter* Target = GetTarget();
 	if (Owner && Target)
 	{
 		USkillLibrary::RotateActorToFaceTarget(Owner, Target);
 	}
+	
+	UAnimInstance* AnimInstance = GetAnimInstance();
 	if (AnimInstance && MurasakiMontage)
 	{
 		BindMontageNotifies();
@@ -60,6 +64,7 @@ void UMurasaki::ResetSkill()
 	GrowthTimer = 0.0f;
 
 	// 타이머 클리어
+	AJujutsuKaisenCharacter* Owner = GetOwner();
 	if (Owner && Owner->GetWorld())
 	{
 		Owner->GetWorld()->GetTimerManager().ClearTimer(GrowthTimerHandle);
@@ -75,6 +80,7 @@ void UMurasaki::ResetSkill()
 
 void UMurasaki::BindMontageNotifies()
 {
+	UAnimInstance* AnimInstance = GetAnimInstance();
 	if (AnimInstance)
 	{
 		AnimInstance->OnPlayMontageNotifyBegin.RemoveDynamic(this, &UMurasaki::OnMontageNotify1Begin);
@@ -84,6 +90,7 @@ void UMurasaki::BindMontageNotifies()
 
 void UMurasaki::UnbindMontageNotifies()
 {
+	UAnimInstance* AnimInstance = GetAnimInstance();
 	if (AnimInstance)
 	{
 		AnimInstance->OnPlayMontageNotifyBegin.RemoveDynamic(this, &UMurasaki::OnMontageNotify1Begin);
@@ -95,6 +102,7 @@ void UMurasaki::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNot
 	if (NotifyName == FName("MurasakiNotify1"))
 	{
 		// 몽타주 일시정지
+		UAnimInstance* AnimInstance = GetAnimInstance();
 		if (AnimInstance && MurasakiMontage)
 		{
 			AnimInstance->Montage_Pause(MurasakiMontage);
@@ -120,6 +128,7 @@ void UMurasaki::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNot
 
 void UMurasaki::SpawnProjectile()
 {
+	AJujutsuKaisenCharacter* Owner = GetOwner();
 	if (!ProjectileClass || !Owner) return;
 
 	UWorld* World = Owner->GetWorld();
@@ -147,6 +156,8 @@ void UMurasaki::SpawnProjectile()
 
 void UMurasaki::LaunchProjectile()
 {
+	AJujutsuKaisenCharacter* Owner = GetOwner();
+	AJujutsuKaisenCharacter* Target = GetTarget();
 	if (Owner && Target)
 	{
 		USkillLibrary::RotateActorToFaceTarget(Owner, Target);
@@ -161,6 +172,7 @@ void UMurasaki::LaunchProjectile()
 	}
 	
 	// 몽타주 재개
+	UAnimInstance* AnimInstance = GetAnimInstance();
 	if (AnimInstance && MurasakiMontage)
 	{
 		AnimInstance->Montage_Resume(MurasakiMontage);

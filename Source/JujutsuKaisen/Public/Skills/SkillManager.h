@@ -21,14 +21,8 @@ class JUJUTSUKAISEN_API USkillManager : public UObject
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced, Category = "Skill", meta = (AllowPrivateAccess = "true"))
     TMap<FName, UBaseSkill*> BoundSkills;
 
-    UPROPERTY()
-    AJujutsuKaisenCharacter* Owner;
 
 public:
-    void InitAllSkillOwner();
-
-    void RegisterOwner(AJujutsuKaisenCharacter* InOwner);
-
     void HandlePressed(FName Key);
 
     void HandleReleased(FName Key);

@@ -21,10 +21,14 @@ void UAka::OnPressed()
 {
 	state = 1;
 
+	AJujutsuKaisenCharacter* Owner = GetOwner();
+	AJujutsuKaisenCharacter* Target = GetTarget();
 	if (Owner && Target)
 	{
 		USkillLibrary::RotateActorToFaceTarget(Owner, Target);
 	}
+	
+	UAnimInstance* AnimInstance = GetAnimInstance();
 	if (AnimInstance && AkaLateMontage)
 	{
 		BindMontageNotifies();
@@ -34,6 +38,8 @@ void UAka::OnPressed()
 
 void UAka::OnReleased()
 {
+	UAnimInstance* AnimInstance = GetAnimInstance();
+	
 	if (AnimInstance && state == 1)
 	{
 		AnimInstance->Montage_Stop(0.2f);
@@ -69,6 +75,7 @@ void UAka::ResetSkill()
 
 void UAka::BindMontageNotifies()
 {
+	UAnimInstance* AnimInstance = GetAnimInstance();
 	if (AnimInstance)
 	{
 		// 기존 바인딩 제거 (중복 방지)
@@ -85,6 +92,7 @@ void UAka::BindMontageNotifies()
 
 void UAka::UnbindMontageNotifies()
 {
+	UAnimInstance* AnimInstance = GetAnimInstance();
 	if (AnimInstance)
 	{
 		AnimInstance->OnPlayMontageNotifyBegin.RemoveDynamic(this, &UAka::OnMontageNotify1Begin);
@@ -106,7 +114,11 @@ void UAka::OnMontageNotify2Begin(FName NotifyName, const FBranchingPointNotifyPa
 	if (NotifyName == FName("AkaNotify2"))
 	{
 		state = 2;
-		AnimInstance->Montage_Pause(AkaLateMontage);
+		UAnimInstance* AnimInstance = GetAnimInstance();
+		if (AnimInstance)
+		{
+			AnimInstance->Montage_Pause(AkaLateMontage);
+		}
 		if (!AkaProjectile)
 		{
 			SpawnProjectile();
@@ -125,6 +137,7 @@ void UAka::OnMontageNotify3Begin(FName NotifyName, const FBranchingPointNotifyPa
 
 void UAka::SpawnProjectile()
 {
+	AJujutsuKaisenCharacter* Owner = GetOwner();
 	if (!ProjectileClass || !Owner) return;
 
 	UWorld* World = Owner->GetWorld();
@@ -151,7 +164,8 @@ void UAka::SpawnProjectile()
 
 void UAka::LaunchProjectile()
 {
-
+	AJujutsuKaisenCharacter* Owner = GetOwner();
+	AJujutsuKaisenCharacter* Target = GetTarget();
 	if (Owner && Target)
 	{
 		USkillLibrary::RotateActorToFaceTarget(Owner, Target);

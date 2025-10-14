@@ -4,33 +4,7 @@
 #include "Skills/SkillManager.h"
 #include "Characters/JujutsuKaisenCharacter.h"
 
-void USkillManager::RegisterOwner(AJujutsuKaisenCharacter* InOwner)
-{
-    Owner = InOwner;
-}
 
-void USkillManager::InitAllSkillOwner() 
-{ 
-    if (Owner)
-    {
-        for (auto& SkillPair : BoundSkills)
-        {
-            UBaseSkill* Skill = SkillPair.Value;
-            if (Skill)
-            {
-                Skill->SetOwner(Owner);
-                if (Owner->GetTargetCharacter())
-                {
-                    Skill->SetTarget(Owner->GetTargetCharacter());
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Warning, TEXT("Owner has no target when InitAllSkillOwner is called for: %s"), *SkillPair.Key.ToString());
-                }
-            }
-        }
-    }
-}
 
 void USkillManager::HandlePressed(FName Key)
 {

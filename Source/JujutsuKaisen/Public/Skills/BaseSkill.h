@@ -18,22 +18,18 @@ class JUJUTSUKAISEN_API UBaseSkill : public UObject
 	GENERATED_BODY()
 
 protected:
-	bool bWantsTick = false; // �ʿ��� ���� Tick
+	bool bWantsTick = false; // 필요시에만 Tick
 
-	UPROPERTY()
-	AJujutsuKaisenCharacter* Owner;
-
-	UPROPERTY()
-	AJujutsuKaisenCharacter* Target;
-
-	UPROPERTY()
-	UAnimInstance* AnimInstance;
+	// 헬퍼 함수: 재귀적으로 Owner 찾기
+	AJujutsuKaisenCharacter* GetOwner() const;
+	
+	// 헬퍼 함수: Owner를 통해 Target 가져오기
+	AJujutsuKaisenCharacter* GetTarget() const;
+	
+	// 헬퍼 함수: Owner를 통해 AnimInstance 가져오기
+	UAnimInstance* GetAnimInstance() const;
 
 public:
-	void SetOwner(AJujutsuKaisenCharacter* NewOwner);
-
-	void SetTarget(AJujutsuKaisenCharacter* NewTarget);
-
 	bool GetBWantsTick();
 
 	virtual void ResetSkill();
