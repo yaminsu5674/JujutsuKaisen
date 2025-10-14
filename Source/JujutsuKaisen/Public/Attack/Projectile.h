@@ -75,9 +75,7 @@ public:
 
 	virtual void HandleMovement(float DeltaTime);
 
-	void SetDirection(AJujutsuKaisenCharacter* InTarget = nullptr);
-
-	void SetTarget(AJujutsuKaisenCharacter* InTarget);
+	void SetDirection();
 
 	void SetBehaviorType(EProjectileBehaviorType NewType);
 

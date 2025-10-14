@@ -50,6 +50,13 @@ void AProjectile::BeginPlay()
 	if (GetOwner())
 	{	
 		CollisionSphere->IgnoreActorWhenMoving(GetOwner(), true);
+		
+		// Owner를 JujutsuKaisenCharacter로 캐스팅하여 Target 가져오기
+		AJujutsuKaisenCharacter* OwnerCharacter = Cast<AJujutsuKaisenCharacter>(GetOwner());
+		if (OwnerCharacter)
+		{
+			Target = OwnerCharacter->GetTargetCharacter();
+		}
 	}
 	
 	if (ProjectileMovement && CollisionSphere)
@@ -80,12 +87,12 @@ void AProjectile::Tick(float DeltaTime)
 	}
 }
 
-void AProjectile::SetDirection(AJujutsuKaisenCharacter* InTarget)
+void AProjectile::SetDirection()
 {
-	if (InTarget)
+	if (Target)
 	{
 		// 타겟의 Z축을 30 더한 위치로 발사
-		FVector TargetLocation = InTarget->GetActorLocation();
+		FVector TargetLocation = Target->GetActorLocation();
 		TargetLocation.Z += 30.0f;
 		Direction = (TargetLocation - GetActorLocation()).GetSafeNormal();
 		SetActorRotation(Direction.Rotation());
@@ -104,10 +111,6 @@ void AProjectile::SetDirection(AJujutsuKaisenCharacter* InTarget)
 	}
 }
 
-void AProjectile::SetTarget(AJujutsuKaisenCharacter* InTarget)
-{
-	Target = InTarget;
-}
 
 void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
 {

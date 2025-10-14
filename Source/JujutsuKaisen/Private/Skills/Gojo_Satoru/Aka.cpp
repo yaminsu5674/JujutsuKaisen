@@ -151,6 +151,7 @@ void UAka::SpawnProjectile()
 
 void UAka::LaunchProjectile()
 {
+
 	if (Owner && Target)
 	{
 		USkillLibrary::RotateActorToFaceTarget(Owner, Target);
@@ -160,7 +161,7 @@ void UAka::LaunchProjectile()
 	if (AkaProjectile)
 	{
 		// 먼저 방향 설정
-		AkaProjectile->SetDirection(Target);
+		AkaProjectile->SetDirection();
 		// 그 다음 Move 상태로 전환 (Velocity 활성화)
 		AkaProjectile->SetBehaviorType(EProjectileBehaviorType::Move);
 		// 중복 호출 제거

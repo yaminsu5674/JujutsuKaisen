@@ -101,7 +101,6 @@ void UPal::SpawnProjectile()
 		return;
 	}
 
-	PalProjectile->SetTarget(Target);
 	PalProjectile->SetBehaviorType(EProjectileBehaviorType::Place);
     PalProjectile->CheckOverlap();
 }

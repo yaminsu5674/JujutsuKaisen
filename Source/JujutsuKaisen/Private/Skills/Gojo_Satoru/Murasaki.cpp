@@ -153,7 +153,7 @@ void UMurasaki::LaunchProjectile()
 	}
 	if (MurasakiProjectile)
 	{
-		MurasakiProjectile->SetDirection(Target);
+		MurasakiProjectile->SetDirection();
 		MurasakiProjectile->SetBehaviorType(EProjectileBehaviorType::Move);
 		
 		// 발사 후 참조 정리 (다음 스킬 사용을 위해)
