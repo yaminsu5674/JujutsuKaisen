@@ -74,87 +74,7 @@ void AProjectile::Tick(float DeltaTime)
 	if (_LifeCountingDown <= 0.0f)
 		return;
 
-	switch (BehaviorType)
-	{
-	case EProjectileBehaviorType::Move:
-		HandleMovement(DeltaTime);
-		break;
-	case EProjectileBehaviorType::Place:
-		// Place는 이동하지 않고 그 자리에 계속 존재
-		break;
-	default:
-		break;
-	}
-}
-
-void AProjectile::SetDirection()
-{
-	if (Target)
-	{
-		// 타겟의 Z축을 30 더한 위치로 발사
-		FVector TargetLocation = Target->GetActorLocation();
-		TargetLocation.Z += 30.0f;
-		Direction = (TargetLocation - GetActorLocation()).GetSafeNormal();
-		SetActorRotation(Direction.Rotation());
-	}
-	else
-	{
-		Direction = GetActorForwardVector();
-	}
-	
-	// ProjectileMovement에 방향과 속도 설정
-	if (ProjectileMovement)
-	{
-		ProjectileMovement->Velocity = Direction * Speed;
-		ProjectileMovement->InitialSpeed = Speed;
-		ProjectileMovement->MaxSpeed = Speed;
-	}
-}
-
-
-void AProjectile::SetBehaviorType(EProjectileBehaviorType NewType)
-{
-	BehaviorType = NewType;
-
-	switch (BehaviorType)
-	{
-	case EProjectileBehaviorType::Move:
-	{
-		SetLifeSpan(Lifespan);
-		SetActorEnableCollision(true);
-		// 오버랩 이벤트 바인딩
-		//CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
-		break;
-	}
-	case EProjectileBehaviorType::Place:
-	{
-		// Place는 수명이 없고 스폰된 곳에서 계속 존재
-		SetLifeSpan(0.0f);
-		SetActorEnableCollision(true);
-		
-		// Velocity를 0으로 설정하여 정지 (Deactivate 사용 안 함)
-		if (ProjectileMovement)
-		{
-			ProjectileMovement->Velocity = FVector::ZeroVector;
-		}
-		
-		// 오버랩 이벤트 바인딩
-		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
-		CollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AProjectile::OnOverlapEnd);
-		break;
-	}
-	case EProjectileBehaviorType::None:
-	default:
-		SetActorEnableCollision(false);
-		
-		// Velocity를 0으로 설정하여 정지 (Deactivate 사용 안 함)
-		if (ProjectileMovement)
-		{
-			ProjectileMovement->Velocity = FVector::ZeroVector;
-		}
-		break;
-	}
-
+	// Tick 로직은 필요시 자식 클래스에서 오버라이드
 }
 
 void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -167,14 +87,6 @@ void AProjectile::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	// 기본 오버랩 종료 처리 (자식 클래스에서 오버라이드 가능)
 }
-
-void AProjectile::HandleMovement(float DeltaTime)
-{
-	// ProjectileMovement가 활성화되어 있으면 자동으로 이동 처리
-	// 수명만 관리하면 됨
-	//_LifeCountingDown -= DeltaTime;
-}
-
 
 void AProjectile::CheckOverlap()
 {

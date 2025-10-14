@@ -4,6 +4,7 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Library/SkillLibrary.h"
+#include "Attack/CustomProjectileMovement.h"
 
 UMurasaki::UMurasaki()
 {
@@ -164,8 +165,16 @@ void UMurasaki::LaunchProjectile()
 	}
 	if (MurasakiProjectile)
 	{
-		MurasakiProjectile->SetDirection();
-		MurasakiProjectile->SetBehaviorType(EProjectileBehaviorType::Move);
+		// ProjectileMovement를 통해 직접 방향 설정
+		if (UCustomProjectileMovement* Movement = MurasakiProjectile->GetProjectileMovement())
+		{
+			Movement->SetDirection(MurasakiProjectile->GetTarget(), MurasakiProjectile->GetSpeed());
+			Movement->ApplyBehaviorSettings(true, true, MurasakiProjectile->GetLifespan());
+		}
+		
+		// Lifespan 및 충돌 설정
+		MurasakiProjectile->SetLifeSpan(MurasakiProjectile->GetLifespan());
+		MurasakiProjectile->SetActorEnableCollision(true);
 		
 		// 발사 후 참조 정리 (다음 스킬 사용을 위해)
 		MurasakiProjectile = nullptr;

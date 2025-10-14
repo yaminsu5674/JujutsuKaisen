@@ -4,6 +4,7 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Library/SkillLibrary.h"
+#include "Attack/CustomProjectileMovement.h"
 
 UAka::UAka()
 {
@@ -174,10 +175,17 @@ void UAka::LaunchProjectile()
 	// 발사체가 유효한지 확인
 	if (AkaProjectile)
 	{
-		// 먼저 방향 설정
-		AkaProjectile->SetDirection();
-		// 그 다음 Move 상태로 전환 (Velocity 활성화)
-		AkaProjectile->SetBehaviorType(EProjectileBehaviorType::Move);
+		// ProjectileMovement를 통해 직접 방향 설정
+		if (UCustomProjectileMovement* Movement = AkaProjectile->GetProjectileMovement())
+		{
+			Movement->SetDirection(AkaProjectile->GetTarget(), AkaProjectile->GetSpeed());
+			Movement->ApplyBehaviorSettings(true, true, AkaProjectile->GetLifespan());
+		}
+		
+		// Lifespan 및 충돌 설정
+		AkaProjectile->SetLifeSpan(AkaProjectile->GetLifespan());
+		AkaProjectile->SetActorEnableCollision(true);
+		
 		// 중복 호출 제거
 		AkaProjectile = nullptr;
 	}

@@ -141,3 +141,44 @@ void UCustomProjectileMovement::SetMoveType(EProjectileMoveType NewMoveType)
 	}
 }
 
+void UCustomProjectileMovement::SetDirection(AActor* TargetActor, float ProjectileSpeed)
+{
+	if (!GetOwner()) return;
+	
+	FVector Direction;
+	
+	if (TargetActor)
+	{
+		// 타겟의 Z축을 30 더한 위치로 발사
+		FVector TargetLocation = TargetActor->GetActorLocation();
+		TargetLocation.Z += 30.0f;
+		Direction = (TargetLocation - GetOwner()->GetActorLocation()).GetSafeNormal();
+		GetOwner()->SetActorRotation(Direction.Rotation());
+	}
+	else
+	{
+		Direction = GetOwner()->GetActorForwardVector();
+	}
+	
+	// Velocity와 속도 설정
+	Velocity = Direction * ProjectileSpeed;
+	InitialSpeed = ProjectileSpeed;
+	MaxSpeed = ProjectileSpeed;
+}
+
+void UCustomProjectileMovement::ApplyBehaviorSettings(bool bShouldMove, bool bEnableLifespan, float LifespanDuration)
+{
+	if (bShouldMove)
+	{
+		// Move 타입: 정상적으로 이동
+		// Velocity는 이미 SetDirection에서 설정됨
+	}
+	else
+	{
+		// Place/None 타입: 정지
+		Velocity = FVector::ZeroVector;
+	}
+	
+	// Lifespan은 Actor 레벨에서 관리하므로 여기서는 Movement 관련 설정만
+}
+

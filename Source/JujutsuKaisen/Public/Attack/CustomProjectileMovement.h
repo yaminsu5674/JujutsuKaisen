@@ -46,6 +46,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Custom Projectile")
 	void SetMoveType(EProjectileMoveType NewMoveType);
 	
+	// 발사 방향 설정 (Target을 향해 발사)
+	UFUNCTION(BlueprintCallable, Category = "Custom Projectile")
+	void SetDirection(AActor* TargetActor, float ProjectileSpeed);
+	
+	// 행동 타입에 따른 설정 적용
+	UFUNCTION(BlueprintCallable, Category = "Custom Projectile")
+	void ApplyBehaviorSettings(bool bShouldMove, bool bEnableLifespan, float LifespanDuration);
+	
 	// 충돌 시 멈추지 않고 계속 진행하도록 설정
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Projectile")
 	bool bNeverStop;

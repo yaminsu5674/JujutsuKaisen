@@ -8,24 +8,12 @@
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "Projectile.generated.h"
 
-UENUM(BlueprintType)
-enum class EProjectileBehaviorType : uint8
-{
-	None,
-	Move,
-	Place
-};
-
 UCLASS()
 class JUJUTSUKAISEN_API AProjectile : public AActor
 {
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "Projectile Params")
-	EProjectileBehaviorType BehaviorType = EProjectileBehaviorType::None;
-
-	//bool bIsCharging = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	float Speed = 500.0f;
@@ -41,9 +29,6 @@ protected:
 
 	UPROPERTY()
 	float _LifeCountingDown;
-
-	UPROPERTY()
-	FVector Direction;
 
 	// CollisionSphere를 Root Component로 사용
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
@@ -73,13 +58,22 @@ public:
 	// Sets default values for this actor's properties
 	AProjectile();
 
-	virtual void HandleMovement(float DeltaTime);
-
-	void SetDirection();
-
-	void SetBehaviorType(EProjectileBehaviorType NewType);
-
 	void CheckOverlap();
+	
+	// ProjectileMovement getter
+	FORCEINLINE UCustomProjectileMovement* GetProjectileMovement() const { return ProjectileMovement; }
+	
+	// Target getter
+	FORCEINLINE AJujutsuKaisenCharacter* GetTarget() const { return Target; }
+	
+	// Speed getter
+	FORCEINLINE float GetSpeed() const { return Speed; }
+	
+	// Lifespan getter
+	FORCEINLINE float GetLifespan() const { return Lifespan; }
+	
+	// CollisionSphere getter
+	FORCEINLINE USphereComponent* GetCollisionSphere() const { return CollisionSphere; }
 
 	// 오버랩 이벤트 함수들
 	UFUNCTION()
