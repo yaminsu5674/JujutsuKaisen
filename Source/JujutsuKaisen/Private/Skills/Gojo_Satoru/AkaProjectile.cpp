@@ -47,9 +47,9 @@ void AAkaProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 		if (Target->GetCharacterMovement())
         {
             // Projectile의 방향 벡터 (정규화된)
-            FVector LaunchDir = GetActorForwardVector();
-            FVector ImpulseForce = LaunchDir * 400.f + FVector(0, 0, 200.f);
-            Target->GetCharacterMovement()->AddImpulse(ImpulseForce, true);
+            // FVector LaunchDir = GetActorForwardVector();
+            // FVector ImpulseForce = LaunchDir * 400.f + FVector(0, 0, 200.f);
+            // Target->GetCharacterMovement()->AddImpulse(ImpulseForce, true);
 
         }
 		bIsOverlapping = true;
