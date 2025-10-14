@@ -7,6 +7,11 @@
 
 AAkaProjectile::AAkaProjectile()
 {
+	// 메시 컴포넌트 생성 (CollisionSphere에 부착)
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	MeshComponent->SetupAttachment(CollisionSphere); // Root인 CollisionSphere에 부착
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 충돌 비활성화 (시각적 용도만)
+	
 	// 블루프린트에서 파티클 시스템을 할당할 예정이므로 생성자에서는 초기화하지 않음
 	ShotEffectTimer = 0.0f;
 	ShotEffectInterval = 0.2f; // 0.2초 간격

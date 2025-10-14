@@ -45,12 +45,11 @@ protected:
 	UPROPERTY()
 	FVector Direction;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Visual, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* _MeshComponent;
-
+	// CollisionSphere를 Root Component로 사용
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 	USphereComponent* CollisionSphere;
 
+	// ProjectileMovement (CollisionSphere에 부착됨)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	UCustomProjectileMovement* ProjectileMovement;
 
@@ -90,12 +89,5 @@ public:
 
 	UFUNCTION()
 	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-
-
-	FORCEINLINE UStaticMeshComponent* GetMeshComponent() const
-	{
-		return _MeshComponent;
-	}
 
 };

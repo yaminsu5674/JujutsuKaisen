@@ -33,6 +33,10 @@ public:
 	void EndPal();
 
 protected:
+	// 메시 컴포넌트 (시각적 표현용)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Visual, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* MeshComponent;
+	
 	// 나이아가라 시스템 (차징 이펙트용)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	UNiagaraSystem* ChargingNiagaraEffect;

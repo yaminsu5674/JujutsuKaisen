@@ -26,6 +26,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	// 메시 컴포넌트 (시각적 표현용)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Visual, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* MeshComponent;
+	
 	// 파티클 시스템들
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ChargingEffect;

@@ -13,20 +13,20 @@ AProjectile::AProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 	InitialLifeSpan = 0.0f;
 	_LifeCountingDown = Lifespan;
-	_MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
-	SetRootComponent(_MeshComponent);
 	
-	// 구체 충돌 컴포넌트 생성
+	// CollisionSphere를 Root Component로 생성
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
-	CollisionSphere->SetupAttachment(_MeshComponent);
+	SetRootComponent(CollisionSphere); // CollisionSphere가 Root!
 	CollisionSphere->SetSphereRadius(SphereRadius);
-	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	CollisionSphere->SetCollisionObjectType(ECC_WorldDynamic);
+	CollisionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	CollisionSphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	
-	// ProjectileMovement 컴포넌트 생성 (커스텀 버전)
+	// ProjectileMovement 컴포넌트 생성 (CollisionSphere에 부착)
 	ProjectileMovement = CreateDefaultSubobject<UCustomProjectileMovement>(TEXT("ProjectileMovement"));
-	ProjectileMovement->SetUpdatedComponent(_MeshComponent);
+	ProjectileMovement->SetUpdatedComponent(CollisionSphere); // CollisionSphere를 이동 대상으로
 	ProjectileMovement->InitialSpeed = 0.0f; // 초기 속도 0 (발사 전까지 정지)
 	ProjectileMovement->MaxSpeed = Speed;
 	ProjectileMovement->bRotationFollowsVelocity = true;
@@ -34,6 +34,7 @@ AProjectile::AProjectile()
 	ProjectileMovement->ProjectileGravityScale = 0.0f; // 중력 비활성화
 	ProjectileMovement->bAutoActivate = true; // BeginPlay에서 자동 활성화 (이후 Velocity로 제어)
 	ProjectileMovement->Velocity = FVector::ZeroVector; // 초기 Velocity 0 (정지 상태)
+	ProjectileMovement->bSweepCollision = true; // Sweep 충돌 감지
 	
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(false);
@@ -49,13 +50,13 @@ void AProjectile::BeginPlay()
 	if (GetOwner())
 	{	
 		CollisionSphere->IgnoreActorWhenMoving(GetOwner(), true);
-		_MeshComponent->IgnoreActorWhenMoving(GetOwner(), true);
 	}
 	
-	if (ProjectileMovement && _MeshComponent)
+	if (ProjectileMovement && CollisionSphere)
 	{
-		ProjectileMovement->SetUpdatedComponent(_MeshComponent);
+		ProjectileMovement->SetUpdatedComponent(CollisionSphere); // CollisionSphere를 이동 대상으로
 	}
+	
 }
 
 // Called every frame
