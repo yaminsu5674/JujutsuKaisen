@@ -18,20 +18,10 @@ AProjectile::AProjectile()
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
 	SetRootComponent(CollisionSphere); // CollisionSphere가 Root!
 	CollisionSphere->SetSphereRadius(SphereRadius);
-	
-	// QueryAndPhysics: 오버랩 감지 + 물리 충돌 둘 다 활성화
 	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	
-	// 커스텀 Projectile 오브젝트 채널 사용
 	CollisionSphere->SetCollisionObjectType(ECC_Projectile);
-	
-	// 기본적으로 모두 무시
 	CollisionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	
-	// Pawn에게는 오버랩
 	CollisionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	
-	// WorldStatic(벽, 바닥 등)에는 Block
 	CollisionSphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	
 	// ProjectileMovement 컴포넌트 생성 (CollisionSphere에 부착)
@@ -73,17 +63,18 @@ void AProjectile::BeginPlay()
 		ProjectileMovement->SetUpdatedComponent(CollisionSphere); // CollisionSphere를 이동 대상으로
 	}
 	
+	// 오버랩 이벤트 바인딩 (Pawn과의 충돌 감지용)
+	if (CollisionSphere)
+	{
+		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
+		CollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AProjectile::OnOverlapEnd);
+	}
 }
 
 // Called every frame
 void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (_LifeCountingDown <= 0.0f)
-		return;
-
-	// Tick 로직은 필요시 자식 클래스에서 오버라이드
 }
 
 void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -110,9 +101,5 @@ void AProjectile::CheckOverlap()
 			}	
 			UE_LOG(LogTemp, Error, TEXT("이미 겹쳐 있음: %s"), *Target->GetName());
 		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("PalProjectile: 타겟도 없노 ㅋ"));
 	}
 }

@@ -10,7 +10,6 @@
 #include "Skills/Sukuna/PalProjectile.h"
 #include "Library/SkillLibrary.h"
 #include "Attack/CustomProjectileMovement.h"
-#include "Components/SphereComponent.h"
 
 UPal::UPal()
 {
@@ -119,13 +118,7 @@ void UPal::SpawnProjectile()
 	// Place 타입 설정: Lifespan 없음
 	PalProjectile->SetLifeSpan(0.0f);
 	
-	// 오버랩 이벤트 바인딩
-	if (USphereComponent* CollisionSphere = PalProjectile->GetCollisionSphere())
-	{
-		CollisionSphere->OnComponentBeginOverlap.AddDynamic(PalProjectile, &AProjectile::OnOverlapBegin);
-		CollisionSphere->OnComponentEndOverlap.AddDynamic(PalProjectile, &AProjectile::OnOverlapEnd);
-	}
-	
+	// 오버랩 이벤트는 BeginPlay에서 자동으로 바인딩됨
     PalProjectile->CheckOverlap();
 }
 

@@ -4,7 +4,6 @@
 
 UCustomProjectileMovement::UCustomProjectileMovement()
 {
-
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
@@ -67,15 +66,6 @@ void UCustomProjectileMovement::TickComponent(float DeltaTime, enum ELevelTick T
 
 void UCustomProjectileMovement::HandleImpact(const FHitResult& Hit, float TimeSlice, const FVector& MoveDelta)
 {
-	// 디버그: 충돌 감지 로그
-	if (GEngine && Hit.GetActor())
-	{
-		FString HitActorName = Hit.GetActor()->GetName();
-		FString MoveTypeStr = (MoveType == EProjectileMoveType::Single) ? TEXT("Single") : TEXT("Rush");
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Yellow, 
-			FString::Printf(TEXT("HandleImpact - Hit: %s, MoveType: %s"), *HitActorName, *MoveTypeStr));
-	}
-	
 	switch (MoveType)
 	{
 	case EProjectileMoveType::Single:
@@ -99,15 +89,6 @@ void UCustomProjectileMovement::HandleImpact(const FHitResult& Hit, float TimeSl
 
 UCustomProjectileMovement::EHandleBlockingHitResult UCustomProjectileMovement::HandleBlockingHit(const FHitResult& Hit, float TimeTick, const FVector& MoveDelta, float& SubTickTimeRemaining)
 {
-	// 디버그: 블로킹 히트 로그
-	if (GEngine && Hit.GetActor())
-	{
-		FString HitActorName = Hit.GetActor()->GetName();
-		FString MoveTypeStr = (MoveType == EProjectileMoveType::Single) ? TEXT("Single") : TEXT("Rush");
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, 
-			FString::Printf(TEXT("HandleBlockingHit - Hit: %s, MoveType: %s"), *HitActorName, *MoveTypeStr));
-	}
-	
 	switch (MoveType)
 	{
 	case EProjectileMoveType::Single:
