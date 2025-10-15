@@ -60,8 +60,7 @@ void UCustomProjectileMovement::HandleImpact(const FHitResult& Hit, float TimeSl
 		break;
 		
 	case EProjectileMoveType::Pulse:
-		// 펄스형: 충돌 디버그만 출력, 멈추지 않음
-	
+		// 펄스형: 충돌해도 멈추지 않음
 		// Super::HandleImpact 호출 안 함 → 멈추지 않음
 		break;
 	}
@@ -77,18 +76,19 @@ UCustomProjectileMovement::EHandleBlockingHitResult UCustomProjectileMovement::H
 		return Super::HandleBlockingHit(Hit, TimeTick, MoveDelta, SubTickTimeRemaining);
 		
 	case EProjectileMoveType::Pulse:
-		// 펄스형: 충돌해도 계속 진행
-
-		
-		// 방향과 속도 유지
-		if (GetOwner())
+		// 펄스형: 충돌해도 속도 유지하며 계속 진행
 		{
-			Velocity = GetOwner()->GetActorForwardVector() * Velocity.Size();
-			ProjectileGravityScale = 0.0f;
+			// 방향과 속도 크기 유지
+			if (GetOwner())
+			{
+				float CurrentSpeed = Velocity.Size();
+				Velocity = GetOwner()->GetActorForwardVector() * CurrentSpeed;
+				ProjectileGravityScale = 0.0f;
+			}
+			
+			// 계속 진행
+			return EHandleBlockingHitResult::AdvanceNextSubstep;
 		}
-		
-		// 충돌 무시하고 계속 진행
-		return EHandleBlockingHitResult::AdvanceNextSubstep;
 	}
 	
 	// 기본 동작

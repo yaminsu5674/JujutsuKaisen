@@ -117,7 +117,7 @@ void AProjectile::CheckOverlap()
 			{
 				Target->GetStateManager()->SetHitSubState(EHitSubState::LightHit);
 			}	
-			UE_LOG(LogTemp, Error, TEXT("이미 겹쳐 있음: %s"), *Target->GetName());
+			UE_LOG(LogTemp, Error, TEXT("Already Overlapping: %s"), *Target->GetName());
 		}
 	}
 }
