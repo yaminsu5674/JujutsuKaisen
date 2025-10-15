@@ -87,6 +87,12 @@ void AAkaProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	}
 }
 
+void AAkaProjectile::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// 부모의 OnOverlapEnd 호출 (bIsOverlapping 처리)
+	Super::OnOverlapEnd(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
+}
+
 void AAkaProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

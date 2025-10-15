@@ -16,8 +16,10 @@ class JUJUTSUKAISEN_API AAkaProjectile : public AProjectile
 public:
 	AAkaProjectile();
 
-	// 부모의 OnOverlapBegin 함수 오버라이드
+	// 부모의 오버랩 함수 오버라이드
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	
+	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 
 	// BeginPlay 오버라이드
 	virtual void BeginPlay() override;
