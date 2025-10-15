@@ -39,9 +39,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 
 	// 스킬 상태 배열 초기화 (Q, E, R, A, S, D, ER, QR 순서)
 	bIsUsingSkills.Init(false, 8);
-	
-	// 메시 충돌 비활성화 (캡슐 컴포넌트만 충돌 사용)
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 
 	// 컴포넌트 초기화
 	InitHitBoxes();

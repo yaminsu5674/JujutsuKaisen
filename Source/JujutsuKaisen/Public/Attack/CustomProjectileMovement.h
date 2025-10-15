@@ -10,8 +10,7 @@ UENUM(BlueprintType)
 enum class EProjectileMoveType : uint8
 {
 	Single,		// 단발형: 한 번 발사되어 날아가는 타입
-	Rush,		// 돌진형: Single과 동일, 계속 전진하는 타입
-	Pulse,		// 펄스형: 이동/정지를 반복하는 타입
+	Rush,		// 돌진형: 이동/정지를 반복하며 벽을 무시하는 타입
 };
 
 /**
@@ -30,10 +29,6 @@ protected:
 	// 발사체 이동 타입
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Custom Projectile")
 	EProjectileMoveType MoveType;
-	
-	// Pulse 타입의 이동/정지 주기
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Projectile")
-	float PulseInterval = 0.2f;
 
 protected:
 	// 부모 클래스의 가상 함수 오버라이드
@@ -50,10 +45,6 @@ public:
 	// 이동 타입 설정 함수
 	UFUNCTION(BlueprintCallable, Category = "Custom Projectile")
 	void SetMoveType(EProjectileMoveType NewMoveType);
-	
-	// Pulse 타입의 이동 간격 설정
-	UFUNCTION(BlueprintCallable, Category = "Custom Projectile")
-	void SetPulseInterval(float NewInterval);
 	
 	// 발사 방향 설정 (Target을 향해 발사)
 	UFUNCTION(BlueprintCallable, Category = "Custom Projectile")

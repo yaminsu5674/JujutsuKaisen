@@ -44,10 +44,6 @@ protected:
 	// ShotEffect 생성 간격 타이머
 	UPROPERTY()
 	float ShotEffectTimer;
-	UPROPERTY()
-	float ShotEffectInterval;
-	
-	// Pulse 이동 간격 (블루프린트에서 설정 가능)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
-	float PulseInterval = 0.2f;
+	float ShotEffectInterval;
 };

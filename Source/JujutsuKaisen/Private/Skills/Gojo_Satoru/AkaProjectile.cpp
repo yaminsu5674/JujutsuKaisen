@@ -29,11 +29,10 @@ void AAkaProjectile::BeginPlay()
 		ChargingEffectComponent = UGameplayStatics::SpawnEmitterAttached(ChargingEffect, RootComponent, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
 	}
 	
-	// ProjectileMovement에 PulseInterval 설정
+	// ProjectileMovement를 Rush 타입으로 설정
 	if (ProjectileMovement)
 	{
-		ProjectileMovement->SetMoveType(EProjectileMoveType::Pulse);
-		ProjectileMovement->SetPulseInterval(PulseInterval);
+		ProjectileMovement->SetMoveType(EProjectileMoveType::Rush);
 	}
 }
 
@@ -44,6 +43,10 @@ void AAkaProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	{
 		return;
 	}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("OnOverlapBegin Called!"));
+	}
 	
 	// 부모의 OnOverlapBegin 호출 (bIsOverlapping 처리)
 	Super::OnOverlapBegin(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
@@ -51,6 +54,13 @@ void AAkaProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	// 부모에서 bIsOverlapping이 true가 되었는지 확인
 	if (bIsOverlapping)
 	{
+		// 발사체를 수평으로만 이동하도록 변경 (Z축 제거)
+		if (ProjectileMovement)
+		{
+			FVector CurrentVelocity = ProjectileMovement->Velocity;
+			CurrentVelocity.Z = 0.0f;  // Z축 속도 제거
+			ProjectileMovement->Velocity = CurrentVelocity;
+		}
 
 		// 캐릭터에게 데미지 적용
 		if (Target && Target->GetStateManager())
@@ -85,8 +95,14 @@ void AAkaProjectile::Tick(float DeltaTime)
 	if (bIsOverlapping && Target != nullptr)
 	{
 		// 오버랩 중일 때의 로직
-		// 필요시 여기에 지속적인 데미지나 효과 추가 가능
-		Target->Hit();
+		//Target->Hit();
+		
+		// 발사체의 현재 속도로 캐릭터 밀어내기 (발사체와 함께 이동)
+		if (ProjectileMovement)
+		{
+			FVector LaunchVelocity = ProjectileMovement->Velocity;
+			Target->LaunchCharacter(LaunchVelocity, true, true);
+		}
 	}
 	// 움직이고 있을 때 (Velocity > 0) ShotEffect를 0.2초마다 생성
 	if (ProjectileMovement && ProjectileMovement->Velocity.Size() > 0.0f && ShotEffect)
