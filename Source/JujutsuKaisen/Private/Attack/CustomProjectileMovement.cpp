@@ -19,46 +19,31 @@ void UCustomProjectileMovement::TickComponent(float DeltaTime, enum ELevelTick T
 	switch (MoveType)
 	{
 	case EProjectileMoveType::Single:
-		// 단발형: 부모 클래스 로직 그대로
+	case EProjectileMoveType::Rush:
+		// 단발형/돌진형: 부모 클래스 로직 그대로
 		Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 		break;
 		
-	case EProjectileMoveType::Rush:
+	case EProjectileMoveType::Pulse:
 	{
-		// 돌진형: 속도와 방향 저장
-		FVector SavedDirection = Velocity.GetSafeNormal();
-		float SavedSpeed = Velocity.Size();
-		
-		// 0.2초 간격으로 Super::TickComponent 호출
-		static float AccumulatedTime = 0.0f;
-		AccumulatedTime += DeltaTime;
-		
-		if (AccumulatedTime >= 0.2f)
+		// Pulse 타입: 이동/정지 반복
+		static float PulseTimer = 0.0f;
+		PulseTimer += DeltaTime;
+
+		// 이동 지속 시간 (PulseInterval의 절반)
+		const float MoveDuration = PulseInterval * 0.5f;
+
+		if (PulseTimer < MoveDuration)
 		{
-			// 지역 변수로 복사
-			float CapturedTime = AccumulatedTime;
-			
-			// 람다로 Super::TickComponent 호출
-			auto CallSuperTick = [this, CapturedTime, TickType, ThisTickFunction]()
-			{
-				// 누적된 시간으로 한 번에 Tick
-				Super::TickComponent(CapturedTime, TickType, ThisTickFunction);
-			};
-			
-			// 람다 실행
-			CallSuperTick();
-			
-			// 타이머 리셋
-			AccumulatedTime = 0.0f;
+			// 짧은 시간 동안 이동
+			Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 		}
-		
-		// Super::TickComponent 이후 속도와 방향 강제 복원
-		ProjectileGravityScale = 0.0f;
-		
-		if (SavedSpeed > 0.0f)
+		else if (PulseTimer >= PulseInterval)
 		{
-			Velocity = SavedDirection * InitialSpeed;
+			PulseTimer = 0.0f; // 주기 리셋
 		}
+		// else: 정지 상태 (MoveDuration ~ PulseInterval 사이)
+
 		break;
 	}
 	}
@@ -69,19 +54,14 @@ void UCustomProjectileMovement::HandleImpact(const FHitResult& Hit, float TimeSl
 	switch (MoveType)
 	{
 	case EProjectileMoveType::Single:
-		// 단발형: 부모 클래스 로직 그대로 (충돌 시 멈춤)
+	case EProjectileMoveType::Rush:
+		// 단발형/돌진형: 부모 클래스 로직 그대로 (충돌 시 멈춤)
 		Super::HandleImpact(Hit, TimeSlice, MoveDelta);
 		break;
 		
-	case EProjectileMoveType::Rush:
-		// 돌진형: 충돌 디버그만 출력, 멈추지 않음
-		if (Hit.GetActor())
-		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("I got hit"));
-			}
-		}
+	case EProjectileMoveType::Pulse:
+		// 펄스형: 충돌 디버그만 출력, 멈추지 않음
+	
 		// Super::HandleImpact 호출 안 함 → 멈추지 않음
 		break;
 	}
@@ -92,15 +72,13 @@ UCustomProjectileMovement::EHandleBlockingHitResult UCustomProjectileMovement::H
 	switch (MoveType)
 	{
 	case EProjectileMoveType::Single:
-		// 단발형: 부모 클래스 로직 그대로 (충돌 시 멈춤)
+	case EProjectileMoveType::Rush:
+		// 단발형/돌진형: 부모 클래스 로직 그대로 (충돌 시 멈춤)
 		return Super::HandleBlockingHit(Hit, TimeTick, MoveDelta, SubTickTimeRemaining);
 		
-	case EProjectileMoveType::Rush:
-		// 돌진형: 충돌해도 계속 진행
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("Blocking Hit Ignored - Continue!"));
-		}
+	case EProjectileMoveType::Pulse:
+		// 펄스형: 충돌해도 계속 진행
+
 		
 		// 방향과 속도 유지
 		if (GetOwner())
@@ -125,19 +103,25 @@ void UCustomProjectileMovement::SetMoveType(EProjectileMoveType NewMoveType)
 	switch (MoveType)
 	{
 	case EProjectileMoveType::Single:
-		// 단발형: 기본 설정
+	case EProjectileMoveType::Rush:
+		// 단발형/돌진형: 기본 설정
 		bNeverStop = false;
 		bShouldBounce = false;
 		bIsHomingProjectile = false;
 		break;
 		
-	case EProjectileMoveType::Rush:
-		// 돌진형: 멈추지 않음
+	case EProjectileMoveType::Pulse:
+		// Pulse 타입: 멈추지 않음
 		bNeverStop = true;
 		bShouldBounce = false;
 		bIsHomingProjectile = false;
 		break;
 	}
+}
+
+void UCustomProjectileMovement::SetPulseInterval(float NewInterval)
+{
+	PulseInterval = NewInterval;
 }
 
 void UCustomProjectileMovement::SetDirection(AActor* TargetActor, float ProjectileSpeed)

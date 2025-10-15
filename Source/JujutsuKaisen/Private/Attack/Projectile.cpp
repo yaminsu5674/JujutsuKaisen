@@ -79,6 +79,12 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// Owner는 무시 (자신의 스킬에 맞지 않도록)
+	if (OtherActor == GetOwner())
+	{
+		return;
+	}
+	
 	// 타겟 캐릭터 초기화
 	Target = Cast<AJujutsuKaisenCharacter>(OtherActor);
 }

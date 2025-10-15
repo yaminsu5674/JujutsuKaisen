@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Attack/CustomProjectileMovement.h"
 
 AAkaProjectile::AAkaProjectile()
 {
@@ -26,6 +27,13 @@ void AAkaProjectile::BeginPlay()
 	{
 		// RootComponent에 부착하여 발사체와 함께 움직임
 		ChargingEffectComponent = UGameplayStatics::SpawnEmitterAttached(ChargingEffect, RootComponent, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
+	}
+	
+	// ProjectileMovement에 PulseInterval 설정
+	if (ProjectileMovement)
+	{
+		ProjectileMovement->SetMoveType(EProjectileMoveType::Pulse);
+		ProjectileMovement->SetPulseInterval(PulseInterval);
 	}
 }
 
@@ -60,11 +68,11 @@ void AAkaProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 		bIsOverlapping = true;
 		
 		// ChargingEffect 제거
-		if (ChargingEffectComponent)
-		{
-			ChargingEffectComponent->DestroyComponent();
-			ChargingEffectComponent = nullptr;
-		}
+		// if (ChargingEffectComponent)
+		// {
+		// 	ChargingEffectComponent->DestroyComponent();
+		// 	ChargingEffectComponent = nullptr;
+		// }
 	}
 }
 
@@ -79,7 +87,7 @@ void AAkaProjectile::Tick(float DeltaTime)
 		// 필요시 여기에 지속적인 데미지나 효과 추가 가능
 		Target->Hit();
 	}
-
+	//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation());
 	// 움직이고 있을 때 (Velocity > 0) ShotEffect를 0.2초마다 생성
 	if (ProjectileMovement && ProjectileMovement->Velocity.Size() > 0.0f && ShotEffect && !bIsOverlapping)
 	{
