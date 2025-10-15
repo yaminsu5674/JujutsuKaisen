@@ -31,10 +31,17 @@ void AMurasakiProjectile::BeginPlay()
 
 void AMurasakiProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// 부모의 OnOverlapBegin 호출 (Target 초기화)
+	// Owner와 오버랩되면 무시
+	if (OtherActor == GetOwner())
+	{
+		return;
+	}
+	
+	// 부모의 OnOverlapBegin 호출 (bIsOverlapping 처리)
 	Super::OnOverlapBegin(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	
-	if (Target != nullptr && !bIsOverlapping)
+	// 부모에서 bIsOverlapping이 true가 되었는지 확인
+	if (bIsOverlapping)
 	{
 		// ShotEffect 파티클 재생 (기존 파티클 시스템 유지)
 		if (ShotEffect)
@@ -44,13 +51,13 @@ void AMurasakiProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponen
 		}
 
 		// 캐릭터에게 데미지 적용
-		if (Target->GetStateManager())
+		if (Target && Target->GetStateManager())
 		{
 			Target->GetStateManager()->SetHitSubState(EHitSubState::MediumHit);
 		}
 		
 		// 물리 충돌로 캐릭터 날리기
-		if (Target->GetCharacterMovement())
+		if (Target && Target->GetCharacterMovement())
         {
             // Projectile의 방향 벡터 (정규화된)
             FVector LaunchDir = GetActorForwardVector();
@@ -58,7 +65,6 @@ void AMurasakiProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponen
             Target->GetCharacterMovement()->AddImpulse(ImpulseForce, true);
 
         }
-		bIsOverlapping = true;
 		
 		// ChargingEffect 제거
 		if (ChargingEffectComponent)

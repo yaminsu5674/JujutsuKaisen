@@ -40,16 +40,21 @@ void APalProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 {
 	UE_LOG(LogTemp, Log, TEXT("PalProjectile: OnOverlapBegin 호출됨!"));
 	
-	// 부모의 OnOverlapBegin 호출 (Target 초기화)
+	// Owner와 오버랩되면 무시
+	if (OtherActor == GetOwner())
+	{
+		return;
+	}
+	
+	// 부모의 OnOverlapBegin 호출 (bIsOverlapping 처리)
 	Super::OnOverlapBegin(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	
-	if (Target != nullptr && !bIsOverlapping)
+	// 부모에서 bIsOverlapping이 true가 되었는지 확인
+	if (bIsOverlapping)
 	{
 		UE_LOG(LogTemp, Log, TEXT("PalProjectile: 오버랩 처리 성공!"));
-		// ShotEffect 파티클 재생
-
-		bIsOverlapping = true;
 	}
+	
     if (Target && Target->GetStateManager())
     {
         Target->GetStateManager()->SetHitSubState(EHitSubState::LightHit);
@@ -59,14 +64,8 @@ void APalProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 
 void APalProjectile::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	// 부모의 OnOverlapEnd 호출
+	// 부모의 OnOverlapEnd 호출 (bIsOverlapping 처리)
 	Super::OnOverlapEnd(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
-	
-	// 오버랩이 끝나면 bIsOverlapping을 false로 설정
-	if (bIsOverlapping)
-	{
-		bIsOverlapping = false;
-	}
 }
 
 void APalProjectile::Tick(float DeltaTime)

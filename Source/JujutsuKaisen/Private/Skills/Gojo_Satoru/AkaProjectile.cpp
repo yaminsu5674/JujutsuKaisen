@@ -39,25 +39,27 @@ void AAkaProjectile::BeginPlay()
 
 void AAkaProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// 부모의 OnOverlapBegin 호출 (Target 초기화)
+	// Owner와 오버랩되면 무시
+	if (OtherActor == GetOwner())
+	{
+		return;
+	}
+	
+	// 부모의 OnOverlapBegin 호출 (bIsOverlapping 처리)
 	Super::OnOverlapBegin(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	
-	if (Target != nullptr && !bIsOverlapping)
+	// 부모에서 bIsOverlapping이 true가 되었는지 확인
+	if (bIsOverlapping)
 	{
-		// ShotEffect 파티클 재생
-		if (ShotEffect)
-		{
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation());
-		}
 
 		// 캐릭터에게 데미지 적용
-		if (Target->GetStateManager())
+		if (Target && Target->GetStateManager())
 		{
 			Target->GetStateManager()->SetHitSubState(EHitSubState::MediumHit);
 		}
 		
 		// 물리 충돌로 캐릭터 날리기
-		if (Target->GetCharacterMovement())
+		if (Target && Target->GetCharacterMovement())
         {
             // Projectile의 방향 벡터 (정규화된)
             // FVector LaunchDir = GetActorForwardVector();
@@ -65,14 +67,13 @@ void AAkaProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
             // Target->GetCharacterMovement()->AddImpulse(ImpulseForce, true);
 
         }
-		bIsOverlapping = true;
 		
 		// ChargingEffect 제거
-		// if (ChargingEffectComponent)
-		// {
-		// 	ChargingEffectComponent->DestroyComponent();
-		// 	ChargingEffectComponent = nullptr;
-		// }
+		if (ChargingEffectComponent)
+		{
+			ChargingEffectComponent->DestroyComponent();
+			ChargingEffectComponent = nullptr;
+		}
 	}
 }
 
@@ -87,9 +88,8 @@ void AAkaProjectile::Tick(float DeltaTime)
 		// 필요시 여기에 지속적인 데미지나 효과 추가 가능
 		Target->Hit();
 	}
-	//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation());
 	// 움직이고 있을 때 (Velocity > 0) ShotEffect를 0.2초마다 생성
-	if (ProjectileMovement && ProjectileMovement->Velocity.Size() > 0.0f && ShotEffect && !bIsOverlapping)
+	if (ProjectileMovement && ProjectileMovement->Velocity.Size() > 0.0f && ShotEffect)
 	{
 		ShotEffectTimer += DeltaTime;
 		

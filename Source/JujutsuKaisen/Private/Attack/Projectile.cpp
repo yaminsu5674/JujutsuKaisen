@@ -85,13 +85,25 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 		return;
 	}
 	
-	// 타겟 캐릭터 초기화
-	Target = Cast<AJujutsuKaisenCharacter>(OtherActor);
+	// 오버랩된 액터를 캐스팅하여 Target과 비교
+	AJujutsuKaisenCharacter* OverlappedCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
+	
+	// Target과 일치하면 bIsOverlapping = true
+	if (OverlappedCharacter && OverlappedCharacter == Target)
+	{
+		bIsOverlapping = true;
+	}
 }
 
 void AProjectile::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	// 기본 오버랩 종료 처리 (자식 클래스에서 오버라이드 가능)
+	// Target과의 오버랩이 끝나면 bIsOverlapping = false
+	AJujutsuKaisenCharacter* OverlappedCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
+	
+	if (OverlappedCharacter && OverlappedCharacter == Target)
+	{
+		bIsOverlapping = false;
+	}
 }
 
 void AProjectile::CheckOverlap()
