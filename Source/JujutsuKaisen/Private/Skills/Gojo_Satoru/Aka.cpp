@@ -182,9 +182,8 @@ void UAka::LaunchProjectile()
 			Movement->ApplyBehaviorSettings(true, true, AkaProjectile->GetLifespan());
 		}
 		
-		// Lifespan 및 충돌 설정
+		// Lifespan 설정
 		AkaProjectile->SetLifeSpan(AkaProjectile->GetLifespan());
-		AkaProjectile->SetActorEnableCollision(true);
 		
 		// 중복 호출 제거
 		AkaProjectile = nullptr;

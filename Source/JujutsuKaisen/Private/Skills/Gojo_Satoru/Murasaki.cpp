@@ -172,9 +172,8 @@ void UMurasaki::LaunchProjectile()
 			Movement->ApplyBehaviorSettings(true, true, MurasakiProjectile->GetLifespan());
 		}
 		
-		// Lifespan 및 충돌 설정
+		// Lifespan 설정
 		MurasakiProjectile->SetLifeSpan(MurasakiProjectile->GetLifespan());
-		MurasakiProjectile->SetActorEnableCollision(true);
 		
 		// 발사 후 참조 정리 (다음 스킬 사용을 위해)
 		MurasakiProjectile = nullptr;

@@ -116,10 +116,10 @@ void UPal::SpawnProjectile()
 		Movement->ApplyBehaviorSettings(false, false, 0.0f);
 	}
 	
-	// Place 타입 설정: Lifespan 없음, 충돌 활성화, 오버랩 이벤트 바인딩
+	// Place 타입 설정: Lifespan 없음
 	PalProjectile->SetLifeSpan(0.0f);
-	PalProjectile->SetActorEnableCollision(true);
 	
+	// 오버랩 이벤트 바인딩
 	if (USphereComponent* CollisionSphere = PalProjectile->GetCollisionSphere())
 	{
 		CollisionSphere->OnComponentBeginOverlap.AddDynamic(PalProjectile, &AProjectile::OnOverlapBegin);

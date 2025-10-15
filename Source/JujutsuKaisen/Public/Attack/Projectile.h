@@ -8,6 +8,9 @@
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "Projectile.generated.h"
 
+// 커스텀 콜리전 채널 (프로젝트 설정에서 생성한 Projectile 채널)
+#define ECC_Projectile ECC_GameTraceChannel1
+
 UCLASS()
 class JUJUTSUKAISEN_API AProjectile : public AActor
 {

@@ -18,10 +18,20 @@ AProjectile::AProjectile()
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
 	SetRootComponent(CollisionSphere); // CollisionSphere가 Root!
 	CollisionSphere->SetSphereRadius(SphereRadius);
+	
+	// QueryAndPhysics: 오버랩 감지 + 물리 충돌 둘 다 활성화
 	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	CollisionSphere->SetCollisionObjectType(ECC_WorldDynamic);
+	
+	// 커스텀 Projectile 오브젝트 채널 사용
+	CollisionSphere->SetCollisionObjectType(ECC_Projectile);
+	
+	// 기본적으로 모두 무시
 	CollisionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
+	
+	// Pawn에게는 오버랩
 	CollisionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	
+	// WorldStatic(벽, 바닥 등)에는 Block
 	CollisionSphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	
 	// ProjectileMovement 컴포넌트 생성 (CollisionSphere에 부착)
@@ -37,7 +47,6 @@ AProjectile::AProjectile()
 	ProjectileMovement->bSweepCollision = true; // Sweep 충돌 감지
 	
 	SetActorHiddenInGame(false);
-	SetActorEnableCollision(false);
 	SetActorTickEnabled(true);
 }
 
