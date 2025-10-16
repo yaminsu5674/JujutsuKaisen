@@ -20,7 +20,7 @@ AAkaProjectile::AAkaProjectile()
 
 void AAkaProjectile::BeginPlay()
 {
-	Super::BeginPlay();
+	Super::BeginPlay();  // 부모에서 SetLifeSpan(Lifespan) 자동 호출됨
 
 	// 스폰 시 ChargingEffect 파티클 재생 (발사체에 붙어서 함께 움직임)
 	if (ChargingEffect)
@@ -60,9 +60,10 @@ void AAkaProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 	// 물리 충돌로 캐릭터 날리기
 	if (Target && Target->GetCharacterMovement())
 	{
-		// 위로만 살짝 띄우기
-		FVector LaunchVelocity = FVector(0, 0, 10.f);
-		Target->LaunchCharacter(LaunchVelocity, false, true);
+		// 중력 끄고 Falling 모드로 전환 (공중에 떠있을 수 있게)
+		Target->GetCharacterMovement()->GravityScale = 0.0f;
+		//Target->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
+		//Target->SetActorLocation(Target->GetActorLocation() + FVector(0, 0, 30.f));
 	}
 	
 	// ChargingEffect 제거
@@ -79,6 +80,30 @@ void AAkaProjectile::OnProjectileOverlapEnd(AActor* OtherActor)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("OnProjectileOverlapEnd Called!"));
 	}
+	
+	// 오버랩이 끝날 때 타겟을 날림
+	if (Target && Target->GetCharacterMovement())
+	{
+		// 중력 다시 켜기 (프로젝트 기본값 2.8)
+		Target->GetCharacterMovement()->GravityScale = 2.8f;
+		
+		// 발사체 속도 방향으로 캐릭터 날리기
+		if (ProjectileMovement)
+		{
+			// 발사체 방향만 추출 (정규화)
+			FVector LaunchDirection = ProjectileMovement->Velocity;
+			LaunchDirection.Normalize();
+			
+			// 각 축에 하드코딩된 힘 적용
+			FVector LaunchVelocity = FVector(
+				LaunchDirection.X * 100.f,  // X축 100
+				LaunchDirection.Y * 100.f,  // Y축 100
+				100.f                        // Z축 100 (위로)
+			);
+			
+			Target->LaunchCharacter(LaunchVelocity, true, true);
+		}
+	}
 }
 
 void AAkaProjectile::Tick(float DeltaTime)
@@ -91,14 +116,19 @@ void AAkaProjectile::Tick(float DeltaTime)
 		// 오버랩 중일 때의 로직
 		//Target->Hit();
 		
-		// 발사체의 현재 속도로 캐릭터 밀어내기 (발사체와 함께 이동)
-		if (ProjectileMovement)
-		{
-			FVector LaunchVelocity = ProjectileMovement->Velocity;
-			LaunchVelocity.Z += 20.f;  // Z축에 600 추가
+		// 발사체와 함께 이동하며 점진적으로 위로 띄우기
+		// if (ProjectileMovement)
+		// {
+		// 	// 발사체의 이동량 계산 (X, Y, Z) 
+		// 	FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 1.0f;
 			
-			Target->LaunchCharacter(LaunchVelocity, true, false);
-		}
+		// 	// Z축에 추가 상승량 누적 (매 프레임마다 조금씩 더 위로)
+		// 	DeltaMovement.Z += 50.f * DeltaTime;  // 초당 50 유닛씩 추가 상승
+			
+		// 	// 타겟을 발사체와 같은 양 + 추가 상승량만큼 이동 (Sweep = false로 충돌 무시)
+		// 	FVector NewLocation = Target->GetActorLocation() + DeltaMovement;
+		// 	Target->SetActorLocation(NewLocation, false);  // false = 충돌 체크 없이 강제 이동
+		// }
 	}
 	// 움직이고 있을 때 (Velocity > 0) ShotEffect를 0.2초마다 생성
 	if (ProjectileMovement && ProjectileMovement->Velocity.Size() > 0.0f && ShotEffect)
