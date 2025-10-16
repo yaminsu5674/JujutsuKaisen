@@ -87,8 +87,6 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	// 기본값 설정
 	Health = MaxHealth;
 	bCanMove = true; // 게임 시작 시 이동 가능하도록 강제 설정
-
-	// SkillManager는 이제 각 스킬이 GetOwner()로 자동으로 Owner를 찾음
 	
 	// StateManager 초기 상태 설정
 	if (StateManager)
@@ -100,7 +98,7 @@ void AJujutsuKaisenCharacter::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("BeginPlay: StateManager is NULL!"));
 		UE_LOG(LogTemp, Error, TEXT("Character: %s"), *GetName());
 		UE_LOG(LogTemp, Error, TEXT("Class: %s"), *GetClass()->GetName());
-}
+	}
 
 	_AnimInstance = Cast<UJujutsuKaisenAnimInstance>(GetMesh()->GetAnimInstance());
 	if (!_AnimInstance)

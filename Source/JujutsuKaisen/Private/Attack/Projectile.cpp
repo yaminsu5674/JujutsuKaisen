@@ -92,6 +92,9 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 	if (OverlappedCharacter && OverlappedCharacter == Target)
 	{
 		bIsOverlapping = true;
+		
+		// 자식 클래스의 커스텀 로직 호출
+		OnProjectileOverlapBegin(OtherActor);
 	}
 }
 
@@ -103,7 +106,20 @@ void AProjectile::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (OverlappedCharacter && OverlappedCharacter == Target)
 	{
 		bIsOverlapping = false;
+		
+		// 자식 클래스의 커스텀 로직 호출
+		OnProjectileOverlapEnd(OtherActor);
 	}
+}
+
+void AProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
+{
+	// 기본 구현 없음 (자식 클래스에서 오버라이드)
+}
+
+void AProjectile::OnProjectileOverlapEnd(AActor* OtherActor)
+{
+	// 기본 구현 없음 (자식 클래스에서 오버라이드)
 }
 
 void AProjectile::CheckOverlap()

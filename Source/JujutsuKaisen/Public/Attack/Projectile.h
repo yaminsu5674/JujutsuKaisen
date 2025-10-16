@@ -78,11 +78,17 @@ public:
 	// CollisionSphere getter
 	FORCEINLINE USphereComponent* GetCollisionSphere() const { return CollisionSphere; }
 
-	// 오버랩 이벤트 함수들
+	// 오버랩 이벤트 함수들 (final - 자식에서 오버라이드 불가)
 	UFUNCTION()
-	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+protected:
+	// 자식 클래스에서 오버라이드할 가상 함수들
+	virtual void OnProjectileOverlapBegin(AActor* OtherActor);
+	
+	virtual void OnProjectileOverlapEnd(AActor* OtherActor);
 
 };

@@ -16,10 +16,13 @@ class JUJUTSUKAISEN_API AMurasakiProjectile : public AProjectile
 public:
 	AMurasakiProjectile();
 
-	// 부모의 오버랩 함수 오버라이드
-	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+protected:
+	// 부모의 가상 함수 오버라이드
+	virtual void OnProjectileOverlapBegin(AActor* OtherActor) override;
 	
-	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
+	virtual void OnProjectileOverlapEnd(AActor* OtherActor) override;
+
+public:
 
 	// BeginPlay 오버라이드
 	virtual void BeginPlay() override;

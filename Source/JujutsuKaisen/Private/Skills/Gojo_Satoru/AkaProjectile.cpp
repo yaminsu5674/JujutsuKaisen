@@ -36,61 +36,49 @@ void AAkaProjectile::BeginPlay()
 	}
 }
 
-void AAkaProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AAkaProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 {
-	// Owner와 오버랩되면 무시
-	if (OtherActor == GetOwner())
-	{
-		return;
-	}
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("OnOverlapBegin Called!"));
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("OnProjectileOverlapBegin Called!"));
 	}
 	
-	// 부모의 OnOverlapBegin 호출 (bIsOverlapping 처리)
-	Super::OnOverlapBegin(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-	
-	// 부모에서 bIsOverlapping이 true가 되었는지 확인
-	if (bIsOverlapping)
+	// 발사체를 수평으로만 이동하도록 변경 (Z축 제거)
+	if (ProjectileMovement)
 	{
-		// 발사체를 수평으로만 이동하도록 변경 (Z축 제거)
-		if (ProjectileMovement)
-		{
-			FVector CurrentVelocity = ProjectileMovement->Velocity;
-			CurrentVelocity.Z = 0.0f;  // Z축 속도 제거
-			ProjectileMovement->Velocity = CurrentVelocity;
-		}
+		FVector CurrentVelocity = ProjectileMovement->Velocity;
+		CurrentVelocity.Z = 0.0f;  // Z축 속도 제거
+		ProjectileMovement->Velocity = CurrentVelocity;
+	}
 
-		// 캐릭터에게 데미지 적용
-		if (Target && Target->GetStateManager())
-		{
-			Target->GetStateManager()->SetHitSubState(EHitSubState::MediumHit);
-		}
-		
-		// 물리 충돌로 캐릭터 날리기
-		if (Target && Target->GetCharacterMovement())
-        {
-            // Projectile의 방향 벡터 (정규화된)
-            // FVector LaunchDir = GetActorForwardVector();
-            // FVector ImpulseForce = LaunchDir * 400.f + FVector(0, 0, 200.f);
-            // Target->GetCharacterMovement()->AddImpulse(ImpulseForce, true);
-
-        }
-		
-		// ChargingEffect 제거
-		if (ChargingEffectComponent)
-		{
-			ChargingEffectComponent->DestroyComponent();
-			ChargingEffectComponent = nullptr;
-		}
+	// 캐릭터에게 데미지 적용
+	// if (Target && Target->GetStateManager())
+	// {
+	// 	Target->GetStateManager()->SetHitSubState(EHitSubState::MediumHit);
+	// }
+	
+	// 물리 충돌로 캐릭터 날리기
+	if (Target && Target->GetCharacterMovement())
+	{
+		// 위로만 살짝 띄우기
+		FVector LaunchVelocity = FVector(0, 0, 10.f);
+		Target->LaunchCharacter(LaunchVelocity, false, true);
+	}
+	
+	// ChargingEffect 제거
+	if (ChargingEffectComponent)
+	{
+		ChargingEffectComponent->DestroyComponent();
+		ChargingEffectComponent = nullptr;
 	}
 }
 
-void AAkaProjectile::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void AAkaProjectile::OnProjectileOverlapEnd(AActor* OtherActor)
 {
-	// 부모의 OnOverlapEnd 호출 (bIsOverlapping 처리)
-	Super::OnOverlapEnd(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("OnProjectileOverlapEnd Called!"));
+	}
 }
 
 void AAkaProjectile::Tick(float DeltaTime)
@@ -107,7 +95,9 @@ void AAkaProjectile::Tick(float DeltaTime)
 		if (ProjectileMovement)
 		{
 			FVector LaunchVelocity = ProjectileMovement->Velocity;
-			Target->LaunchCharacter(LaunchVelocity, true, true);
+			LaunchVelocity.Z += 20.f;  // Z축에 600 추가
+			
+			Target->LaunchCharacter(LaunchVelocity, true, false);
 		}
 	}
 	// 움직이고 있을 때 (Velocity > 0) ShotEffect를 0.2초마다 생성
