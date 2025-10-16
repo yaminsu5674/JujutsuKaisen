@@ -115,6 +115,8 @@ public:
 	// Gravity Control
 	// ============================================================================
 	void SetGravityEnabled(bool bEnabled);
+	
+	FORCEINLINE float GetDefaultGravityScale() const { return DefaultGravityScale; }
 
 	// ============================================================================
 	// Movement Control
@@ -215,6 +217,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	float DefaultSpeed = 500;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character params")
+	float DefaultGravityScale = 2.8f;
 
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	float DashSpeed = 1200;

@@ -63,7 +63,7 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	GetCharacterMovement()->MinAnalogWalkSpeed = DefaultSpeed;
 	GetCharacterMovement()->JumpZVelocity = DefaultJumpVelocity;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->GravityScale = 2.8f;
+	GetCharacterMovement()->GravityScale = DefaultGravityScale;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
@@ -552,7 +552,7 @@ void AJujutsuKaisenCharacter::SetGravityEnabled(bool bEnabled)
 {
 	if (bEnabled)
 	{
-		GetCharacterMovement()->GravityScale = 2.8f; // 기본값
+		GetCharacterMovement()->GravityScale = DefaultGravityScale; // 기본값 사용
 	}
 	else
 	{

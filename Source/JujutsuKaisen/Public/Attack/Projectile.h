@@ -57,6 +57,9 @@ protected:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Called when actor is explicitly destroyed (소멸 시 이펙트 연출용)
+	virtual void Destroyed() override;
+
 public:	
 	// Sets default values for this actor's properties
 	AProjectile();

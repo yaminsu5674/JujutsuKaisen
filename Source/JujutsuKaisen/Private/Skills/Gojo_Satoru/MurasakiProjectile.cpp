@@ -87,3 +87,11 @@ void AMurasakiProjectile::Tick(float DeltaTime)
 	}
 }
 
+void AMurasakiProjectile::Destroyed()
+{
+	
+	
+	// 부모 클래스의 Destroyed 호출 (중요!)
+	Super::Destroyed();
+}
+

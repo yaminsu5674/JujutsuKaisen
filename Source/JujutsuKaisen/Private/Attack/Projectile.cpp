@@ -82,6 +82,25 @@ void AProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+// Called when actor is explicitly destroyed
+void AProjectile::Destroyed()
+{
+	// 발사체 소멸 시 공통 정리 로직
+	UE_LOG(LogTemp, Warning, TEXT("Projectile Destroyed: %s"), *GetName());
+	
+	// 타겟의 중력 복원
+	if (Target && Target->GetCharacterMovement())
+	{
+		Target->GetCharacterMovement()->GravityScale = Target->GetDefaultGravityScale();
+		Target->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	}
+	
+	// 자식 클래스에서 소멸 이펙트 추가 가능 (오버라이드)
+	
+	Super::Destroyed();
+}
+
 void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Owner는 무시 (자신의 스킬에 맞지 않도록)
@@ -97,6 +116,16 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 	if (OverlappedCharacter && OverlappedCharacter == Target)
 	{
 		bIsOverlapping = true;
+		
+		// 충돌한 캐릭터의 중력/이동 모드 설정
+		if (OverlappedCharacter->GetCharacterMovement())
+		{
+			// 중력 끄기
+			OverlappedCharacter->GetCharacterMovement()->GravityScale = 0.0f;
+			
+			// Falling 모드로 전환 (공중에 떠있을 수 있게)
+			OverlappedCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
+		}
 		
 		// 자식 클래스의 커스텀 로직 호출
 		OnProjectileOverlapBegin(OtherActor);

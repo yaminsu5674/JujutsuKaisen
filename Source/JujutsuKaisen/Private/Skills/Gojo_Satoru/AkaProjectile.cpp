@@ -5,6 +5,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Attack/CustomProjectileMovement.h"
+#include "Components/SphereComponent.h"
 
 AAkaProjectile::AAkaProjectile()
 {
@@ -12,6 +13,17 @@ AAkaProjectile::AAkaProjectile()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetupAttachment(CollisionSphere); // Root인 CollisionSphere에 부착
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 충돌 비활성화 (시각적 용도만)
+	
+	// HitSphere 생성 및 설정 (Pawn과만 오버랩)
+	HitSphere = CreateDefaultSubobject<USphereComponent>(TEXT("HitSphere"));
+	HitSphere->SetupAttachment(CollisionSphere); // Root인 CollisionSphere에 부착
+	HitSphere->InitSphereRadius(100.0f); // 반지름 50 (CollisionSphere와 비슷하게)
+	
+	// HitSphere 충돌 설정 - Pawn과만 오버랩
+	HitSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	HitSphere->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	HitSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); // 모든 채널 무시
+	HitSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap); // Pawn만 오버랩
 	
 	// 블루프린트에서 파티클 시스템을 할당할 예정이므로 생성자에서는 초기화하지 않음
 	ShotEffectTimer = 0.0f;
@@ -21,6 +33,13 @@ AAkaProjectile::AAkaProjectile()
 void AAkaProjectile::BeginPlay()
 {
 	Super::BeginPlay();  // 부모에서 SetLifeSpan(Lifespan) 자동 호출됨
+
+	// HitSphere 오버랩 이벤트 바인딩
+	if (HitSphere)
+	{
+		HitSphere->OnComponentBeginOverlap.AddDynamic(this, &AAkaProjectile::OnHitSphereOverlapBegin);
+		HitSphere->OnComponentEndOverlap.AddDynamic(this, &AAkaProjectile::OnHitSphereOverlapEnd);
+	}
 
 	// 스폰 시 ChargingEffect 파티클 재생 (발사체에 붙어서 함께 움직임)
 	if (ChargingEffect)
@@ -38,11 +57,67 @@ void AAkaProjectile::BeginPlay()
 
 void AAkaProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("OnProjectileOverlapBegin Called!"));
-	}
 	
+}
+
+void AAkaProjectile::OnProjectileOverlapEnd(AActor* OtherActor)
+{
+
+}
+
+void AAkaProjectile::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	// Aka 전용 Tick 로직 (HitSphere 오버랩 중일 때만)
+	if (bIsOverlapping && Target != nullptr)
+	{
+		// 발사체와 함께 이동하며 점진적으로 위로 띄우기
+		if (ProjectileMovement)
+		{
+			// X, Y는 발사체와 동기화, Z는 점진적 상승 (한 번에 계산)
+			FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 1.0f;
+			DeltaMovement.Z = 50.f * DeltaTime;  // Z축은 초당 5 유닛씩 상승으로 덮어쓰기
+			
+			FVector NewLocation = Target->GetActorLocation() + DeltaMovement;
+			Target->SetActorLocation(NewLocation, true);  // Sweep = false (충돌 무시하고 강제 이동)
+		}
+	}
+	// 움직이고 있을 때 (Velocity > 0) ShotEffect를 ShotEffectInterval초마다 생성
+	if (ProjectileMovement && ProjectileMovement->Velocity.Size() > 0.0f && ShotEffect)
+	{
+		ShotEffectTimer += DeltaTime;
+		
+		if (ShotEffectTimer >= ShotEffectInterval)
+		{
+			// 현재 위치에서 ShotEffect 파티클 생성 (스케일 3배)
+			UGameplayStatics::SpawnEmitterAtLocation(
+				GetWorld(), 
+				ShotEffect, 
+				GetActorLocation(), 
+				GetActorRotation(),
+				FVector(1.0f, 1.0f, 1.0f)  // 크기 3배로 확대
+			);
+			ShotEffectTimer = 0.0f; // 타이머 리셋
+		}
+	}
+}
+
+void AAkaProjectile::Destroyed()
+{
+	// 부모 클래스의 Destroyed 호출 (중요!)
+
+	Super::Destroyed();
+}
+
+void AAkaProjectile::OnHitSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Owner는 무시 (자신의 스킬에 맞지 않도록)
+	if (OtherActor == GetOwner())
+	{
+		return;
+	}
+
 	// 발사체를 수평으로만 이동하도록 변경 (Z축 제거)
 	if (ProjectileMovement)
 	{
@@ -51,21 +126,23 @@ void AAkaProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 		ProjectileMovement->Velocity = CurrentVelocity;
 	}
 
-	// 캐릭터에게 데미지 적용
-	// if (Target && Target->GetStateManager())
-	// {
-	// 	Target->GetStateManager()->SetHitSubState(EHitSubState::MediumHit);
-	// }
-	
-	// 물리 충돌로 캐릭터 날리기
-	if (Target && Target->GetCharacterMovement())
+	// HitCharacter (실제 충돌한 캐릭터)의 중력/이동 모드 설정 ⭐ 핵심!
+	// JujutsuKaisenCharacter인지 확인
+	AJujutsuKaisenCharacter* HitCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
+	if (HitCharacter && HitCharacter->GetCharacterMovement())
 	{
-		// 중력 끄고 Falling 모드로 전환 (공중에 떠있을 수 있게)
-		Target->GetCharacterMovement()->GravityScale = 0.0f;
-		//Target->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
-		//Target->SetActorLocation(Target->GetActorLocation() + FVector(0, 0, 30.f));
+		// 중력 끄기
+		HitCharacter->GetCharacterMovement()->GravityScale = 0.0f;
+		
+		// Falling 모드로 전환 (공중에 떠있을 수 있게)
+		HitCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
+		
+		// 캐릭터 이동 비활성화 (CharacterMovement가 위치를 덮어쓰지 못하게)
+		HitCharacter->GetCharacterMovement()->StopMovementImmediately();
+		
+		UE_LOG(LogTemp, Warning, TEXT("HitCharacter Setup: GravityScale=0, MovementMode=Falling, StopMovement"));
 	}
-	
+
 	// ChargingEffect 제거
 	if (ChargingEffectComponent)
 	{
@@ -74,72 +151,42 @@ void AAkaProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 	}
 }
 
-void AAkaProjectile::OnProjectileOverlapEnd(AActor* OtherActor)
+void AAkaProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (GEngine)
+	// Owner는 무시 (자신의 스킬에 맞지 않도록)
+	if (OtherActor == GetOwner())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("OnProjectileOverlapEnd Called!"));
+		return;
 	}
 	
-	// 오버랩이 끝날 때 타겟을 날림
-	if (Target && Target->GetCharacterMovement())
+	// JujutsuKaisenCharacter인지 확인
+	AJujutsuKaisenCharacter* HitCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
+	if (HitCharacter)
 	{
-		// 중력 다시 켜기 (프로젝트 기본값 2.8)
-		Target->GetCharacterMovement()->GravityScale = 2.8f;
-		
 		// 발사체 속도 방향으로 캐릭터 날리기
 		if (ProjectileMovement)
 		{
-			// 발사체 방향만 추출 (정규화)
+			// 발사체 속도 방향 추출 (정규화)
 			FVector LaunchDirection = ProjectileMovement->Velocity;
 			LaunchDirection.Normalize();
 			
-			// 각 축에 하드코딩된 힘 적용
+			// XY 방향에만 300 적용, Z는 0
 			FVector LaunchVelocity = FVector(
-				LaunchDirection.X * 100.f,  // X축 100
-				LaunchDirection.Y * 100.f,  // Y축 100
-				100.f                        // Z축 100 (위로)
+				LaunchDirection.X * 3000.f,  // X축 300
+				LaunchDirection.Y * 3000.f,  // Y축 300
+				1000.0f                         // Z축 0 (수평으로만)
 			);
 			
-			Target->LaunchCharacter(LaunchVelocity, true, true);
-		}
-	}
-}
-
-void AAkaProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-	// Aka 전용 Tick 로직
-	if (bIsOverlapping && Target != nullptr)
-	{
-		// 오버랩 중일 때의 로직
-		//Target->Hit();
-		
-		// 발사체와 함께 이동하며 점진적으로 위로 띄우기
-		// if (ProjectileMovement)
-		// {
-		// 	// 발사체의 이동량 계산 (X, Y, Z) 
-		// 	FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 1.0f;
+			HitCharacter->LaunchCharacter(LaunchVelocity, false, true);
 			
-		// 	// Z축에 추가 상승량 누적 (매 프레임마다 조금씩 더 위로)
-		// 	DeltaMovement.Z += 50.f * DeltaTime;  // 초당 50 유닛씩 추가 상승
-			
-		// 	// 타겟을 발사체와 같은 양 + 추가 상승량만큼 이동 (Sweep = false로 충돌 무시)
-		// 	FVector NewLocation = Target->GetActorLocation() + DeltaMovement;
-		// 	Target->SetActorLocation(NewLocation, false);  // false = 충돌 체크 없이 강제 이동
-		// }
-	}
-	// 움직이고 있을 때 (Velocity > 0) ShotEffect를 0.2초마다 생성
-	if (ProjectileMovement && ProjectileMovement->Velocity.Size() > 0.0f && ShotEffect)
-	{
-		ShotEffectTimer += DeltaTime;
-		
-		if (ShotEffectTimer >= ShotEffectInterval)
-		{
-			// 현재 위치에서 ShotEffect 파티클 생성
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation());
-			ShotEffectTimer = 0.0f; // 타이머 리셋
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Magenta, 
+					FString::Printf(TEXT("Launch: (%.1f, %.1f, %.1f)"), LaunchVelocity.X, LaunchVelocity.Y, LaunchVelocity.Z));
+			}
 		}
+		
+		// 발사체 자신을 즉시 파괴
+		Destroy();
 	}
 }

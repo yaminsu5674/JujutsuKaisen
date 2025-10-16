@@ -30,6 +30,9 @@ public:
 	// Tick 오버라이드
 	virtual void Tick(float DeltaTime) override;
 
+	// Destroyed 오버라이드 (소멸 시 특수 이펙트)
+	virtual void Destroyed() override;
+
 protected:
 	// 메시 컴포넌트 (시각적 표현용)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Visual, meta = (AllowPrivateAccess = "true"))

@@ -32,6 +32,9 @@ public:
 	// Tick 오버라이드
 	virtual void Tick(float DeltaTime) override;
 
+	// Destroyed 오버라이드 (소멸 시 특수 이펙트)
+	virtual void Destroyed() override;
+
 	void EndPal();
 
 protected:

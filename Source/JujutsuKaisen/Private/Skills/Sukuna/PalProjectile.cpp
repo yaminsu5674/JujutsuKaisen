@@ -94,3 +94,9 @@ void APalProjectile::EndPal()
     Destroy();
 }
 
+void APalProjectile::Destroyed()
+{	
+	// 부모 클래스의 Destroyed 호출 (중요!)
+	Super::Destroyed();
+}
+
