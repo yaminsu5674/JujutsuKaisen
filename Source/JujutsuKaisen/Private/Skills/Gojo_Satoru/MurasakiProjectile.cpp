@@ -35,28 +35,29 @@ void AMurasakiProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("OnProjectileOverlapBegin Called!"));
 	}
-	
-	// ShotEffect 파티클 재생 (기존 파티클 시스템 유지)
-	if (ShotEffect)
+	// 발사체를 수평으로만 이동하도록 변경 (Z축 제거)
+	if (ProjectileMovement)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation());
-		UE_LOG(LogTemp, Log, TEXT("MurasakiProjectile: Shot Particle Effect 시작"));
+		FVector CurrentVelocity = ProjectileMovement->Velocity;
+		CurrentVelocity.Z = 0.0f;  // Z축 속도 제거
+		ProjectileMovement->Velocity = CurrentVelocity;
 	}
 
-	// 캐릭터에게 데미지 적용
-	if (Target && Target->GetStateManager())
+	AJujutsuKaisenCharacter* HitCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
+	if (HitCharacter && HitCharacter->GetCharacterMovement())
 	{
-		Target->GetStateManager()->SetHitSubState(EHitSubState::MediumHit);
+		// 중력 끄기
+		HitCharacter->GetCharacterMovement()->GravityScale = 0.0f;
+		
+		// Falling 모드로 전환 (공중에 떠있을 수 있게)
+		HitCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
+		
+		// 캐릭터 이동 비활성화 (CharacterMovement가 위치를 덮어쓰지 못하게)
+		HitCharacter->GetCharacterMovement()->StopMovementImmediately();
+		
+		UE_LOG(LogTemp, Warning, TEXT("HitCharacter Setup: GravityScale=0, MovementMode=Falling, StopMovement"));
 	}
 	
-	// 물리 충돌로 캐릭터 날리기
-	if (Target && Target->GetCharacterMovement())
-	{
-		// Projectile의 방향 벡터 (정규화된)
-		FVector LaunchDir = GetActorForwardVector();
-		FVector ImpulseForce = LaunchDir * 400.f + FVector(0, 0, 200.f);
-		Target->GetCharacterMovement()->AddImpulse(ImpulseForce, true);
-	}
 	
 	// ChargingEffect 제거
 	if (ChargingEffectComponent)
@@ -68,9 +69,35 @@ void AMurasakiProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 
 void AMurasakiProjectile::OnProjectileOverlapEnd(AActor* OtherActor)
 {
-	if (GEngine)
+	// JujutsuKaisenCharacter인지 확인
+	AJujutsuKaisenCharacter* HitCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
+	if (HitCharacter)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("OnProjectileOverlapEnd Called!"));
+		// 발사체 속도 방향으로 캐릭터 날리기
+		if (ProjectileMovement)
+		{
+			// 발사체 속도 방향 추출 (정규화)
+			FVector LaunchDirection = ProjectileMovement->Velocity;
+			LaunchDirection.Normalize();
+			
+			// XY 방향에만 300 적용, Z는 0
+			FVector LaunchVelocity = FVector(
+				LaunchDirection.X * 3000.f,  // X축 300
+				LaunchDirection.Y * 3000.f,  // Y축 300
+				1000.0f                         // Z축 0 (수평으로만)
+			);
+			
+			HitCharacter->LaunchCharacter(LaunchVelocity, false, true);
+			
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Magenta, 
+					FString::Printf(TEXT("Launch: (%.1f, %.1f, %.1f)"), LaunchVelocity.X, LaunchVelocity.Y, LaunchVelocity.Z));
+			}
+		}
+		
+		// 발사체 자신을 즉시 파괴
+		Destroy();
 	}
 }
 
@@ -81,10 +108,18 @@ void AMurasakiProjectile::Tick(float DeltaTime)
 	// Murasaki 전용 Tick 로직
 	if (bIsOverlapping && Target != nullptr)
 	{
-		// 오버랩 중일 때의 로직
-		// 필요시 여기에 지속적인 데미지나 효과 추가 가능
-		Target->Hit();
+		// 발사체와 함께 이동하며 점진적으로 위로 띄우기
+		if (ProjectileMovement)
+		{
+			// X, Y는 발사체와 동기화, Z는 점진적 상승 (한 번에 계산)
+			FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 0.6f;
+			DeltaMovement.Z = 50.f * DeltaTime;  // Z축은 초당 5 유닛씩 상승으로 덮어쓰기
+			
+			FVector NewLocation = Target->GetActorLocation() + DeltaMovement;
+			Target->SetActorLocation(NewLocation, true);  // Sweep = false (충돌 무시하고 강제 이동)
+		}
 	}
+	
 }
 
 void AMurasakiProjectile::Destroyed()
