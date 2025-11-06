@@ -23,11 +23,10 @@ enum class ECharacterState : uint8
 UENUM(BlueprintType)
 enum class EHitSubState : uint8
 {
-	HitFall = 0,		// 피격 후 낙하
-	CustomHit = 1,
-	LightHit = 2,       // 약한 피격
-	MediumHit = 3,      // 중간 피격
-	HeavyHit = 4,       // 강한 피격
+	Custom = 0,
+	Stun = 1,
+	Light = 2,
+	KnockBack = 3
 };
 
 
@@ -52,7 +51,7 @@ public:
 
 	// 하위 상태들
 	UPROPERTY(BlueprintReadOnly, Category = "State")
-	EHitSubState CurrentHitSubState = EHitSubState::CustomHit;
+	EHitSubState CurrentHitSubState;
 
 	// 상태 전환 함수들
 	UFUNCTION(BlueprintCallable)

@@ -165,7 +165,7 @@ void AProjectile::CheckOverlap()
 			bIsOverlapping = true;
 			if (Target->GetStateManager())
 			{
-				Target->GetStateManager()->SetHitSubState(EHitSubState::LightHit);
+				Target->GetStateManager()->SetHitSubState(EHitSubState::Stun);
 			}	
 			UE_LOG(LogTemp, Error, TEXT("Already Overlapping: %s"), *Target->GetName());
 		}

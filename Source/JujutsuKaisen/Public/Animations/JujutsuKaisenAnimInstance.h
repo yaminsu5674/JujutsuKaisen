@@ -26,7 +26,7 @@ class JUJUTSUKAISEN_API UJujutsuKaisenAnimInstance : public UAnimInstance
 	ECharacterState CurrentState = ECharacterState::Locomotion;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))
-	EHitSubState CurrentHitSubState = EHitSubState::CustomHit;
+	EHitSubState CurrentHitSubState = EHitSubState::Custom;
 
 	// 기존 애니메이션 변수들
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "JujutsuKaisenAnimInstance Params", meta = (AllowPrivateAccess = "true"))

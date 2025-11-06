@@ -43,8 +43,8 @@ void APalProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 	
 	if (Target && Target->GetStateManager())
 	{
-		Target->GetStateManager()->SetHitSubState(EHitSubState::LightHit);
-		UE_LOG(LogTemp, Log, TEXT("PalProjectile: LightHit 설정 완료!"));
+		Target->GetStateManager()->SetHitSubState(EHitSubState::Stun);
+		UE_LOG(LogTemp, Log, TEXT("PalProjectile: Stun 설정 완료!"));
 	}
 }
 
@@ -78,7 +78,7 @@ void APalProjectile::EndPal()
         // 캐릭터에게 데미지 적용
 		if (Target->GetStateManager())
 		{
-			Target->GetStateManager()->SetHitSubState(EHitSubState::MediumHit);
+			Target->GetStateManager()->SetHitSubState(EHitSubState::KnockBack);
 		}
 		
 		// 물리 충돌로 캐릭터 날리기
