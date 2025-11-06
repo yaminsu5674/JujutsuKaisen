@@ -77,6 +77,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EHitSubState GetCurrentHitSubState() const { return CurrentHitSubState; }
 
+	UFUNCTION(BlueprintCallable)
+	bool GetIsHitFront() const { return IsHitFront; }
+
 	// 강제 상태 설정 (우선순위 무시)
 	UFUNCTION(BlueprintCallable)
 	void ForceState(ECharacterState NewState);

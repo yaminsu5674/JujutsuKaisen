@@ -13,7 +13,7 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
     // 기존 애니메이션 변수들 업데이트
     Speed = Character->GetVelocity().Size();
-    float VerticalSpeed = Character->GetVelocity().Z;
+    VerticalSpeed = Character->GetVelocity().Z;
     bIsFalling = VerticalSpeed < -1.f;
 
 
@@ -24,6 +24,7 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         ECharacterState PreviousState = CurrentState;
         CurrentState = Character->GetStateManager()->GetCurrentState();
         CurrentHitSubState = Character->GetStateManager()->GetCurrentHitSubState();
+        bIsHitFront = Character->GetStateManager()->GetIsHitFront();
         
         // 상태 변화 감지 및 로그
         if (PreviousState != CurrentState)

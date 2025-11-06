@@ -56,19 +56,32 @@ bool USkillLibrary::JudgeHitFront(AActor* Attacker, AActor* Victim)
 		return true; // 기본값 true 반환
 	}
 
-	// 공격자의 Forward 방향 벡터 (XY만)
-	FVector AttackerForward = Attacker->GetActorForwardVector();
-	AttackerForward.Z = 0.0f;
-	AttackerForward.Normalize();
+	// 공격자의 진행 방향 벡터 (XY만) - 기본적으로 Forward 벡터 사용
+	FVector AttackerMovementDirection = Attacker->GetActorForwardVector();
+	AttackerMovementDirection.Z = 0.0f;
+	
+	
+	AttackerMovementDirection.Normalize();
 
-	// 피격자로의 방향 벡터 (XY만)
-	FVector ToVictim = Victim->GetActorLocation() - Attacker->GetActorLocation();
-	ToVictim.Z = 0.0f;
-	ToVictim.Normalize();
+	// 피격자가 앞으로 바라보고 있는 방향 벡터 (XY만)
+	FVector VictimForward = Victim->GetActorForwardVector();
+	VictimForward.Z = 0.0f;
+	VictimForward.Normalize();
 
-	// 내적 계산
-	float DotProduct = FVector::DotProduct(AttackerForward, ToVictim);
+	// 내적 계산: 발사체 진행 방향과 피격자 Forward 벡터
+	float DotProduct = FVector::DotProduct(AttackerMovementDirection, VictimForward);
 
-	// 내적이 0 이하면 false (뒤에서 맞음), 그렇지 않으면 true (앞에서 맞음)
-	return DotProduct > 0.0f;
+	if (GEngine)
+	{
+		if (DotProduct > 0.0f)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, FString::Printf(TEXT("Hit Back (Dot: %.2f)"), DotProduct));
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString::Printf(TEXT("Hit Front (Dot: %.2f)"), DotProduct));
+		}
+	}
+	// 내적이 0 이하면 true (뒤에서 맞음), 그렇지 않으면 false (앞에서 맞음)
+	return DotProduct < 0.0f;
 }
