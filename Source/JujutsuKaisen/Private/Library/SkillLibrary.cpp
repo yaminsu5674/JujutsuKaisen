@@ -70,18 +70,6 @@ bool USkillLibrary::JudgeHitFront(AActor* Attacker, AActor* Victim)
 
 	// 내적 계산: 발사체 진행 방향과 피격자 Forward 벡터
 	float DotProduct = FVector::DotProduct(AttackerMovementDirection, VictimForward);
-
-	if (GEngine)
-	{
-		if (DotProduct > 0.0f)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, FString::Printf(TEXT("Hit Back (Dot: %.2f)"), DotProduct));
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString::Printf(TEXT("Hit Front (Dot: %.2f)"), DotProduct));
-		}
-	}
 	// 내적이 0 이하면 true (뒤에서 맞음), 그렇지 않으면 false (앞에서 맞음)
 	return DotProduct < 0.0f;
 }
