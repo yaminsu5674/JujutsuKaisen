@@ -7,6 +7,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Characters/JujutsuKaisenCharacter.h"
+#include "Library/SkillLibrary.h"
 
 APalProjectile::APalProjectile()
 {
@@ -41,9 +42,10 @@ void APalProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 	UE_LOG(LogTemp, Log, TEXT("PalProjectile: OnProjectileOverlapBegin 호출됨!"));
 	UE_LOG(LogTemp, Log, TEXT("PalProjectile: 오버랩 처리 성공!"));
 	
-	if (Target && Target->GetStateManager())
+	if (Target && Target->GetStateManager() && GetOwner())
 	{
-		Target->GetStateManager()->SetHitSubState(EHitSubState::Stun);
+		bool bIsHitFront = USkillLibrary::JudgeHitFront(GetOwner(), Target);
+		Target->GetStateManager()->SetHitSubState(EHitSubState::Stun, bIsHitFront);
 		UE_LOG(LogTemp, Log, TEXT("PalProjectile: Stun 설정 완료!"));
 	}
 }
@@ -76,9 +78,10 @@ void APalProjectile::EndPal()
     if (bIsOverlapping)
     {
         // 캐릭터에게 데미지 적용
-		if (Target->GetStateManager())
+		if (Target->GetStateManager() && GetOwner())
 		{
-			Target->GetStateManager()->SetHitSubState(EHitSubState::KnockBack);
+			bool bIsHitFront = USkillLibrary::JudgeHitFront(GetOwner(), Target);
+			Target->GetStateManager()->SetHitSubState(EHitSubState::KnockBack, bIsHitFront);
 		}
 		
 		// 물리 충돌로 캐릭터 날리기

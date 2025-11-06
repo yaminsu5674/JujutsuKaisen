@@ -29,12 +29,13 @@ bool UCharacterStateManager::SetState(ECharacterState NewState)
 	return true;
 }
 
-bool UCharacterStateManager::SetHitSubState(EHitSubState NewSubState)
+bool UCharacterStateManager::SetHitSubState(EHitSubState NewSubState, bool bIsHitFront)
 {
 	SetState(ECharacterState::Hit);
 	if (CurrentState == ECharacterState::Hit)
 	{
 		CurrentHitSubState = NewSubState;
+		IsHitFront = bIsHitFront;
 		return true;
 	}
 	return false;
@@ -63,6 +64,7 @@ void UCharacterStateManager::ResetSubStates(ECharacterState NewState)
 	{
 	case ECharacterState::Hit:
 		CurrentHitSubState = EHitSubState::Custom;
+		IsHitFront = true;
 		break;
 	case ECharacterState::Locomotion:
 	case ECharacterState::Falling:

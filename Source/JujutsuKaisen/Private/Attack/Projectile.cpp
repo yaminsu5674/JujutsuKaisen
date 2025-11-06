@@ -5,6 +5,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Attack/CustomProjectileMovement.h"
 #include "Components/SphereComponent.h"
+#include "Library/SkillLibrary.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -163,9 +164,10 @@ void AProjectile::CheckOverlap()
 		if (CollisionSphere->IsOverlappingActor(Target))
 		{
 			bIsOverlapping = true;
-			if (Target->GetStateManager())
+			if (Target->GetStateManager() && GetOwner())
 			{
-				Target->GetStateManager()->SetHitSubState(EHitSubState::Stun);
+				bool bIsHitFront = USkillLibrary::JudgeHitFront(GetOwner(), Target);
+				Target->GetStateManager()->SetHitSubState(EHitSubState::Stun, bIsHitFront);
 			}	
 			UE_LOG(LogTemp, Error, TEXT("Already Overlapping: %s"), *Target->GetName());
 		}

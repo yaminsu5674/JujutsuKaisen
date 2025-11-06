@@ -4,6 +4,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Library/SkillLibrary.h"
+#include "Characters/CharacterStateManager.h"
 
 AMurasakiProjectile::AMurasakiProjectile()
 {
@@ -55,6 +57,13 @@ void AMurasakiProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 		// 캐릭터 이동 비활성화 (CharacterMovement가 위치를 덮어쓰지 못하게)
 		HitCharacter->GetCharacterMovement()->StopMovementImmediately();
 		
+		// 피격 하위 상태를 Stun으로 설정
+		if (HitCharacter->GetStateManager() && GetOwner())
+		{
+			bool bIsHitFront = USkillLibrary::JudgeHitFront(GetOwner(), HitCharacter);
+			HitCharacter->GetStateManager()->SetHitSubState(EHitSubState::Stun, bIsHitFront);
+		}
+		
 		UE_LOG(LogTemp, Warning, TEXT("HitCharacter Setup: GravityScale=0, MovementMode=Falling, StopMovement"));
 	}
 	
@@ -73,6 +82,13 @@ void AMurasakiProjectile::OnProjectileOverlapEnd(AActor* OtherActor)
 	AJujutsuKaisenCharacter* HitCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
 	if (HitCharacter)
 	{
+		// 피격 하위 상태를 KnockBack으로 설정
+		if (HitCharacter->GetStateManager() && GetOwner())
+		{
+			bool bIsHitFront = USkillLibrary::JudgeHitFront(GetOwner(), HitCharacter);
+			HitCharacter->GetStateManager()->SetHitSubState(EHitSubState::KnockBack, bIsHitFront);
+		}
+		
 		// 발사체 속도 방향으로 캐릭터 날리기
 		if (ProjectileMovement)
 		{

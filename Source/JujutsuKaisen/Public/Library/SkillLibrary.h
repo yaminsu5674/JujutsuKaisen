@@ -29,4 +29,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Skill|Utility")
 	static AJujutsuKaisenCharacter* GetOwnerRecursive(UObject* Object);
 	
+	// 공격 방향 판단 (앞/뒤)
+	UFUNCTION(BlueprintCallable, Category = "Skill|Utility")
+	static bool JudgeHitFront(AActor* Attacker, AActor* Victim);
+	
 };

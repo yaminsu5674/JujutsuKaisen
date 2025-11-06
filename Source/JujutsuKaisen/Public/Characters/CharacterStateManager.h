@@ -53,12 +53,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 	EHitSubState CurrentHitSubState;
 
+	UPROPERTY(BlueprintReadOnly, Category = "State")
+	bool IsHitFront = true;
+
 	// 상태 전환 함수들
 	UFUNCTION(BlueprintCallable)
 	bool SetState(ECharacterState NewState);
 
 	UFUNCTION(BlueprintCallable)
-	bool SetHitSubState(EHitSubState NewSubState);
+	bool SetHitSubState(EHitSubState NewSubState, bool bIsHitFront = true);
 
 	// 상태 체크 함수들
 	UFUNCTION(BlueprintCallable)
