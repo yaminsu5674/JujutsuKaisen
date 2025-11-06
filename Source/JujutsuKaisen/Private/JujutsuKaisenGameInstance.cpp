@@ -16,7 +16,8 @@ void UJujutsuKaisenGameInstance::StartSingle()
         AWorldSettings* WorldSettings = world->GetWorldSettings();
         if (WorldSettings)
         {
-            UGameplayStatics::OpenLevel(world, "CityMap", true, TEXT("?game=/Script/JujutsuKaisen.SinglePlayGameMode"));
+            // URL 파라미터 없이 오픈하여 월드 세팅의 게임 모드 사용
+            UGameplayStatics::OpenLevel(world, "CityMap", true);
             
         }
     }

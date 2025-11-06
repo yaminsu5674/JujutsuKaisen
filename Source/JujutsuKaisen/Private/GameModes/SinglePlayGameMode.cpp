@@ -49,6 +49,7 @@ void ASinglePlayGameMode::BeginPlay()
     PossessPlayer();
     PossessAI();
 
+
     if (PlayerCharacter && EnemyCharacter)
     {
         PlayerCharacter->SetTargetCharacter(EnemyCharacter);

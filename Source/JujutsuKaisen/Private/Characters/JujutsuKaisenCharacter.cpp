@@ -106,13 +106,6 @@ void AJujutsuKaisenCharacter::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("_AnimInstance not init!!!"));
 	}
 
-	// 위치 조정
-	float CapsuleHalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
-	FVector NewLocation = GetActorLocation();
-	NewLocation.Z = CapsuleHalfHeight;
-	SetActorLocation(NewLocation);
-
-
 	// 히트박스 부착
 	AttachHitBoxToBone(LeftFist, FString(TEXT("hand_l")));
 	AttachHitBoxToBone(RightFist, FString(TEXT("hand_r")));
