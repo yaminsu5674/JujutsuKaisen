@@ -87,21 +87,6 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	// 기본값 설정
 	Health = MaxHealth;
 	bCanMove = true; // 게임 시작 시 이동 가능하도록 강제 설정
-	
-	// StateManager 초기 상태 설정 (누락 시 런타임 생성)
-	// if (!StateManager)
-	// {
-	// 	StateManager = NewObject<UCharacterStateManager>(this, UCharacterStateManager::StaticClass(), TEXT("StateManager_Runtime"));
-	// 	if (StateManager)
-	// 	{
-	// 		StateManager->SetOwnerCharacter(this);
-	// 		UE_LOG(LogTemp, Warning, TEXT("BeginPlay: Runtime StateManager created for %s"), *GetName());
-	// 	}
-	// 	else
-	// 	{
-	// 		UE_LOG(LogTemp, Error, TEXT("BeginPlay: Failed to create runtime StateManager for %s"), *GetName());
-	// 	}
-	// }
 
 	if (StateManager)
 	{
@@ -280,10 +265,6 @@ void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
 	}
 
 	SetCanMove(false);
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Landed Called!"));
-	}
 	if (StateManager->IsInState(ECharacterState::Hit))
 	{
 		bool bIsHitFront = StateManager->GetIsHitFront();
