@@ -253,17 +253,41 @@ void AJujutsuKaisenCharacter::JumpCustom()
 }
 
 void AJujutsuKaisenCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	JumpCount = 0;
+	bDidSuperJump = false;
+	bDidDoubleJump = false;
+
+	if (GEngine)
 	{
-		Super::Landed(Hit);
-		JumpCount = 0;
-		bDidSuperJump = false;
-		bDidDoubleJump = false;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Landed Called!"));
+		
+	}
+
+	if (!StateManager || !GetMesh() || !GetMesh()->GetAnimInstance())
+	{
+		return;
+	}
+
+	SetCanMove(false);
+
+	if (StateManager->IsInState(ECharacterState::Hit))
+	{
+		bool bIsHitFront = StateManager->GetIsHitFront();
+		UAnimMontage* MontageToPlay = bIsHitFront ? LandFrontMontage : LandBackMontage;
+
+		if (MontageToPlay)
+		{
+			GetMesh()->GetAnimInstance()->Montage_Play(MontageToPlay);
+		}
+	}
+
 	// Falling 상태일 때만 착지 로직 수행
-	if (StateManager && StateManager->IsInState(ECharacterState::Falling))
+	else if (StateManager->IsInState(ECharacterState::Falling))
 	{
-		SetCanMove(false);	
 		// 착지 몽타주 재생
-		if (LandMontage && GetMesh() && GetMesh()->GetAnimInstance())
+		if (LandMontage)
 		{
 			GetMesh()->GetAnimInstance()->Montage_Play(LandMontage);
 		}

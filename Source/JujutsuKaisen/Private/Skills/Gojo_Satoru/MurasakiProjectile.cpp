@@ -51,9 +51,7 @@ void AMurasakiProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 		// 중력 끄기
 		HitCharacter->GetCharacterMovement()->GravityScale = 0.0f;
 		
-		// Falling 모드로 전환 (공중에 떠있을 수 있게)
-		HitCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
-		
+	
 		// 캐릭터 이동 비활성화 (CharacterMovement가 위치를 덮어쓰지 못하게)
 		HitCharacter->GetCharacterMovement()->StopMovementImmediately();
 		

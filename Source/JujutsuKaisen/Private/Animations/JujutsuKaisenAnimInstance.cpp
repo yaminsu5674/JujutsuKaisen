@@ -25,7 +25,7 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         CurrentState = Character->GetStateManager()->GetCurrentState();
         CurrentHitSubState = Character->GetStateManager()->GetCurrentHitSubState();
         bIsHitFront = Character->GetStateManager()->GetIsHitFront();
-        
+
         // 상태 변화 감지 및 로그
         if (PreviousState != CurrentState)
         {
@@ -65,6 +65,7 @@ void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
         {
             ECharacterState PreviousState = CurrentState;
             Character->GetStateManager()->ForceState(ECharacterState::Locomotion);
+          
             
         }
         else

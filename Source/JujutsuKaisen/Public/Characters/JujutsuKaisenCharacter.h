@@ -257,6 +257,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
 	class UAnimMontage* LandMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* LandFrontMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Montages", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* LandBackMontage;
+
 	// ============================================================================
 	// Character State
 	// ============================================================================
