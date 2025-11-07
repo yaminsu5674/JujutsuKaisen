@@ -97,6 +97,8 @@ void ASinglePlayGameMode::SpawnCharacterFromData(UJujutsuKaisenCharacterDataAsse
         {
             EnemyCharacter = SpawnedCharacter;
             UE_LOG(LogTemp, Log, TEXT("AI Character %s spawn complete"), *SpawnedCharacter->GetName());
+
+
         }
     }
     else

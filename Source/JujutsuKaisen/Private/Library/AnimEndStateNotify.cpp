@@ -33,4 +33,9 @@ void UAnimEndStateNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
         // 애니메이션 인스턴스가 없으면 에러 로그
         UE_LOG(LogTemp, Error, TEXT("AnimEndStateNotify: No AnimInstance found for %s!"), *CharacterName);
     }
+
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("AnimEndStateNotify called!"));
+    }
 }

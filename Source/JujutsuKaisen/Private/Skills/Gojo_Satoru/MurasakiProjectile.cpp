@@ -65,7 +65,10 @@ void AMurasakiProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 		UE_LOG(LogTemp, Warning, TEXT("HitCharacter Setup: GravityScale=0, MovementMode=Falling, StopMovement"));
 	}
 	
-	
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("OnProjectileOverlapBegin Called!"));
+	}
 	// ChargingEffect 제거
 	if (ChargingEffectComponent)
 	{
@@ -76,6 +79,10 @@ void AMurasakiProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 
 void AMurasakiProjectile::OnProjectileOverlapEnd(AActor* OtherActor)
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("OnProjectileOverlapEnd Called!"));
+	}
 	// JujutsuKaisenCharacter인지 확인
 	AJujutsuKaisenCharacter* HitCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
 	if (HitCharacter)
