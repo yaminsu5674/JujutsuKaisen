@@ -166,10 +166,6 @@ void AJujutsuKaisenPlayerController::A_Pressed()
 
 void AJujutsuKaisenPlayerController::R_Pressed()
 {
-	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-	{
-		Char->R_Pressed();
-	}
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("R_Pressed Called!"));
@@ -178,10 +174,6 @@ void AJujutsuKaisenPlayerController::R_Pressed()
 
 void AJujutsuKaisenPlayerController::R_Released()
 {
-	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-	{
-		Char->R_Released();
-	}
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("R_Released Called!"));
@@ -190,10 +182,6 @@ void AJujutsuKaisenPlayerController::R_Released()
 
 void AJujutsuKaisenPlayerController::E_Pressed()
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("E_Pressed Called!"));
-	}
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
 		Char->E_Pressed();
@@ -211,18 +199,10 @@ void AJujutsuKaisenPlayerController::ER_Chord()
 	{
 		Char->ER_Pressed();
 	}
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("ER_Chord Called!"));
-	}
 }
 
 void AJujutsuKaisenPlayerController::QR_Chord()
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("QR_Chord Called!"));
-	}
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
 		Char->QR_Pressed();
