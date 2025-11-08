@@ -25,12 +25,6 @@ void UJujutsuKaisenAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         CurrentState = Character->GetStateManager()->GetCurrentState();
         CurrentHitSubState = Character->GetStateManager()->GetCurrentHitSubState();
         bIsHitFront = Character->GetStateManager()->GetIsHitFront();
-
-        // 상태 변화 감지 및 로그
-        if (PreviousState != CurrentState)
-        {
-            UE_LOG(LogTemp, Warning, TEXT("State changed from %d to %d"), (int32)PreviousState, (int32)CurrentState);
-        }
         
         // 물리 기반 Falling 상태 전환
         if (bIsFalling && CurrentState != ECharacterState::Falling)
