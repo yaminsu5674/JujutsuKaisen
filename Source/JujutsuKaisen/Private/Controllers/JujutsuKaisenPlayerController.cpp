@@ -194,10 +194,10 @@ void AJujutsuKaisenPlayerController::E_Pressed()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("E_Pressed Called!"));
 	}
-	// if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-	// {
-	// 	Char->E_Pressed();
-	// }
+	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+	{
+		Char->E_Pressed();
+	}
 }
 
 void AJujutsuKaisenPlayerController::E_Released()
