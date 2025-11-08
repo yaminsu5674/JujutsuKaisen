@@ -8,12 +8,6 @@
 
 AJujutsuKaisenPlayerController::AJujutsuKaisenPlayerController()
 {
-
-	bEKeyPressed = false;
-	bRKeyPressed = false;
-	bQKeyPressed = false;
-	bERComboExecuted = false;
-	bQRComboExecuted = false;
 }
 
 void AJujutsuKaisenPlayerController::BeginPlay()
@@ -56,10 +50,7 @@ void AJujutsuKaisenPlayerController::BeginPlay()
 void AJujutsuKaisenPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-	
-	UE_LOG(LogTemp, Log, TEXT("SetupInputComponent - DefaultMappingContext: %s"), DefaultMappingContext ? TEXT("Valid") : TEXT("NULL"));
-	UE_LOG(LogTemp, Log, TEXT("SetupInputComponent - JumpAction: %s"), JumpAction ? TEXT("Valid") : TEXT("NULL"));
-	
+
 	// Enhanced Input Component 설정
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
@@ -85,12 +76,18 @@ void AJujutsuKaisenPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(A_Pressed_Action, ETriggerEvent::Started, this, &AJujutsuKaisenPlayerController::A_Pressed);
 
 		// R_Pressed (Started/Completed 트리거 사용)
-		EnhancedInputComponent->BindAction(R_Pressed_Action, ETriggerEvent::Started, this, &AJujutsuKaisenPlayerController::R_Pressed);
+		EnhancedInputComponent->BindAction(R_Pressed_Action, ETriggerEvent::Triggered, this, &AJujutsuKaisenPlayerController::R_Pressed);
 		EnhancedInputComponent->BindAction(R_Pressed_Action, ETriggerEvent::Completed, this, &AJujutsuKaisenPlayerController::R_Released);
 	
 		// E_Pressed (Started/Completed 트리거 사용)
 		EnhancedInputComponent->BindAction(E_Pressed_Action, ETriggerEvent::Started, this, &AJujutsuKaisenPlayerController::E_Pressed);
 		EnhancedInputComponent->BindAction(E_Pressed_Action, ETriggerEvent::Completed, this, &AJujutsuKaisenPlayerController::E_Released);
+
+		// ER Chord
+		EnhancedInputComponent->BindAction(ER_Chord_Action, ETriggerEvent::Completed, this, &AJujutsuKaisenPlayerController::ER_Chord);
+
+		// QR Chord
+		EnhancedInputComponent->BindAction(QR_Chord_Action, ETriggerEvent::Completed, this, &AJujutsuKaisenPlayerController::QR_Chord);
 	}
 }
 
@@ -145,28 +142,18 @@ void AJujutsuKaisenPlayerController::StopDash()
 
 void AJujutsuKaisenPlayerController::Q_Pressed()
 {
-	bQKeyPressed = true;
-    StartJujutsuComboTimer();
+	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+	{
+		Char->Guard();
+	}
 }
 
 void AJujutsuKaisenPlayerController::Q_Released()
 {
-	GetWorld()->GetTimerManager().SetTimer(QKeyTimer, [this]() {
-		bQKeyPressed = false;
-		
-		// ER 콤보가 실행되지 않았을 때만 R_Released 호출
-		if (!bERComboExecuted && !bQRComboExecuted)
-		{
-			if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-			{
-				Char->StopGuard();
-			}
-		}
-		
-		// 플래그 리셋
-		//bERComboExecuted = false;
-		bQRComboExecuted = false;
-	}, KeyReleaseDelay, false);
+	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+	{
+		Char->StopGuard();
+	}
 }
 
 void AJujutsuKaisenPlayerController::A_Pressed()
@@ -179,107 +166,68 @@ void AJujutsuKaisenPlayerController::A_Pressed()
 
 void AJujutsuKaisenPlayerController::R_Pressed()
 {
-	bRKeyPressed = true;
-    StartJujutsuComboTimer();
+	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+	{
+		Char->R_Pressed();
+	}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("R_Pressed Called!"));
+	}
 }
 
 void AJujutsuKaisenPlayerController::R_Released()
 {
-	GetWorld()->GetTimerManager().SetTimer(RKeyTimer, [this]() {
-		bRKeyPressed = false;
-		
-		// ER 콤보가 실행되지 않았을 때만 R_Released 호출
-		if (!bERComboExecuted && !bQRComboExecuted)
-		{
-			if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-			{
-				Char->R_Released();
-			}
-		}
-		
-		// 플래그 리셋
-		// bERComboExecuted = false;
-		//bQRComboExecuted = false;
-	}, KeyReleaseDelay, false);
+	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+	{
+		Char->R_Released();
+	}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("R_Released Called!"));
+	}
 }
 
 void AJujutsuKaisenPlayerController::E_Pressed()
 {
-	bEKeyPressed = true;
-    StartJujutsuComboTimer();
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("E_Pressed Called!"));
+	}
+	// if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+	// {
+	// 	Char->E_Pressed();
+	// }
 }
 
 void AJujutsuKaisenPlayerController::E_Released()
 {
-	GetWorld()->GetTimerManager().SetTimer(EKeyTimer, [this]() {
-		bEKeyPressed = false;
-		bERComboExecuted = false;
-	}, KeyReleaseDelay, false);
-
+	// 현재는 래핑할 대상이 없음
 }
 
-void AJujutsuKaisenPlayerController::StartJujutsuComboTimer()
+void AJujutsuKaisenPlayerController::ER_Chord()
 {
-    // 이전 타이머 있으면 리셋
-    GetWorld()->GetTimerManager().ClearTimer(JujutsuComboTimer);
-
-    // 새로 타이머 등록
-    GetWorld()->GetTimerManager().SetTimer(
-        JujutsuComboTimer,
-        this,
-        &AJujutsuKaisenPlayerController::JudgeJujutsuCombo,
-        JujutsuComboDelay,
-        false
-    );
+	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+	{
+		Char->ER_Pressed();
+	}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("ER_Chord Called!"));
+	}
 }
 
-void AJujutsuKaisenPlayerController::JudgeJujutsuCombo()
+void AJujutsuKaisenPlayerController::QR_Chord()
 {
-    // ER 콤보 우선
-    if (bEKeyPressed && bRKeyPressed)
-    {
-        bERComboExecuted = true;
-        if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-        {
-            Char->ER_Pressed();
-        }
-    }
-    // QR 콤보 우선
-    else if (bQKeyPressed && bRKeyPressed)
-    {
-        bQRComboExecuted = true;
-        if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-        {
-            Char->QR_Pressed();
-        }
-    }
-    // 단독 E
-    else if (bEKeyPressed)
-    {
-        if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-        {
-            Char->E_Pressed();
-        }
-    }
-    // 단독 Q
-    else if (bQKeyPressed)
-    {
-        if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-        {
-            Char->Guard();
-        }
-    }
-    // 단독 R
-    else if (bRKeyPressed)
-    {
-        if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
-        {
-            Char->R_Pressed();
-        }
-    }
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("QR_Chord Called!"));
+	}
+	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+	{
+		Char->QR_Pressed();
+	}
 }
-
-
 
 void AJujutsuKaisenPlayerController::OnPossess(APawn* InPawn)
 {
