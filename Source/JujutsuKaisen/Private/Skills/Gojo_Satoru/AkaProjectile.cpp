@@ -191,12 +191,7 @@ void AAkaProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedCompon
 			);
 			
 			HitCharacter->LaunchCharacter(LaunchVelocity, false, true);
-			
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Magenta, 
-					FString::Printf(TEXT("Launch: (%.1f, %.1f, %.1f)"), LaunchVelocity.X, LaunchVelocity.Y, LaunchVelocity.Z));
-			}
+
 		}
 		
 		// 발사체 자신을 즉시 파괴

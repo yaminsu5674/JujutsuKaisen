@@ -431,7 +431,11 @@ void AJujutsuKaisenCharacter::QR_Pressed()
 	// 다른 스킬이 사용 중인지 확인
 	if (IsOtherSkillInUse(ESkillIndex::QR))
 	{
-		return; // 다른 스킬 사용 중이면 실행하지 않음
+		// 아래 조건문을 더 간단힘
+		if (!IsSkillInUse(ESkillIndex::Q))
+		{
+			return;
+		}
 	}
 
 	// QR 콤보 스킬 사용 시작
@@ -455,7 +459,11 @@ void AJujutsuKaisenCharacter::ER_Pressed()
 	// 다른 스킬이 사용 중인지 확인
 	if (IsOtherSkillInUse(ESkillIndex::ER))
 	{
-		return; // 다른 스킬 사용 중이면 실행하지 않음
+		// 아래 조건문을 더 간단힘
+		if (!IsSkillInUse(ESkillIndex::E))
+		{
+			return;
+		}
 	}
 
 	// ER 콤보 스킬 사용 시작
