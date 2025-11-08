@@ -215,6 +215,13 @@ void AJujutsuKaisenCharacter::JumpCustom()
 	// 점프 시작 시 Falling 상태로 전환 시도
 	if (StateManager && StateManager->SetState(ECharacterState::Falling))
 	{
+		if (GEngine)
+		{
+			if (StateManager->IsInState(ECharacterState::Falling))
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("Falling State!"));
+			}
+		}
 		if (JumpCount == 0 && bIsDashing)
 		{
 			// 슈퍼 점프 (대시 중 점프)
