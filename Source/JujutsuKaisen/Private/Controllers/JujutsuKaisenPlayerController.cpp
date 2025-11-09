@@ -166,17 +166,17 @@ void AJujutsuKaisenPlayerController::A_Pressed()
 
 void AJujutsuKaisenPlayerController::R_Pressed()
 {
-	if (GEngine)
+	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("R_Pressed Called!"));
+		Char->R_Pressed();
 	}
 }
 
 void AJujutsuKaisenPlayerController::R_Released()
 {
-	if (GEngine)
+	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("R_Released Called!"));
+		Char->R_Released();
 	}
 }
 
@@ -217,6 +217,6 @@ void AJujutsuKaisenPlayerController::OnPossess(APawn* InPawn)
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(InPawn))
 	{
 		Char->SetPlayerMode(true);
-		UE_LOG(LogTemp, Log, TEXT("Player Character set to Player Mode"));
+		UE_LOG(LogTemp, Error, TEXT("Player Character set to Player Mode (Class: %s)"), *Char->GetClass()->GetName());
 	}
 }

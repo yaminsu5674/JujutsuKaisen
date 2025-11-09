@@ -134,10 +134,10 @@ void AAkaProjectile::OnHitSphereOverlapBegin(UPrimitiveComponent* OverlappedComp
 	if (HitCharacter && HitCharacter->GetCharacterMovement())
 	{
 		// 중력 끄기
-		HitCharacter->GetCharacterMovement()->GravityScale = 0.0f;
+		//HitCharacter->GetCharacterMovement()->GravityScale = 0.0f;
 		
 		// 캐릭터 이동 비활성화 (CharacterMovement가 위치를 덮어쓰지 못하게)
-		HitCharacter->GetCharacterMovement()->StopMovementImmediately();
+		//HitCharacter->GetCharacterMovement()->StopMovementImmediately();
 		
 		// 피격 하위 상태를 Stun으로 설정
 		if (HitCharacter->GetStateManager() && GetOwner())

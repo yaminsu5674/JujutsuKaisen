@@ -88,11 +88,7 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	Health = MaxHealth;
 	bCanMove = true; // 게임 시작 시 이동 가능하도록 강제 설정
 
-	if (StateManager)
-	{
-		StateManager->ForceState(ECharacterState::Locomotion);
-	}
-	else
+	if (StateManager == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("BeginPlay: StateManager is NULL!"));
 		UE_LOG(LogTemp, Error, TEXT("Character: %s"), *GetName());
@@ -104,6 +100,9 @@ void AJujutsuKaisenCharacter::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("_AnimInstance not init!!!"));
 	}
+
+	// gravityscale 출력 log
+	UE_LOG(LogTemp, Error, TEXT("GravityScale: %.2f"), GetCharacterMovement()->GravityScale);
 
 	// 히트박스 부착
 	AttachHitBoxToBone(LeftFist, FString(TEXT("hand_l")));
@@ -361,6 +360,7 @@ void AJujutsuKaisenCharacter::R_Pressed()
 	// 다른 스킬이 사용 중인지 확인
 	if (IsOtherSkillInUse(ESkillIndex::R))
 	{
+		if (GEngine)
 		return; // 다른 스킬 사용 중이면 실행하지 않음
 	}
 
@@ -554,14 +554,26 @@ void AJujutsuKaisenCharacter::SetGravityEnabled(bool bEnabled)
 	if (bEnabled)
 	{
 		GetCharacterMovement()->GravityScale = DefaultGravityScale; // 기본값 사용
+		UE_LOG(LogTemp, Error, TEXT("Reset GravityScale: %.2f"), GetCharacterMovement()->GravityScale);
 	}
 	else
 	{
+		if (GEngine)
+		{
+			UE_LOG(LogTemp, Error, TEXT("SetGravityEnabled: Gravity disabled"));
+			UE_LOG(LogTemp, Error, TEXT("GravityScale: %.2f"), GetCharacterMovement()->GravityScale);
+		}
 		// 중력 끄기 + 수직 속도도 0으로 만들어서 공중에서 멈춤
 		GetCharacterMovement()->GravityScale = 0.0f;
+		GetCharacterMovement()->StopMovementImmediately();
 		FVector CurrentVelocity = GetCharacterMovement()->Velocity;
 		CurrentVelocity.Z = 0.0f; // 수직 속도만 0으로
 		GetCharacterMovement()->Velocity = CurrentVelocity;
+		// gravity scale 출력
+		UE_LOG(LogTemp, Error, TEXT("GravityScale: %.2f"), GetCharacterMovement()->GravityScale);
+		FTimerHandle TimerHandle;
+
+		
 	}
 }
 
