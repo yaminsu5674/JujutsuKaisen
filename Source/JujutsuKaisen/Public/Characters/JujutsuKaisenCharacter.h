@@ -140,7 +140,7 @@ protected:
 	// ============================================================================
 	// Core Components
 	// ============================================================================
-	UPROPERTY(Instanced)
+	UPROPERTY()
 	UCharacterStateManager* StateManager;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced, Category = "Skill")

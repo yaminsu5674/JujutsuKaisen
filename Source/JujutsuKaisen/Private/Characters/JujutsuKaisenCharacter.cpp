@@ -101,9 +101,6 @@ void AJujutsuKaisenCharacter::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("_AnimInstance not init!!!"));
 	}
 
-	// gravityscale 출력 log
-	UE_LOG(LogTemp, Error, TEXT("GravityScale: %.2f"), GetCharacterMovement()->GravityScale);
-
 	// 히트박스 부착
 	AttachHitBoxToBone(LeftFist, FString(TEXT("hand_l")));
 	AttachHitBoxToBone(RightFist, FString(TEXT("hand_r")));
@@ -554,26 +551,15 @@ void AJujutsuKaisenCharacter::SetGravityEnabled(bool bEnabled)
 	if (bEnabled)
 	{
 		GetCharacterMovement()->GravityScale = DefaultGravityScale; // 기본값 사용
-		UE_LOG(LogTemp, Error, TEXT("Reset GravityScale: %.2f"), GetCharacterMovement()->GravityScale);
 	}
 	else
 	{
-		if (GEngine)
-		{
-			UE_LOG(LogTemp, Error, TEXT("SetGravityEnabled: Gravity disabled"));
-			UE_LOG(LogTemp, Error, TEXT("GravityScale: %.2f"), GetCharacterMovement()->GravityScale);
-		}
 		// 중력 끄기 + 수직 속도도 0으로 만들어서 공중에서 멈춤
 		GetCharacterMovement()->GravityScale = 0.0f;
 		GetCharacterMovement()->StopMovementImmediately();
 		FVector CurrentVelocity = GetCharacterMovement()->Velocity;
 		CurrentVelocity.Z = 0.0f; // 수직 속도만 0으로
 		GetCharacterMovement()->Velocity = CurrentVelocity;
-		// gravity scale 출력
-		UE_LOG(LogTemp, Error, TEXT("GravityScale: %.2f"), GetCharacterMovement()->GravityScale);
-		FTimerHandle TimerHandle;
-
-		
 	}
 }
 

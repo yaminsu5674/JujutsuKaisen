@@ -54,33 +54,8 @@ bool UCharacterStateManager::CanTransitionTo(ECharacterState NewState) const
 
 void UCharacterStateManager::ForceState(ECharacterState NewState)
 {
-	const ECharacterState PreviousState = CurrentState;
 	CurrentState = NewState;
 	UpdateGravityForState(NewState);
-
-	auto StateToString = [](ECharacterState State) -> const TCHAR*
-	{
-		switch (State)
-		{
-		case ECharacterState::Locomotion: return TEXT("Locomotion");
-		case ECharacterState::Falling:    return TEXT("Falling");
-		case ECharacterState::Skill:      return TEXT("Skill");
-		case ECharacterState::Hit:        return TEXT("Hit");
-		case ECharacterState::Dead:       return TEXT("Dead");
-		default:                          return TEXT("Unknown");
-		}
-	};
-
-	const FString Message = FString::Printf(TEXT("State change: %s -> %s"),
-		StateToString(PreviousState),
-		StateToString(NewState));
-
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *Message);
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, Message);
-	}
 }
 
 void UCharacterStateManager::ResetSubStates(ECharacterState NewState)
