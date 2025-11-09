@@ -50,41 +50,17 @@ void AMurasakiProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 	AJujutsuKaisenCharacter* HitCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
 	if (HitCharacter && HitCharacter->GetCharacterMovement())
 	{
-		// 중력 끄기
-		HitCharacter->GetCharacterMovement()->GravityScale = 0.0f;
-		
-	
-		// 캐릭터 이동 비활성화 (CharacterMovement가 위치를 덮어쓰지 못하게)
-		HitCharacter->GetCharacterMovement()->StopMovementImmediately();
-		
 		// 피격 하위 상태를 Stun으로 설정
 		if (HitCharacter->GetStateManager() && GetOwner())
 		{
 			bool bIsHitFront = USkillLibrary::JudgeHitFront(GetOwner(), HitCharacter);
 			HitCharacter->GetStateManager()->SetHitSubState(EHitSubState::Stun, bIsHitFront);
 		}
-		
-		UE_LOG(LogTemp, Warning, TEXT("HitCharacter Setup: GravityScale=0, MovementMode=Falling, StopMovement"));
-	}
-	
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("OnProjectileOverlapBegin Called!"));
-	}
-	// ChargingEffect 제거
-	if (ChargingEffectComponent)
-	{
-		ChargingEffectComponent->DestroyComponent();
-		ChargingEffectComponent = nullptr;
 	}
 }
 
 void AMurasakiProjectile::OnProjectileOverlapEnd(AActor* OtherActor)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("OnProjectileOverlapEnd Called!"));
-	}
 	// JujutsuKaisenCharacter인지 확인
 	AJujutsuKaisenCharacter* HitCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
 	if (HitCharacter)
@@ -111,12 +87,6 @@ void AMurasakiProjectile::OnProjectileOverlapEnd(AActor* OtherActor)
 			);
 			
 			HitCharacter->LaunchCharacter(LaunchVelocity, false, true);
-			
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Magenta, 
-					FString::Printf(TEXT("Launch: (%.1f, %.1f, %.1f)"), LaunchVelocity.X, LaunchVelocity.Y, LaunchVelocity.Z));
-			}
 		}
 		
 		// 발사체 자신을 즉시 파괴

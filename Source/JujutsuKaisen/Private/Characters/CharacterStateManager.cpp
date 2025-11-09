@@ -32,8 +32,23 @@ bool UCharacterStateManager::SetState(ECharacterState NewState)
 bool UCharacterStateManager::SetHitSubState(EHitSubState NewSubState, bool bIsHitFront)
 {
 	SetState(ECharacterState::Hit);
+	
 	if (CurrentState == ECharacterState::Hit)
 	{
+		if (OwnerCharacter)
+		{
+			OwnerCharacter->SetCanMove(false);
+
+			switch (NewSubState)
+			{
+			case EHitSubState::Stun:
+				OwnerCharacter->SetGravityEnabled(false);
+				break;
+			default:
+				OwnerCharacter->SetGravityEnabled(true);
+				break;
+			}
+		}
 		CurrentHitSubState = NewSubState;
 		IsHitFront = bIsHitFront;
 		return true;

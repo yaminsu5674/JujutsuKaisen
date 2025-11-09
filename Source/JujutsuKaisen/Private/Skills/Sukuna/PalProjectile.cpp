@@ -39,15 +39,11 @@ void APalProjectile::BeginPlay()
 }
 
 void APalProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
-{
-	UE_LOG(LogTemp, Log, TEXT("PalProjectile: OnProjectileOverlapBegin 호출됨!"));
-	UE_LOG(LogTemp, Log, TEXT("PalProjectile: 오버랩 처리 성공!"));
-	
+{	
 	if (Target && Target->GetStateManager() && GetOwner())
 	{
 		bool bIsHitFront = USkillLibrary::JudgeHitFront(GetOwner(), Target);
 		Target->GetStateManager()->SetHitSubState(EHitSubState::Stun, bIsHitFront);
-		UE_LOG(LogTemp, Log, TEXT("PalProjectile: Stun 설정 완료!"));
 	}
 }
 
@@ -92,7 +88,6 @@ void APalProjectile::EndPal()
             FVector LaunchDir = GetActorForwardVector();
             FVector ImpulseForce = LaunchDir * 2000.f + FVector(0, 0, 600.f);
             Target->GetCharacterMovement()->AddImpulse(ImpulseForce, true);
-
         }
     }
     Destroy();
