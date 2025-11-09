@@ -98,6 +98,7 @@ void AJujutsuKaisenPlayerController::Move(const FInputActionValue& Value)
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
 		Char->Move(Value);
+		Char->SetIsMoving(true);
 	}
 }
 

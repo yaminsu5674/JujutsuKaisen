@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
+#include "Library/SkillLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -146,8 +147,6 @@ void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
 	{
 		FVector2D MovementVector = Value.Get<FVector2D>();
 
-		SetIsMoving(bHasMovementInput);
-
 		if (Controller != nullptr && CameraBoom != nullptr)
 		{
 			// 카메라 회전을 기준으로 이동 방향 계산
@@ -179,21 +178,74 @@ void AJujutsuKaisenCharacter::Look(const FInputActionValue& Value)
 }
 
 void AJujutsuKaisenCharacter::Dash()
-	{
-		if (bIsDashing)
-			return;
+{
+	if (bIsDashing)
+		return;
 
-		bIsDashing = true;
-		GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
-		GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
+	bIsDashing = true;
+	GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
+	GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
 
 	// Falling 상태인지 확인 후 앞으로 대시 로직 + 애님 몽타주 재생
-	if (StateManager && (StateManager->IsInState(ECharacterState::Falling) || StateManager->IsInState(ECharacterState::Locomotion)))
+	if (!bIsMoving && TargetCharacter)
 	{
-		GetCharacterMovement()->Velocity = GetActorForwardVector() * DashSpeed * 3;
+		USkillLibrary::RotateActorToFaceTarget(this, TargetCharacter);
+		GetCharacterMovement()->StopMovementImmediately();
+	}
+
+	if (!StateManager)
+	{
+		return;
+	}
+
+	if (StateManager->IsInState(ECharacterState::Falling))
+	{
+		FVector DashLaunchVelocity = GetActorForwardVector();
+		DashLaunchVelocity.Z = 0.0f;
+		DashLaunchVelocity = DashLaunchVelocity.GetSafeNormal() * DashSpeed * 3.0f;
+		LaunchCharacter(DashLaunchVelocity, true, false);
+
 		if (DashMontage && GetMesh() && GetMesh()->GetAnimInstance())
 		{
 			GetMesh()->GetAnimInstance()->Montage_Play(DashMontage);
+		}
+	}
+	else if (StateManager->IsInState(ECharacterState::Locomotion))
+	{
+		if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+		{
+			MoveComp->BrakingFrictionFactor = 0.0f;
+			MoveComp->GroundFriction = 0.0f;
+			MoveComp->BrakingDecelerationWalking = 0.0f;
+
+			FVector DashDirection = GetActorForwardVector();
+			DashDirection.Z = 0.0f;
+
+			if (!DashDirection.IsNearlyZero())
+			{
+				DashDirection = DashDirection.GetSafeNormal();
+
+				FVector CurrentVelocity = MoveComp->Velocity;
+				CurrentVelocity.X = 0.0f;
+				CurrentVelocity.Y = 0.0f;
+				MoveComp->Velocity = CurrentVelocity;
+
+				const FVector DashImpulse = DashDirection * DashSpeed * 3.0f;
+				MoveComp->AddImpulse(DashImpulse, true);
+			}
+
+			FTimerHandle DashFrictionRestoreHandle;
+			GetWorldTimerManager().SetTimer(DashFrictionRestoreHandle, [this, MoveComp]()
+			{
+				if (!MoveComp)
+				{
+					return;
+				}
+
+				MoveComp->BrakingFrictionFactor = 2.0f;
+				MoveComp->GroundFriction = 8.0f;
+				MoveComp->BrakingDecelerationWalking = 2000.0f;
+			}, 0.3f, false);
 		}
 	}
 }
