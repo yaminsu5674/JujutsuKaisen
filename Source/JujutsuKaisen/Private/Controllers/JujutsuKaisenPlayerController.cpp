@@ -60,6 +60,7 @@ void AJujutsuKaisenPlayerController::SetupInputComponent()
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AJujutsuKaisenPlayerController::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AJujutsuKaisenPlayerController::MoveCompleted);
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJujutsuKaisenPlayerController::Look);
@@ -97,6 +98,15 @@ void AJujutsuKaisenPlayerController::Move(const FInputActionValue& Value)
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
 		Char->Move(Value);
+	}
+}
+
+void AJujutsuKaisenPlayerController::MoveCompleted()
+{
+
+	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+	{
+		Char->SetIsMoving(false);
 	}
 }
 

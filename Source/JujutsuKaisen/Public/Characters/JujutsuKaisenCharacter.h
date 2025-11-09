@@ -123,6 +123,7 @@ public:
 	// ============================================================================
 	void SetCanMove(bool bCanMove);
 	bool GetCanMove() const { return bCanMove; }
+	void SetIsMoving(bool bInIsMoving);
 
 protected:
 	// ============================================================================
@@ -196,6 +197,9 @@ protected:
 
 	UPROPERTY()
 	bool bCanMove = true;
+
+	UPROPERTY()
+	bool bIsMoving = false;
 
 	// ============================================================================
 	// Movement Parameters

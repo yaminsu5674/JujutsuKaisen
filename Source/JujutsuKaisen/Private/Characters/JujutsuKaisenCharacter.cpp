@@ -146,6 +146,8 @@ void AJujutsuKaisenCharacter::Move(const FInputActionValue& Value)
 	{
 		FVector2D MovementVector = Value.Get<FVector2D>();
 
+		SetIsMoving(bHasMovementInput);
+
 		if (Controller != nullptr && CameraBoom != nullptr)
 		{
 			// 카메라 회전을 기준으로 이동 방향 계산
@@ -186,7 +188,7 @@ void AJujutsuKaisenCharacter::Dash()
 		GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
 
 	// Falling 상태인지 확인 후 앞으로 대시 로직 + 애님 몽타주 재생
-	if (StateManager && StateManager->IsInState(ECharacterState::Falling))
+	if (StateManager && (StateManager->IsInState(ECharacterState::Falling) || StateManager->IsInState(ECharacterState::Locomotion)))
 	{
 		GetCharacterMovement()->Velocity = GetActorForwardVector() * DashSpeed * 3;
 		if (DashMontage && GetMesh() && GetMesh()->GetAnimInstance())
@@ -570,6 +572,11 @@ void AJujutsuKaisenCharacter::SetGravityEnabled(bool bEnabled)
 void AJujutsuKaisenCharacter::SetCanMove(bool bCanMoveValue)
 {
 	bCanMove = bCanMoveValue;
+}
+
+void AJujutsuKaisenCharacter::SetIsMoving(bool bInIsMoving)
+{
+	bIsMoving = bInIsMoving;
 }
 
 // ============================================================================

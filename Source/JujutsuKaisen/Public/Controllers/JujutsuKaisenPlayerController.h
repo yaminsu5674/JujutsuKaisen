@@ -69,6 +69,7 @@ public:
 
 	// Input Action Functions (래핑 함수들)
 	void Move(const FInputActionValue& Value);
+	void MoveCompleted();
 	void Look(const FInputActionValue& Value);
 	void JumpCustom();
 	void StopJumping();
