@@ -2,9 +2,7 @@
 
 
 #include "Characters/GojoSatoruCharacter.h"
-#include "Skills/BaseSkill.h"
-#include "Skills/Gojo_Satoru/Aka.h"
-#include "Skills/Common/RightHook.h"
+
 
 AGojoSatoruCharacter::AGojoSatoruCharacter()
 {

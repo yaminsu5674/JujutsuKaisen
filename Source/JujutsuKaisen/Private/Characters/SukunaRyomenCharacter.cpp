@@ -2,7 +2,7 @@
 
 
 #include "Characters/SukunaRyomenCharacter.h"
-#include "Skills/BaseSkill.h"
+
 
 ASukunaRyomenCharacter::ASukunaRyomenCharacter()
 {
