@@ -83,7 +83,6 @@ void UCharacterStateManager::ResetSubStates(ECharacterState NewState)
 		break;
 	case ECharacterState::Locomotion:
 	case ECharacterState::Falling:
-	case ECharacterState::Dead:
 	case ECharacterState::Skill:
 		// 하위 상태가 없는 상태들
 		break;

@@ -570,21 +570,27 @@ void AJujutsuKaisenCharacter::TakeDamage(float DamageAmount)
 {
 	if (StateManager && StateManager->IsInState(ECharacterState::Hit))
 	{
-		// if (GEngine)
-		// {
-		// 	GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Red, TEXT("Hit!"));
-		// }
+		Health -= DamageAmount;
+		if (GEngine)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Health: %f"), Health);
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Health: %f"), Health));
+		}
+		if (Health <= 0.0f && !bIsDead)
+		{
+			Die();
+		}
+		
 	}
 }
 
 void AJujutsuKaisenCharacter::Die()
 {
-	if (SetState(ECharacterState::Dead))
+	bIsDead = true;
+	SetCanMove(false);
+	if (GEngine)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Dead!"));
-		}
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("Dead!"));
 	}
 }
 

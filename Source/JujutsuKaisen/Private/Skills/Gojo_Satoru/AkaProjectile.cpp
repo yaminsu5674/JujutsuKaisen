@@ -77,6 +77,8 @@ void AAkaProjectile::Tick(float DeltaTime)
 		// 발사체와 함께 이동하며 점진적으로 위로 띄우기
 		if (ProjectileMovement)
 		{
+
+			Target->TakeDamage(5.0f);
 			// X, Y는 발사체와 동기화, Z는 점진적 상승 (한 번에 계산)
 			FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 1.0f;
 			DeltaMovement.Z = 50.f * DeltaTime;  // Z축은 초당 5 유닛씩 상승으로 덮어쓰기
@@ -183,7 +185,7 @@ void AAkaProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedCompon
 			);
 			
 			HitCharacter->LaunchCharacter(LaunchVelocity, false, true);
-
+			HitCharacter->TakeDamage(200.0f);
 		}
 		
 		// 발사체 자신을 즉시 파괴

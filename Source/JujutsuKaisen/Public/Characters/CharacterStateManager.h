@@ -15,8 +15,7 @@ enum class ECharacterState : uint8
 	Locomotion = 0,     // 로코모션 (최고 우선순위)
 	Falling = 1,        // 낙하
 	Skill = 2,          // 스킬 사용
-	Hit = 3,            // 피격
-	Dead = 4            // 죽음 (최저 우선순위)
+	Hit = 3             // 피격
 };
 
 // 피격 하위 상태

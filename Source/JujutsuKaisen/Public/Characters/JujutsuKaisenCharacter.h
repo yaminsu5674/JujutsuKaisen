@@ -125,6 +125,7 @@ public:
 	void SetCanMove(bool bCanMove);
 	bool GetCanMove() const { return bCanMove; }
 	void SetIsMoving(bool bInIsMoving);
+	bool GetIsDead() const { return bIsDead; }
 
 protected:
 	// ============================================================================
@@ -201,6 +202,9 @@ protected:
 
 	UPROPERTY()
 	bool bIsMoving = false;
+
+	UPROPERTY()
+	bool bIsDead = false;
 
 	// ============================================================================
 	// Movement Parameters

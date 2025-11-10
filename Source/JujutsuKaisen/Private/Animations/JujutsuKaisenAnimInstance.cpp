@@ -46,37 +46,25 @@ void UJujutsuKaisenAnimInstance::NativeInitializeAnimation()
 
 void UJujutsuKaisenAnimInstance::OnStateAnimationEnds()
 {
-    if (CurrentState == ECharacterState::Dead)
+    // 다른 상태들은 로코모션으로 복귀
+    if (Character && Character->GetStateManager())
     {
-        // 죽음 상태는 그대로 유지
-        UE_LOG(LogTemp, Warning, TEXT("OnStateAnimationEnds: Dead state, no transition"));
-        return;
+        Character->GetStateManager()->ForceState(ECharacterState::Locomotion);
     }
     else
-    {   
-        // 다른 상태들은 로코모션으로 복귀
-        if (Character && Character->GetStateManager())
-        {
-            ECharacterState PreviousState = CurrentState;
-            Character->GetStateManager()->ForceState(ECharacterState::Locomotion);
-          
-            
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("Character or StateManager is NULL in OnStateAnimationEnds"));
-        }
-        
-        // 이동 가능하도록 설정
-        if (Character)
-        {
-            Character->SetCanMove(true);
-            // 스킬 변수들 리셋
-            Character->ResetSkillVariables();
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("Character is NULL when trying to SetCanMove"));
-        }
+    {
+        UE_LOG(LogTemp, Error, TEXT("Character or StateManager is NULL in OnStateAnimationEnds"));
+    }
+    
+    // 이동 가능하도록 설정
+    if (Character)
+    {
+        Character->SetCanMove(true);
+        // 스킬 변수들 리셋
+        Character->ResetSkillVariables();
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Character is NULL when trying to SetCanMove"));
     }
 }
