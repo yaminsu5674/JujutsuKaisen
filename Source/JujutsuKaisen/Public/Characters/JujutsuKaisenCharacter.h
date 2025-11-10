@@ -99,6 +99,8 @@ public:
 	void SetBDidSuperJump(bool bValue) { bDidSuperJump = bValue; }
 	bool GetBDidDoubleJump() const { return bDidDoubleJump; }
 	void SetBDidDoubleJump(bool bValue) { bDidDoubleJump = bValue; }
+	float GetCurrentHealth() const { return Health; }
+	float GetMaxHealthValue() const { return MaxHealth; }
 
 	// ============================================================================
 	// Camera Access

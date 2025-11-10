@@ -5,9 +5,18 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
+#include "UI/PlayerHUDWidget.h"
+#include "UI/PlayerHealthBarWidget.h"
+#include "UI/EnemyHealthBarWidget.h"
+#include "Blueprint/UserWidget.h"
+#include "GameModes/SinglePlayGameMode.h"
+#include "Kismet/GameplayStatics.h"
+#include "JujutsuKaisenGameInstance.h"
+#include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
 
 AJujutsuKaisenPlayerController::AJujutsuKaisenPlayerController()
 {
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AJujutsuKaisenPlayerController::BeginPlay()
@@ -44,7 +53,13 @@ void AJujutsuKaisenPlayerController::BeginPlay()
 	{
 		Char->SetPlayerMode(true);
 		UE_LOG(LogTemp, Log, TEXT("Player Character set to Player Mode"));
+
+		CachedPlayerCharacter = Char;
 	}
+
+	RefreshEnemyReference();
+	InitializeHUD();
+	UpdateHUDData();
 }
 
 void AJujutsuKaisenPlayerController::SetupInputComponent()
@@ -229,5 +244,172 @@ void AJujutsuKaisenPlayerController::OnPossess(APawn* InPawn)
 	{
 		Char->SetPlayerMode(true);
 		UE_LOG(LogTemp, Error, TEXT("Player Character set to Player Mode (Class: %s)"), *Char->GetClass()->GetName());
+		CachedPlayerCharacter = Char;
+		RefreshEnemyReference();
+		UpdateHUDData();
+	}
+}
+
+void AJujutsuKaisenPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	RefreshEnemyReference();
+	UpdateHUDData();
+
+	if (PlayerHUDWidgetInstance && CachedEnemyCharacter.IsValid())
+	{
+		PlayerHUDWidgetInstance->UpdateEnemyHealthBarForCharacter(CachedEnemyCharacter.Get());
+	}
+}
+
+void AJujutsuKaisenPlayerController::InitializeHUD()
+{
+	if (PlayerHUDWidgetInstance || !PlayerHUDWidgetClass)
+	{
+		return;
+	}
+
+	PlayerHUDWidgetInstance = CreateWidget<UPlayerHUDWidget>(this, PlayerHUDWidgetClass);
+
+	if (!PlayerHUDWidgetInstance)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to create PlayerHUDWidget instance."));
+		return;
+	}
+
+	PlayerHUDWidgetInstance->AddToViewport();
+
+	if (UPlayerHealthBarWidget* PlayerBar = PlayerHUDWidgetInstance->GetPlayerHealthBar())
+	{
+		if (CachedPlayerCharacter.IsValid())
+		{
+			PlayerBar->InitializeWithCharacter(CachedPlayerCharacter.Get());
+		}
+	}
+
+	if (UEnemyHealthBarWidget* EnemyBar = PlayerHUDWidgetInstance->GetEnemyHealthBar())
+	{
+		if (CachedEnemyCharacter.IsValid())
+		{
+			EnemyBar->InitializeWithCharacter(CachedEnemyCharacter.Get());
+		}
+	}
+
+	UpdateHUDNamesFromDataAssets();
+}
+
+void AJujutsuKaisenPlayerController::UpdateHUDData()
+{
+	if (!PlayerHUDWidgetInstance)
+	{
+		return;
+	}
+
+	if (UPlayerHealthBarWidget* PlayerBar = PlayerHUDWidgetInstance->GetPlayerHealthBar())
+	{
+		if (CachedPlayerCharacter.IsValid())
+		{
+			PlayerBar->SetHealthValues(CachedPlayerCharacter->GetCurrentHealth(), CachedPlayerCharacter->GetMaxHealthValue());
+		}
+	}
+
+	if (UEnemyHealthBarWidget* EnemyBar = PlayerHUDWidgetInstance->GetEnemyHealthBar())
+	{
+		if (CachedEnemyCharacter.IsValid())
+		{
+			EnemyBar->SetHealthValues(CachedEnemyCharacter->GetCurrentHealth(), CachedEnemyCharacter->GetMaxHealthValue());
+		}
+	}
+}
+
+void AJujutsuKaisenPlayerController::RefreshEnemyReference()
+{
+	if (!CachedPlayerCharacter.IsValid())
+	{
+		CachedPlayerCharacter = Cast<AJujutsuKaisenCharacter>(GetPawn());
+	}
+
+	if (!CachedEnemyCharacter.IsValid())
+	{
+		if (CachedPlayerCharacter.IsValid())
+		{
+			CachedEnemyCharacter = CachedPlayerCharacter->GetTargetCharacter();
+		}
+	}
+	else
+	{
+		// Ensure target character updates (in case target changes)
+		if (CachedPlayerCharacter.IsValid())
+		{
+			AJujutsuKaisenCharacter* CurrentTarget = CachedPlayerCharacter->GetTargetCharacter();
+			if (CurrentTarget && CurrentTarget != CachedEnemyCharacter.Get())
+			{
+				CachedEnemyCharacter = CurrentTarget;
+
+				if (PlayerHUDWidgetInstance)
+				{
+					if (UEnemyHealthBarWidget* EnemyBar = PlayerHUDWidgetInstance->GetEnemyHealthBar())
+					{
+						EnemyBar->InitializeWithCharacter(CurrentTarget);
+					}
+				}
+
+				UpdateHUDNamesFromDataAssets();
+			}
+		}
+	}
+
+	if (PlayerHUDWidgetInstance && CachedEnemyCharacter.IsValid())
+	{
+		if (UEnemyHealthBarWidget* EnemyBar = PlayerHUDWidgetInstance->GetEnemyHealthBar())
+		{
+			if (EnemyBar->GetLinkedCharacter() == nullptr)
+			{
+				EnemyBar->InitializeWithCharacter(CachedEnemyCharacter.Get());
+				UpdateHUDNamesFromDataAssets();
+			}
+		}
+	}
+
+	if (PlayerHUDWidgetInstance && CachedPlayerCharacter.IsValid())
+	{
+		if (UPlayerHealthBarWidget* PlayerBar = PlayerHUDWidgetInstance->GetPlayerHealthBar())
+		{
+			if (PlayerBar->GetLinkedCharacter() == nullptr)
+			{
+				PlayerBar->InitializeWithCharacter(CachedPlayerCharacter.Get());
+				UpdateHUDNamesFromDataAssets();
+			}
+		}
+	}
+}
+
+void AJujutsuKaisenPlayerController::UpdateHUDNamesFromDataAssets()
+{
+	if (!PlayerHUDWidgetInstance)
+	{
+		return;
+	}
+
+	if (UJujutsuKaisenGameInstance* JKGameInstance = Cast<UJujutsuKaisenGameInstance>(GetGameInstance()))
+	{
+		if (UJujutsuKaisenCharacterDataAsset* PlayerAsset = JKGameInstance->GetMyCharacterDataAsset())
+		{
+			const FString& PlayerName = PlayerAsset->GetCharacterName();
+			if (!PlayerName.IsEmpty())
+			{
+				PlayerHUDWidgetInstance->SetPlayerDisplayName(FText::FromString(PlayerName));
+			}
+		}
+
+		if (UJujutsuKaisenCharacterDataAsset* EnemyAsset = JKGameInstance->GetEnemyCharacterDataAsset())
+		{
+			const FString& EnemyName = EnemyAsset->GetCharacterName();
+			if (!EnemyName.IsEmpty())
+			{
+				PlayerHUDWidgetInstance->SetEnemyDisplayName(FText::FromString(EnemyName));
+			}
+		}
 	}
 }

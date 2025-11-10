@@ -195,7 +195,7 @@ void AJujutsuKaisenCharacter::Dash()
 		{
 			SprintDash();
 		}
-	}, 0.3f, false);
+	}, 0.2f, false);
 }
 
 void AJujutsuKaisenCharacter::StopDash()

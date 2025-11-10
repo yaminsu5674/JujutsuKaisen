@@ -11,6 +11,9 @@
 class UInputMappingContext;
 class UInputAction;
 class AJujutsuKaisenCharacter;
+class UPlayerHUDWidget;
+class UPlayerHealthBarWidget;
+class UEnemyHealthBarWidget;
 
 /**
  * 플레이어 컨트롤러 클래스
@@ -89,4 +92,26 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void PlayerTick(float DeltaTime) override;
+
+	/** HUD 위젯 클래스를 지정 (블루프린트에서 설정 필수) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UPlayerHUDWidget> PlayerHUDWidgetClass;
+
+	/** 생성된 HUD 위젯 인스턴스 */
+	UPROPERTY()
+	UPlayerHUDWidget* PlayerHUDWidgetInstance = nullptr;
+
+	/** 플레이어 캐릭터 참조 (약한 참조) */
+	UPROPERTY()
+	TWeakObjectPtr<AJujutsuKaisenCharacter> CachedPlayerCharacter;
+
+	/** 적 캐릭터 참조 (약한 참조) */
+	UPROPERTY()
+	TWeakObjectPtr<AJujutsuKaisenCharacter> CachedEnemyCharacter;
+
+	void InitializeHUD();
+	void UpdateHUDData();
+	void RefreshEnemyReference();
+	void UpdateHUDNamesFromDataAssets();
 };

@@ -7,22 +7,22 @@
 #include "GameFramework/Character.h"
 #include "JujutsuKaisenCharacterDataAsset.generated.h"
 
-// ¹Ì¸® ¼±¾ð (Çì´õ °£ ¼øÈ¯ ÂüÁ¶ ¹æÁö)
+// ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¯ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 class AJujutsuKaisenCharacter;
 
 /**
- * °íÁ¶»çÅä·ç, ½ºÄí³ª µîÀÇ Ä³¸¯ÅÍ Á¤º¸¸¦ ´ã´Â µ¥ÀÌÅÍ ¿¡¼Â Å¬·¡½º
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½
  */
 UCLASS(BlueprintType)
 class JUJUTSUKAISEN_API UJujutsuKaisenCharacterDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
-	// Ä³¸¯ÅÍ ÀÌ¸§
+	// Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
 	FString Name;
 
-	// Ä³¸¯ÅÍ Å¬·¡½º (¿¹: °íÁ¶»çÅä·ç, ½ºÄí³ª µîÀÇ ¼­ºêÅ¬·¡½º)
+	// Ä³ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Å¬ï¿½ï¿½ï¿½ï¿½)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AJujutsuKaisenCharacter> CharacterClass;
 
@@ -34,4 +34,5 @@ class JUJUTSUKAISEN_API UJujutsuKaisenCharacterDataAsset : public UPrimaryDataAs
 
 public:
 	FORCEINLINE TSubclassOf<AJujutsuKaisenCharacter> GetCharacterClass() const { return CharacterClass; }
+	FORCEINLINE const FString& GetCharacterName() const { return Name; }
 };
