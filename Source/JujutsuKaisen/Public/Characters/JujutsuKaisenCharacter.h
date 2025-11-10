@@ -50,6 +50,7 @@ public:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Dash();
+	void SprintDash();
 	void StopDash();
 	virtual void JumpCustom();
 	void Landed(const FHitResult& Hit);

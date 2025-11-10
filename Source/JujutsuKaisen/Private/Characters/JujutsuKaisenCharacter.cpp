@@ -186,13 +186,39 @@ void AJujutsuKaisenCharacter::Dash()
 	GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = DashSpeed;
 
-	// Falling 상태인지 확인 후 앞으로 대시 로직 + 애님 몽타주 재생
+	bDidSuperJump = false;
+
+	FTimerHandle SprintDashHandle;
+	GetWorldTimerManager().SetTimer(SprintDashHandle, [this]()
+	{
+		if (!bDidSuperJump)
+		{
+			SprintDash();
+		}
+	}, 0.3f, false);
+}
+
+void AJujutsuKaisenCharacter::StopDash()
+{
+	if (!bIsDashing)
+		return;
+
+	bIsDashing = false;
+	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+	GetCharacterMovement()->MinAnalogWalkSpeed = DefaultSpeed;
+}
+
+void AJujutsuKaisenCharacter::SprintDash()
+{
 	if (!bIsMoving && TargetCharacter)
 	{
 		USkillLibrary::RotateActorToFaceTarget(this, TargetCharacter);
-		GetCharacterMovement()->StopMovementImmediately();
-	}
 
+		if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+		{
+			MoveComp->StopMovementImmediately();
+		}
+	}
 	if (!StateManager)
 	{
 		return;
@@ -248,16 +274,6 @@ void AJujutsuKaisenCharacter::Dash()
 			}, 0.3f, false);
 		}
 	}
-}
-
-void AJujutsuKaisenCharacter::StopDash()
-{
-	if (!bIsDashing)
-		return;
-
-	bIsDashing = false;
-	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
-	GetCharacterMovement()->MinAnalogWalkSpeed = DefaultSpeed;
 }
 
 void AJujutsuKaisenCharacter::JumpCustom()
