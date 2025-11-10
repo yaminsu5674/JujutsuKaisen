@@ -229,8 +229,9 @@ void AJujutsuKaisenCharacter::SprintDash()
 		FVector DashLaunchVelocity = GetActorForwardVector();
 		DashLaunchVelocity.Z = 0.0f;
 		DashLaunchVelocity = DashLaunchVelocity.GetSafeNormal() * DashSpeed * 3.0f;
-		LaunchCharacter(DashLaunchVelocity, true, false);
-		GetCharacterMovement()->GravityScale = 0.0f;
+		LaunchCharacter(DashLaunchVelocity, true, true);
+		SetGravityEnabled(false);
+		bSprintDashing = true;
 
 		if (DashMontage && GetMesh() && GetMesh()->GetAnimInstance())
 		{
@@ -239,8 +240,9 @@ void AJujutsuKaisenCharacter::SprintDash()
 		FTimerHandle DashGravityRestoreHandle;
 			GetWorldTimerManager().SetTimer(DashGravityRestoreHandle, [this]()
 			{
-				GetCharacterMovement()->GravityScale = DefaultGravityScale;
-			}, 0.3f, false);
+				bSprintDashing = false;
+				SetGravityEnabled(true);
+			}, 0.6f, false);
 	}
 	else if (StateManager->IsInState(ECharacterState::Locomotion))
 	{

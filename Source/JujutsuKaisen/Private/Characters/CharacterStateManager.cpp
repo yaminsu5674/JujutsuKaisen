@@ -105,6 +105,9 @@ void UCharacterStateManager::UpdateGravityForState(ECharacterState NewState)
 	else
 	{
 		// 다른 모든 상태에서는 중력 켜기
-		OwnerCharacter->SetGravityEnabled(true);
+		if (!OwnerCharacter->IsSprintDashing())
+		{
+			OwnerCharacter->SetGravityEnabled(true);
+		}
 	}
 }

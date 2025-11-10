@@ -127,6 +127,7 @@ public:
 	void SetCanMove(bool bCanMove);
 	bool GetCanMove() const { return bCanMove; }
 	void SetIsMoving(bool bInIsMoving);
+	bool IsSprintDashing() const { return bSprintDashing; }
 	bool GetIsDead() const { return bIsDead; }
 
 protected:
@@ -211,17 +212,20 @@ protected:
 	// ============================================================================
 	// Movement Parameters
 	// ============================================================================
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	uint8 JumpCount = 0;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	bool bDidSuperJump = false;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	bool bDidDoubleJump = false;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	bool bIsDashing = false;
+
+	UPROPERTY()
+	bool bSprintDashing = false;
 
 	UPROPERTY(VisibleAnywhere)
 	float Speed;
