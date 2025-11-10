@@ -566,7 +566,7 @@ ECharacterState AJujutsuKaisenCharacter::GetState() const
 // Character Actions
 // ============================================================================
 
-void AJujutsuKaisenCharacter::Hit()
+void AJujutsuKaisenCharacter::TakeDamage(float DamageAmount)
 {
 	if (StateManager && StateManager->IsInState(ECharacterState::Hit))
 	{

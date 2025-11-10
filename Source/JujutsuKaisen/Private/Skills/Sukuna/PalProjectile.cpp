@@ -59,7 +59,7 @@ void APalProjectile::Tick(float DeltaTime)
 	// Pal 전용 Tick 로직
 	if (bIsOverlapping && Target != nullptr)
 	{
-		Target->Hit();
+		Target->TakeDamage(0.0f);
 	}
 
 }

@@ -75,7 +75,7 @@ public:
 	// ============================================================================
 	// Character Actions
 	// ============================================================================
-	void Hit();
+	void TakeDamage(float DamageAmount);
 	void Die();
 	void ResetSkillVariables();
 
