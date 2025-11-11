@@ -72,6 +72,7 @@ void AProjectile::BeginPlay()
 		CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 		CollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AProjectile::OnOverlapEnd);
 	}
+	CheckOverlap();
 }
 
 // Called every frame
@@ -149,6 +150,10 @@ void AProjectile::CheckOverlap()
 				Target->GetStateManager()->SetHitSubState(EHitSubState::Stun, bIsHitFront);
 			}	
 			UE_LOG(LogTemp, Error, TEXT("Already Overlapping: %s"), *Target->GetName());
+
+			// 강제로 OnOverlapBegin 흐름을 태워 자식 클래스 커스텀 로직 실행
+			FHitResult DummyHit;
+			OnOverlapBegin(CollisionSphere, Target, nullptr, 0, false, DummyHit);
 		}
 	}
 }

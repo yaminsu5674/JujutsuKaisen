@@ -36,10 +36,6 @@ void AMurasakiProjectile::BeginPlay()
 
 void AMurasakiProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("OnProjectileOverlapBegin Called!"));
-	}
 	// 발사체를 수평으로만 이동하도록 변경 (Z축 제거)
 	if (ProjectileMovement)
 	{
@@ -110,11 +106,12 @@ void AMurasakiProjectile::Tick(float DeltaTime)
 		if (ProjectileMovement)
 		{
 			// X, Y는 발사체와 동기화, Z는 점진적 상승 (한 번에 계산)
-			FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 0.6f;
+			FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 0.9f;
 			DeltaMovement.Z = 50.f * DeltaTime;  // Z축은 초당 5 유닛씩 상승으로 덮어쓰기
 			
 			FVector NewLocation = Target->GetActorLocation() + DeltaMovement;
 			Target->SetActorLocation(NewLocation, true);  // Sweep = false (충돌 무시하고 강제 이동)
+			Target->TakeDamage(700.0f);
 		}
 	}
 	

@@ -117,9 +117,6 @@ void UPal::SpawnProjectile()
 	
 	// Place 타입 설정: Lifespan 없음
 	PalProjectile->SetLifeSpan(0.0f);
-	
-	// 오버랩 이벤트는 BeginPlay에서 자동으로 바인딩됨
-    PalProjectile->CheckOverlap();
 }
 
 
@@ -146,7 +143,7 @@ void UPal::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNotifyPa
 			UE_LOG(LogTemp, Warning, TEXT("Pal: 프로젝타일이 이미 존재함 - 스폰 건너뜀"));
 		}
 
-		// 2초 후 EndPal 호출
+		// Lifespan 초 후 EndPal 호출
 		AJujutsuKaisenCharacter* Owner = GetOwner();
 		if (Owner)
 		{
@@ -169,7 +166,7 @@ void UPal::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNotifyPa
                     AnimInst->Montage_Resume(PalMontage);
                 }
                 PalProjectile = nullptr;    
-			}, 2.0f, false);
+			}, PalProjectile->GetLifespan(), false);
 		}
 	}
     else
