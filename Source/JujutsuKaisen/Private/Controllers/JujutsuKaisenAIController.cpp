@@ -96,17 +96,19 @@ void AJujutsuKaisenAIController::InitializeBlackboard()
 void AJujutsuKaisenAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
+	{
+		if (CachedAICharacter.IsValid())
+		{
+			if (AJujutsuKaisenCharacter* Target = CachedAICharacter->GetTargetCharacter())
+			{
+				BlackboardComp->SetValueAsVector(TEXT("TargetLocation"), Target->GetActorLocation());
+			}
+		}
+	}
 	
-	// if (bIsAIActive)
-	// {
-	// 	// AI 업데이트 간격 체크
-	// 	LastAIUpdateTime += DeltaTime;
-	// 	if (LastAIUpdateTime >= AIUpdateInterval)
-	// 	{
-	// 		UpdateAIBehavior(DeltaTime);
-	// 		LastAIUpdateTime = 0.0f;
-	// 	}
-	// }
+	
 }
 
 void AJujutsuKaisenAIController::UpdateAIBehavior(float DeltaTime)
