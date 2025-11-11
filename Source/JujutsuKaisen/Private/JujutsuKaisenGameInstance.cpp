@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameModes/SinglePlayGameMode.h"
 #include "GameModes/LobbyGameMode.h"
+#include "GameModes/SingleLobbyGameMode.h"
 
 
 
@@ -16,6 +17,12 @@ void UJujutsuKaisenGameInstance::StartSingle()
         AWorldSettings* WorldSettings = world->GetWorldSettings();
         if (WorldSettings)
         {
+            ASingleLobbyGameMode* LobbyGameMode = Cast<ASingleLobbyGameMode>(UGameplayStatics::GetGameMode(world));
+            if (LobbyGameMode && !LobbyGameMode->GetSelectedBehaviorTree().IsNull())
+            {
+                SelectedBehaviorTree = LobbyGameMode->GetSelectedBehaviorTree();
+            }
+
             // URL 파라미터 없이 오픈하여 월드 세팅의 게임 모드 사용
             UGameplayStatics::OpenLevel(world, "CityMap", true);
             

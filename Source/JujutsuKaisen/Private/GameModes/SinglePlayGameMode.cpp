@@ -152,35 +152,13 @@ void ASinglePlayGameMode::PossessAI()
 	{
 		UJujutsuKaisenGameInstance* GameInstance = Cast<UJujutsuKaisenGameInstance>(GetGameInstance());
 
-		TSoftObjectPtr<UBehaviorTree> BehaviorToUse;
 		if (GameInstance && !GameInstance->GetSelectedBehaviorTree().IsNull())
 		{
-			BehaviorToUse = GameInstance->GetSelectedBehaviorTree();
-		}
-
-		if (BehaviorToUse.IsNull())
-		{
-			if (!EasyBehaviorTree.IsNull())
-			{
-				BehaviorToUse = EasyBehaviorTree;
-			}
-			else if (!NormalBehaviorTree.IsNull())
-			{
-				BehaviorToUse = NormalBehaviorTree;
-			}
-			else if (!HardBehaviorTree.IsNull())
-			{
-				BehaviorToUse = HardBehaviorTree;
-			}
-		}
-
-		if (!BehaviorToUse.IsNull())
-		{
-			AIController->InitializeBehaviorTree(BehaviorToUse);
+			AIController->InitializeBehaviorTree(GameInstance->GetSelectedBehaviorTree());
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("PossessAI: No behavior tree assigned for AI controller."));
+			UE_LOG(LogTemp, Warning, TEXT("PossessAI: No behavior tree assigned for AI controller. Set SelectedBehaviorTree in GameInstance before starting the match."));
 		}
 	}
 }
