@@ -135,8 +135,6 @@ protected:
 	// Protected Virtual Functions
 	// ============================================================================
 	virtual void InitWeapon();
-	virtual void UpdateCameraMovement(float DeltaTime);
-
 	// ============================================================================
 	// Protected Helper Functions
 	// ============================================================================

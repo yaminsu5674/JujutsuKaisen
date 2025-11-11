@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Controllers/JujutsuKaisenPlayerController.h"
+#include "Controllers/CustomCameraManager.h"
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -17,6 +18,7 @@
 AJujutsuKaisenPlayerController::AJujutsuKaisenPlayerController()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	PlayerCameraManagerClass = ACustomCameraManager::StaticClass();
 }
 
 void AJujutsuKaisenPlayerController::BeginPlay()

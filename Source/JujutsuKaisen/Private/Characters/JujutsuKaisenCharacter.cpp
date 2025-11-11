@@ -117,13 +117,6 @@ void AJujutsuKaisenCharacter::Tick(float DeltaTime)
 	{
 		SkillManager->TickActiveSkills(DeltaTime);
 	}
-	
-	
-	// 플레이어가 제어하는 캐릭터만 카메라 무브 업데이트
-	if (bIsPlayerControlled)
-	{
-		UpdateCameraMovement(DeltaTime);
-	}
 }
 
 void AJujutsuKaisenCharacter::NotifyControllerChanged()
@@ -579,11 +572,6 @@ void AJujutsuKaisenCharacter::TakeDamage(float DamageAmount)
 	if (StateManager && StateManager->IsInState(ECharacterState::Hit))
 	{
 		Health -= DamageAmount;
-		if (GEngine)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Health: %f"), Health);
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Orange, FString::Printf(TEXT("Health: %f"), Health));
-		}
 		if (Health <= 0.0f && !bIsDead)
 		{
 			Die();
@@ -740,37 +728,6 @@ void AJujutsuKaisenCharacter::AttachHitBoxToBone(UJujutsuKaisenHitBox* HitBox, c
 			DebugMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
 	}
-}
-
-void AJujutsuKaisenCharacter::UpdateCameraMovement(float DeltaTime)
-{
-	// 플레이어가 제어하는 캐릭터만 카메라 무브먼트 실행
-	if (!bIsPlayerControlled || !CameraBoom || !TargetCharacter)
-	{
-		UE_LOG(LogTemp, Error, TEXT("UpdateCameraMovement: bIsPlayerControlled is FALSE or CameraBoom or TargetCharacter is NULL!"));
-		return;
-	}
-	
-	FVector MyLocation = CameraBoom->GetComponentLocation();
-    FVector TargetLocation = TargetCharacter->GetActorLocation();
-
-    // 타겟을 바라보는 전체 회전 계산 (Pitch 포함)
-    FRotator TargetRotation = (TargetLocation - MyLocation).Rotation();
-    
-    // Z축 기준으로 시계방향으로 10도 추가 회전
-    TargetRotation.Yaw -= 10.0f;
-
-    // 보간 회전
-    FRotator CurrentRotation = CameraBoom->GetComponentRotation();
-    FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 2.0f);
-
-     // 스프링암은 항상 코드로만 회전 제어
-     CameraBoom->bUsePawnControlRotation = false;
-     CameraBoom->SetWorldRotation(NewRotation);
-
-     // 길이는 고정
-     CameraBoom->TargetArmLength = SpringArmLength;
-	
 }
 
 void AJujutsuKaisenCharacter::ResetSkillVariables()
