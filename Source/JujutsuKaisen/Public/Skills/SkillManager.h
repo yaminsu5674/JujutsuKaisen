@@ -30,5 +30,7 @@ public:
     void TickActiveSkills(float Delta);
 
     void ResetActiveSkills();
+
+    TArray<FName> GetRegisteredSkillNames() const;
 	
 };

@@ -20,6 +20,9 @@ AJujutsuKaisenAIController::AJujutsuKaisenAIController()
 	bShouldUseSkill = false;
 
 	CachedAICharacter = nullptr;
+	DesiredEngageDistance = FMath::RandRange(200.0f, 3000.0f);
+	bIsWaiting = false;
+	WaitTimer = 0.0f;
 }
 
 void AJujutsuKaisenAIController::BeginPlay()
@@ -36,38 +39,39 @@ void AJujutsuKaisenAIController::OnPossess(APawn* InPawn)
 
 void AJujutsuKaisenAIController::InitializeBehaviorTree(TSoftObjectPtr<UBehaviorTree> BehaviorTreeAsset)
 {
-	if (BehaviorTreeAsset.IsNull())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("InitializeBehaviorTree: BehaviorTreeAsset is null."));
-		return;
-	}
+	// 추후 비헤비어트리 작업하며 되살릴 것임.
+	// if (BehaviorTreeAsset.IsNull())
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("InitializeBehaviorTree: BehaviorTreeAsset is null."));
+	// 	return;
+	// }
 
-	UBehaviorTree* LoadedBehaviorTree = BehaviorTreeAsset.LoadSynchronous();
-	if (!LoadedBehaviorTree)
-	{
-		UE_LOG(LogTemp, Error, TEXT("InitializeBehaviorTree: Failed to load behavior tree asset."));
-		return;
-	}
+	// UBehaviorTree* LoadedBehaviorTree = BehaviorTreeAsset.LoadSynchronous();
+	// if (!LoadedBehaviorTree)
+	// {
+	// 	UE_LOG(LogTemp, Error, TEXT("InitializeBehaviorTree: Failed to load behavior tree asset."));
+	// 	return;
+	// }
 
-	if (LoadedBehaviorTree->BlackboardAsset)
-	{
-		UBlackboardComponent* BlackboardComp = nullptr;
-		if (!UseBlackboard(LoadedBehaviorTree->BlackboardAsset, BlackboardComp))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("InitializeBehaviorTree: UseBlackboard failed."));
-		}
-	}
+	// if (LoadedBehaviorTree->BlackboardAsset)
+	// {
+	// 	UBlackboardComponent* BlackboardComp = nullptr;
+	// 	if (!UseBlackboard(LoadedBehaviorTree->BlackboardAsset, BlackboardComp))
+	// 	{
+	// 		UE_LOG(LogTemp, Warning, TEXT("InitializeBehaviorTree: UseBlackboard failed."));
+	// 	}
+	// }
 
-	if (!RunBehaviorTree(LoadedBehaviorTree))
-	{
-		UE_LOG(LogTemp, Error, TEXT("InitializeBehaviorTree: RunBehaviorTree failed."));
-		return;
-	}
+	// if (!RunBehaviorTree(LoadedBehaviorTree))
+	// {
+	// 	UE_LOG(LogTemp, Error, TEXT("InitializeBehaviorTree: RunBehaviorTree failed."));
+	// 	return;
+	// }
 
-	AssignedBehaviorTree = BehaviorTreeAsset;
-	CachedAICharacter = Cast<AJujutsuKaisenCharacter>(GetPawn());
-	UE_LOG(LogTemp, Warning, TEXT("InitializeBehaviorTree: Behavior tree '%s' started."), *LoadedBehaviorTree->GetName());
-	InitializeBlackboard();
+	// AssignedBehaviorTree = BehaviorTreeAsset;
+	// CachedAICharacter = Cast<AJujutsuKaisenCharacter>(GetPawn());
+	// UE_LOG(LogTemp, Warning, TEXT("InitializeBehaviorTree: Behavior tree '%s' started."), *LoadedBehaviorTree->GetName());
+	// InitializeBlackboard();
 }
 
 void AJujutsuKaisenAIController::InitializeBlackboard()
@@ -97,67 +101,133 @@ void AJujutsuKaisenAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
-	{
-		if (CachedAICharacter.IsValid())
-		{
-			if (AJujutsuKaisenCharacter* Target = CachedAICharacter->GetTargetCharacter())
-			{
-				BlackboardComp->SetValueAsVector(TEXT("TargetLocation"), Target->GetActorLocation());
-			}
-		}
-	}
+	// 추후 재작업 예정. 현재는 임시로 여기서 직접 ai 간단 제어.
+	// if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
+	// {
+	// 	if (CachedAICharacter.IsValid())
+	// 	{
+	// 		if (AJujutsuKaisenCharacter* Target = CachedAICharacter->GetTargetCharacter())
+	// 		{
+	// 			BlackboardComp->SetValueAsVector(TEXT("TargetLocation"), Target->GetActorLocation());
+	// 		}
+	// 	}
+	// }
 	
+	UpdateAIBehavior(DeltaTime);
+	
+	// if (bIsAIActive)
 	
 }
 
 void AJujutsuKaisenAIController::UpdateAIBehavior(float DeltaTime)
 {
-	if (!GetPawn())
+	if (!CachedAICharacter.IsValid())
 	{
+		CachedAICharacter = Cast<AJujutsuKaisenCharacter>(GetPawn());
+	}
+
+	AJujutsuKaisenCharacter* AICharacter = CachedAICharacter.Get();
+	if (!AICharacter || AICharacter->GetIsDead())
+	{
+		StopMovement();
 		return;
 	}
-	
-	// 간단한 AI 행동 로직 (임시)
-	// 나중에 BehaviorTree로 대체될 예정
-	
-	// 이동 로직
-	if (bShouldMove)
+
+	AJujutsuKaisenCharacter* TargetCharacter = AICharacter->GetTargetCharacter();
+	if (!TargetCharacter || TargetCharacter->GetIsDead())
 	{
-		AI_Move();
+		StopMovement();
+		return;
 	}
-	
-	// 점프 로직 (랜덤하게)
-	if (FMath::RandRange(0.0f, 1.0f) < 0.01f) // 1% 확률로 점프
+
+	if (bIsWaiting)
 	{
-		bShouldJump = true;
-	}
-	
-	if (bShouldJump)
-	{
-		AI_JumpCustom();
-		bShouldJump = false;
-	}
-	
-	// 스킬 사용 로직 (랜덤하게)
-	if (FMath::RandRange(0.0f, 1.0f) < 0.005f) // 0.5% 확률로 스킬 사용
-	{
-		bShouldUseSkill = true;
-	}
-	
-	if (bShouldUseSkill)
-	{
-		// A키 또는 R키 스킬 랜덤 선택
-		if (FMath::RandRange(0, 1) == 0)
+		WaitTimer -= DeltaTime;
+		if (WaitTimer <= 0.0f)
 		{
-			AI_A_Pressed();
+			bIsWaiting = false;
+			DesiredEngageDistance = FMath::RandRange(200.0f, 3000.0f);
 		}
 		else
 		{
-			AI_R_Pressed();
+			StopMovement();
+			return;
 		}
-		bShouldUseSkill = false;
 	}
+
+	UCharacterStateManager* StateManager = AICharacter->GetStateManager();
+	if (!StateManager)
+	{
+		StopMovement();
+		return;
+	}
+
+	const float DistanceToTarget = FVector::Dist(TargetCharacter->GetActorLocation(), AICharacter->GetActorLocation());
+	const bool bWithinDesiredRange = DistanceToTarget <= DesiredEngageDistance;
+
+	if (!bWithinDesiredRange)
+	{
+		if (!StateManager->IsInState(ECharacterState::Locomotion))
+		{
+			StopMovement();
+			return;
+		}
+
+		MoveToActor(TargetCharacter, DesiredEngageDistance, true, true, true, nullptr, true);
+		return;
+	}
+
+	StopMovement();
+
+	if (!StateManager->CanTransitionTo(ECharacterState::Skill))
+	{
+		bIsWaiting = true;
+		WaitTimer = FMath::RandRange(1.0f, 2.0f);
+		return;
+	}
+
+	USkillManager* SkillManager = AICharacter->GetSkillManager();
+	if (!SkillManager)
+	{
+		return;
+	}
+
+	TArray<FName> RegisteredSkills = SkillManager->GetRegisteredSkillNames();
+	RegisteredSkills.RemoveAll([](const FName& SkillName)
+	{
+		return SkillName.IsNone();
+	});
+
+	if (RegisteredSkills.Num() == 0)
+	{
+		return;
+	}
+
+	const int32 SkillIndex = FMath::RandRange(0, RegisteredSkills.Num() - 1);
+	const FName SelectedSkillName = RegisteredSkills[SkillIndex];
+
+	if (SelectedSkillName == FName(TEXT("R")))
+	{
+		AI_R_Pressed();
+		AI_R_Released();
+	}
+	else if (SelectedSkillName == FName(TEXT("ER")))
+	{
+		AI_ER_Pressed();
+	}
+	else if (SelectedSkillName == FName(TEXT("E")))
+	{
+		AI_E_Pressed();
+	}
+	else
+	{
+		SkillManager->HandlePressed(SelectedSkillName);
+		SkillManager->HandleReleased(SelectedSkillName);
+	}
+
+	bIsWaiting = true;
+	WaitTimer = FMath::RandRange(1.0f, 2.0f);
+	DesiredEngageDistance = FMath::RandRange(200.0f, 3000.0f);
 }
 
 // AI용 함수들 (캐릭터의 함수 직접 호출)
@@ -244,6 +314,22 @@ void AJujutsuKaisenAIController::AI_R_Released()
 	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
 	{
 		Char->R_Released();
+	}
+}
+
+void AJujutsuKaisenAIController::AI_E_Pressed()
+{
+	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+	{
+		Char->E_Pressed();
+	}
+}
+
+void AJujutsuKaisenAIController::AI_ER_Pressed()
+{
+	if (AJujutsuKaisenCharacter* Char = Cast<AJujutsuKaisenCharacter>(GetPawn()))
+	{
+		Char->ER_Pressed();
 	}
 }
 

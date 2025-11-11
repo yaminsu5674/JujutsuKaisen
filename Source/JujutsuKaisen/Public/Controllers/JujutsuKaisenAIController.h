@@ -43,6 +43,8 @@ protected:
 	void AI_A_Pressed();
 	void AI_R_Pressed();
 	void AI_R_Released();
+	void AI_E_Pressed();
+	void AI_ER_Pressed();
 
 	// AI 상태 관리
 	UPROPERTY(BlueprintReadOnly, Category = "AI State")
@@ -69,4 +71,13 @@ protected:
 
 	UPROPERTY()
 	TWeakObjectPtr<AJujutsuKaisenCharacter> CachedAICharacter;
+
+	UPROPERTY()
+	float DesiredEngageDistance = 600.f;
+
+	UPROPERTY()
+	bool bIsWaiting = false;
+
+	UPROPERTY()
+	float WaitTimer = 0.0f;
 };

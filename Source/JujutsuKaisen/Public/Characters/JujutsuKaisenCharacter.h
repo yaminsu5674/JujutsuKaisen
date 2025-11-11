@@ -71,6 +71,7 @@ public:
 	bool SetState(ECharacterState InState);
 	ECharacterState GetState() const;
 	UCharacterStateManager* GetStateManager() const { return StateManager; }
+    USkillManager* GetSkillManager() const { return SkillManager; }
 
 	// ============================================================================
 	// Character Actions

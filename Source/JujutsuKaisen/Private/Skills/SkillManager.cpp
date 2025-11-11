@@ -43,3 +43,16 @@ void USkillManager::ResetActiveSkills()
         }
     }
 }
+
+TArray<FName> USkillManager::GetRegisteredSkillNames() const
+{
+    TArray<FName> SkillNames;
+    for (const auto& Pair : BoundSkills)
+    {
+        if (Pair.Value)
+        {
+            SkillNames.Add(Pair.Key);
+        }
+    }
+    return SkillNames;
+}
