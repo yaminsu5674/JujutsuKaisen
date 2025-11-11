@@ -6,6 +6,7 @@
 #include "JujutsuKaisenGameMode.h"
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "SinglePlayGameMode.generated.h"
 
 /**
@@ -31,6 +32,15 @@ class JUJUTSUKAISEN_API ASinglePlayGameMode : public AJujutsuKaisenGameMode
 
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	FRotator EnemySpawnRotation = FRotator(0.f, 180.f, 0.f);
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI|Behavior")
+	TSoftObjectPtr<UBehaviorTree> EasyBehaviorTree;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI|Behavior")
+	TSoftObjectPtr<UBehaviorTree> NormalBehaviorTree;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI|Behavior")
+	TSoftObjectPtr<UBehaviorTree> HardBehaviorTree;
 
 	
 

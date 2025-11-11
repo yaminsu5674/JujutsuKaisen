@@ -4,6 +4,8 @@
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "Engine/World.h"
 #include "InputActionValue.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 AJujutsuKaisenAIController::AJujutsuKaisenAIController()
 {
@@ -21,6 +23,41 @@ AJujutsuKaisenAIController::AJujutsuKaisenAIController()
 void AJujutsuKaisenAIController::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AJujutsuKaisenAIController::InitializeBehaviorTree(TSoftObjectPtr<UBehaviorTree> BehaviorTreeAsset)
+{
+	if (BehaviorTreeAsset.IsNull())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InitializeBehaviorTree: BehaviorTreeAsset is null."));
+		return;
+	}
+
+	UBehaviorTree* LoadedBehaviorTree = BehaviorTreeAsset.LoadSynchronous();
+	if (!LoadedBehaviorTree)
+	{
+		UE_LOG(LogTemp, Error, TEXT("InitializeBehaviorTree: Failed to load behavior tree asset."));
+		return;
+	}
+
+	if (LoadedBehaviorTree->BlackboardAsset)
+	{
+		UBlackboardComponent* BlackboardComp = nullptr;
+		if (!UseBlackboard(LoadedBehaviorTree->BlackboardAsset, BlackboardComp))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("InitializeBehaviorTree: UseBlackboard failed."));
+		}
+	}
+
+	if (!RunBehaviorTree(LoadedBehaviorTree))
+	{
+		UE_LOG(LogTemp, Error, TEXT("InitializeBehaviorTree: RunBehaviorTree failed."));
+		return;
+	}
+
+	AssignedBehaviorTree = BehaviorTreeAsset;
+
+	UE_LOG(LogTemp, Log, TEXT("InitializeBehaviorTree: Behavior tree '%s' started."), *LoadedBehaviorTree->GetName());
 }
 
 void AJujutsuKaisenAIController::Tick(float DeltaTime)

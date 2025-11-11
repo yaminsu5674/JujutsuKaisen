@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "JujutsuKaisenAIController.generated.h"
 
 class AJujutsuKaisenCharacter;
@@ -19,6 +20,8 @@ class JUJUTSUKAISEN_API AJujutsuKaisenAIController : public AAIController
 
 public:
 	AJujutsuKaisenAIController();
+
+	void InitializeBehaviorTree(TSoftObjectPtr<UBehaviorTree> BehaviorTreeAsset);
 
 protected:
 	virtual void BeginPlay() override;
@@ -58,4 +61,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "AI Behavior")
 	bool bShouldUseSkill = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "AI Behavior")
+	TSoftObjectPtr<UBehaviorTree> AssignedBehaviorTree;
 };

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "DataAssets/JujutsuKaisenCharacterDataAsset.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "JujutsuKaisenGameInstance.generated.h"
 
 /**
@@ -25,6 +26,9 @@ class JUJUTSUKAISEN_API UJujutsuKaisenGameInstance : public UGameInstance
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UJujutsuKaisenCharacterDataAsset* EnemyCharacterDataAsset;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	TSoftObjectPtr<UBehaviorTree> SelectedBehaviorTree;
+
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "JujutsuKaisen")
@@ -44,5 +48,9 @@ public:
 	FORCEINLINE UJujutsuKaisenCharacterDataAsset* GetMyCharacterDataAsset() const { return MyCharacterDataAsset; }
 
 	FORCEINLINE UJujutsuKaisenCharacterDataAsset* GetEnemyCharacterDataAsset() const { return EnemyCharacterDataAsset; }
+
+	FORCEINLINE TSoftObjectPtr<UBehaviorTree> GetSelectedBehaviorTree() const { return SelectedBehaviorTree; }
+	
+	FORCEINLINE void SetSelectedBehaviorTree(TSoftObjectPtr<UBehaviorTree> InBehaviorTree) { SelectedBehaviorTree = InBehaviorTree; }
 	
 };
