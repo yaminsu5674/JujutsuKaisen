@@ -1,10 +1,28 @@
 #include "Controllers/CustomCameraManager.h"
 #include "Controllers/JujutsuKaisenPlayerController.h"
+#include "Library/SkillEventHub.h"
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraShakeBase.h"
 
 ACustomCameraManager::ACustomCameraManager()
 {
+}
+
+void ACustomCameraManager::BeginPlay()
+{
+	Super::BeginPlay();
+
+	USkillEventHub::OnCameraShakeStartEvent.AddDynamic(this, &ACustomCameraManager::HandleCameraShakeStart);
+	USkillEventHub::OnCameraShakeEndEvent.AddDynamic(this, &ACustomCameraManager::HandleCameraShakeEnd);
+}
+
+void ACustomCameraManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	USkillEventHub::OnCameraShakeStartEvent.RemoveDynamic(this, &ACustomCameraManager::HandleCameraShakeStart);
+	USkillEventHub::OnCameraShakeEndEvent.RemoveDynamic(this, &ACustomCameraManager::HandleCameraShakeEnd);
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void ACustomCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
@@ -55,5 +73,18 @@ void ACustomCameraManager::UpdateCameraForCharacter(AJujutsuKaisenCharacter* Con
 
 	CameraBoom->bUsePawnControlRotation = false;
 	CameraBoom->SetWorldRotation(InterpolatedRotation);
+}
+
+void ACustomCameraManager::HandleCameraShakeStart()
+{
+	if (DefaultCameraShake)
+	{
+		StartCameraShake(DefaultCameraShake);
+	}
+}
+
+void ACustomCameraManager::HandleCameraShakeEnd()
+{
+	StopAllCameraShakes(true);
 }
 

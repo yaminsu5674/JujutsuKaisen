@@ -4,6 +4,7 @@
 #include "Skills/BaseSkill.h"
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "Library/SkillLibrary.h"
+#include "Library/SkillEventHub.h"
 
 AJujutsuKaisenCharacter* UBaseSkill::GetOwner() const
 {

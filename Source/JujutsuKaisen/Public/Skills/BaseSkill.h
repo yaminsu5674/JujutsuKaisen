@@ -20,6 +20,10 @@ class JUJUTSUKAISEN_API UBaseSkill : public UObject
 protected:
 	bool bWantsTick = false; // 필요시에만 Tick
 
+	// TODO: 카메라 애니메이션 기능은 플러그인 활성화 후 재도입 예정
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	// UCameraAnimationSequence* CameraAnimation = nullptr;
+
 	// 헬퍼 함수: 재귀적으로 Owner 찾기
 	AJujutsuKaisenCharacter* GetOwner() const;
 	

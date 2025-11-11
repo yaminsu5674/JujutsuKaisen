@@ -7,6 +7,8 @@
 #include "Attack/CustomProjectileMovement.h"
 #include "Components/SphereComponent.h"
 #include "Library/SkillLibrary.h"
+#include "Library/SkillEventHub.h"
+#include "Characters/JujutsuKaisenCharacter.h"
 #include "Characters/CharacterStateManager.h"
 
 AAkaProjectile::AAkaProjectile()
@@ -149,6 +151,8 @@ void AAkaProjectile::OnHitSphereOverlapBegin(UPrimitiveComponent* OverlappedComp
 		ChargingEffectComponent->DestroyComponent();
 		ChargingEffectComponent = nullptr;
 	}
+
+	USkillEventHub::OnCameraShakeStartEvent.Broadcast();
 }
 
 void AAkaProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -191,4 +195,6 @@ void AAkaProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedCompon
 		// 발사체 자신을 즉시 파괴
 		Destroy();
 	}
+
+	USkillEventHub::OnCameraShakeEndEvent.Broadcast();
 }
