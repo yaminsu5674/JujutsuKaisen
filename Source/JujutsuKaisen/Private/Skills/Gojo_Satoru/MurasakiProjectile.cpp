@@ -5,6 +5,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Library/SkillLibrary.h"
+#include "Library/SkillEventHub.h"
 #include "Characters/CharacterStateManager.h"
 
 AMurasakiProjectile::AMurasakiProjectile()
@@ -50,6 +51,7 @@ void AMurasakiProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 	AJujutsuKaisenCharacter* HitCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
 	if (HitCharacter && HitCharacter->GetCharacterMovement())
 	{
+		USkillEventHub::OnCameraShakeStartEvent.Broadcast();
 		// 피격 하위 상태를 Stun으로 설정
 		if (HitCharacter->GetStateManager() && GetOwner())
 		{
@@ -61,10 +63,13 @@ void AMurasakiProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 
 void AMurasakiProjectile::OnProjectileOverlapEnd(AActor* OtherActor)
 {
+	
+
 	// JujutsuKaisenCharacter인지 확인
 	AJujutsuKaisenCharacter* HitCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
 	if (HitCharacter)
 	{
+		USkillEventHub::OnCameraShakeEndEvent.Broadcast();
 		// 피격 하위 상태를 KnockBack으로 설정
 		if (HitCharacter->GetStateManager() && GetOwner())
 		{

@@ -8,6 +8,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "Library/SkillLibrary.h"
+#include "Library/SkillEventHub.h"
 
 APalProjectile::APalProjectile()
 {
@@ -42,6 +43,7 @@ void APalProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 {	
 	if (Target && Target->GetStateManager() && GetOwner())
 	{
+		USkillEventHub::OnCameraShakeStartEvent.Broadcast();
 		bool bIsHitFront = USkillLibrary::JudgeHitFront(GetOwner(), Target);
 		Target->GetStateManager()->SetHitSubState(EHitSubState::Stun, bIsHitFront);
 	}
@@ -74,6 +76,7 @@ void APalProjectile::EndPal()
 	}
     if (bIsOverlapping)
     {
+		USkillEventHub::OnCameraShakeEndEvent.Broadcast();
         // 캐릭터에게 데미지 적용
 		if (Target->GetStateManager() && GetOwner())
 		{
