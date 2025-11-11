@@ -106,10 +106,6 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<AJujutsuKaisenCharacter> CachedPlayerCharacter;
 
-	/** 적 캐릭터 참조 (약한 참조) */
-	UPROPERTY()
-	TWeakObjectPtr<AJujutsuKaisenCharacter> CachedEnemyCharacter;
-
 	void InitializeHUD();
 	void UpdateHUDData();
 	void RefreshEnemyReference();

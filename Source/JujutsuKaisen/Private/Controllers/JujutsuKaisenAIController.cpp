@@ -18,11 +18,20 @@ AJujutsuKaisenAIController::AJujutsuKaisenAIController()
 	bShouldMove = true;
 	bShouldJump = false;
 	bShouldUseSkill = false;
+
+	CachedAICharacter = nullptr;
 }
 
 void AJujutsuKaisenAIController::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AJujutsuKaisenAIController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	CachedAICharacter = Cast<AJujutsuKaisenCharacter>(InPawn);
 }
 
 void AJujutsuKaisenAIController::InitializeBehaviorTree(TSoftObjectPtr<UBehaviorTree> BehaviorTreeAsset)
@@ -56,8 +65,32 @@ void AJujutsuKaisenAIController::InitializeBehaviorTree(TSoftObjectPtr<UBehavior
 	}
 
 	AssignedBehaviorTree = BehaviorTreeAsset;
+	CachedAICharacter = Cast<AJujutsuKaisenCharacter>(GetPawn());
+	UE_LOG(LogTemp, Warning, TEXT("InitializeBehaviorTree: Behavior tree '%s' started."), *LoadedBehaviorTree->GetName());
+	InitializeBlackboard();
+}
 
-	UE_LOG(LogTemp, Log, TEXT("InitializeBehaviorTree: Behavior tree '%s' started."), *LoadedBehaviorTree->GetName());
+void AJujutsuKaisenAIController::InitializeBlackboard()
+{
+	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
+	{
+		if (!CachedAICharacter.IsValid())
+		{
+			CachedAICharacter = Cast<AJujutsuKaisenCharacter>(GetPawn());
+		}
+
+		if (CachedAICharacter.IsValid())
+		{
+			if (AJujutsuKaisenCharacter* Target = CachedAICharacter->GetTargetCharacter())
+			{
+				BlackboardComp->SetValueAsVector(TEXT("TargetLocation"), Target->GetActorLocation());
+			}
+			else
+			{
+				BlackboardComp->ClearValue(TEXT("TargetLocation"));
+			}
+		}
+	}
 }
 
 void AJujutsuKaisenAIController::Tick(float DeltaTime)

@@ -23,6 +23,8 @@ public:
 
 	void InitializeBehaviorTree(TSoftObjectPtr<UBehaviorTree> BehaviorTreeAsset);
 
+	void InitializeBlackboard();
+	virtual void OnPossess(APawn* InPawn) override;
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -64,4 +66,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "AI Behavior")
 	TSoftObjectPtr<UBehaviorTree> AssignedBehaviorTree;
+
+	UPROPERTY()
+	TWeakObjectPtr<AJujutsuKaisenCharacter> CachedAICharacter;
 };

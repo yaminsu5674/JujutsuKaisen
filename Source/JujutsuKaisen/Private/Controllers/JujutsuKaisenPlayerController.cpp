@@ -259,9 +259,12 @@ void AJujutsuKaisenPlayerController::PlayerTick(float DeltaTime)
 	RefreshEnemyReference();
 	UpdateHUDData();
 
-	if (PlayerHUDWidgetInstance && CachedEnemyCharacter.IsValid())
+	if (PlayerHUDWidgetInstance && CachedPlayerCharacter.IsValid())
 	{
-		PlayerHUDWidgetInstance->UpdateEnemyHealthBarForCharacter(CachedEnemyCharacter.Get());
+		if (AJujutsuKaisenCharacter* TargetCharacter = CachedPlayerCharacter->GetTargetCharacter())
+		{
+			PlayerHUDWidgetInstance->UpdateEnemyHealthBarForCharacter(TargetCharacter);
+		}
 	}
 }
 
@@ -292,9 +295,12 @@ void AJujutsuKaisenPlayerController::InitializeHUD()
 
 	if (UEnemyHealthBarWidget* EnemyBar = PlayerHUDWidgetInstance->GetEnemyHealthBar())
 	{
-		if (CachedEnemyCharacter.IsValid())
+		if (CachedPlayerCharacter.IsValid())
 		{
-			EnemyBar->InitializeWithCharacter(CachedEnemyCharacter.Get());
+			if (AJujutsuKaisenCharacter* TargetCharacter = CachedPlayerCharacter->GetTargetCharacter())
+			{
+				EnemyBar->InitializeWithCharacter(TargetCharacter);
+			}
 		}
 	}
 
@@ -318,9 +324,12 @@ void AJujutsuKaisenPlayerController::UpdateHUDData()
 
 	if (UEnemyHealthBarWidget* EnemyBar = PlayerHUDWidgetInstance->GetEnemyHealthBar())
 	{
-		if (CachedEnemyCharacter.IsValid())
+		if (CachedPlayerCharacter.IsValid())
 		{
-			EnemyBar->SetHealthValues(CachedEnemyCharacter->GetCurrentHealth(), CachedEnemyCharacter->GetMaxHealthValue());
+			if (AJujutsuKaisenCharacter* TargetCharacter = CachedPlayerCharacter->GetTargetCharacter())
+			{
+				EnemyBar->SetHealthValues(TargetCharacter->GetCurrentHealth(), TargetCharacter->GetMaxHealthValue());
+			}
 		}
 	}
 }
@@ -332,43 +341,15 @@ void AJujutsuKaisenPlayerController::RefreshEnemyReference()
 		CachedPlayerCharacter = Cast<AJujutsuKaisenCharacter>(GetPawn());
 	}
 
-	if (!CachedEnemyCharacter.IsValid())
-	{
-		if (CachedPlayerCharacter.IsValid())
-		{
-			CachedEnemyCharacter = CachedPlayerCharacter->GetTargetCharacter();
-		}
-	}
-	else
-	{
-		// Ensure target character updates (in case target changes)
-		if (CachedPlayerCharacter.IsValid())
-		{
-			AJujutsuKaisenCharacter* CurrentTarget = CachedPlayerCharacter->GetTargetCharacter();
-			if (CurrentTarget && CurrentTarget != CachedEnemyCharacter.Get())
-			{
-				CachedEnemyCharacter = CurrentTarget;
+	AJujutsuKaisenCharacter* CurrentTarget = CachedPlayerCharacter.IsValid() ? CachedPlayerCharacter->GetTargetCharacter() : nullptr;
 
-				if (PlayerHUDWidgetInstance)
-				{
-					if (UEnemyHealthBarWidget* EnemyBar = PlayerHUDWidgetInstance->GetEnemyHealthBar())
-					{
-						EnemyBar->InitializeWithCharacter(CurrentTarget);
-					}
-				}
-
-				UpdateHUDNamesFromDataAssets();
-			}
-		}
-	}
-
-	if (PlayerHUDWidgetInstance && CachedEnemyCharacter.IsValid())
+	if (PlayerHUDWidgetInstance)
 	{
 		if (UEnemyHealthBarWidget* EnemyBar = PlayerHUDWidgetInstance->GetEnemyHealthBar())
 		{
-			if (EnemyBar->GetLinkedCharacter() == nullptr)
+			if (EnemyBar->GetLinkedCharacter() != CurrentTarget)
 			{
-				EnemyBar->InitializeWithCharacter(CachedEnemyCharacter.Get());
+				EnemyBar->InitializeWithCharacter(CurrentTarget);
 				UpdateHUDNamesFromDataAssets();
 			}
 		}
@@ -378,7 +359,7 @@ void AJujutsuKaisenPlayerController::RefreshEnemyReference()
 	{
 		if (UPlayerHealthBarWidget* PlayerBar = PlayerHUDWidgetInstance->GetPlayerHealthBar())
 		{
-			if (PlayerBar->GetLinkedCharacter() == nullptr)
+			if (PlayerBar->GetLinkedCharacter() != CachedPlayerCharacter.Get())
 			{
 				PlayerBar->InitializeWithCharacter(CachedPlayerCharacter.Get());
 				UpdateHUDNamesFromDataAssets();

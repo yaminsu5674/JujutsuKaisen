@@ -56,6 +56,20 @@ void ASinglePlayGameMode::BeginPlay()
         EnemyCharacter->SetTargetCharacter(PlayerCharacter);
 
         EnemyCharacter->SetPlayerMode(false);
+
+        AJujutsuKaisenAIController* AIController = Cast<AJujutsuKaisenAIController>(EnemyCharacter->GetController());
+
+        if (AIController)
+        {
+            if (GameInstance && !GameInstance->GetSelectedBehaviorTree().IsNull())
+            {
+                AIController->InitializeBehaviorTree(GameInstance->GetSelectedBehaviorTree());
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("PossessAI: No behavior tree assigned for AI controller. Set SelectedBehaviorTree in GameInstance before starting the match."));
+            }
+        }
     }
 }
 
@@ -147,18 +161,4 @@ void ASinglePlayGameMode::PossessAI()
             UE_LOG(LogTemp, Error, TEXT("AIController spawn failed"));
         }
     }
-
-	if (AIController)
-	{
-		UJujutsuKaisenGameInstance* GameInstance = Cast<UJujutsuKaisenGameInstance>(GetGameInstance());
-
-		if (GameInstance && !GameInstance->GetSelectedBehaviorTree().IsNull())
-		{
-			AIController->InitializeBehaviorTree(GameInstance->GetSelectedBehaviorTree());
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("PossessAI: No behavior tree assigned for AI controller. Set SelectedBehaviorTree in GameInstance before starting the match."));
-		}
-	}
 }
