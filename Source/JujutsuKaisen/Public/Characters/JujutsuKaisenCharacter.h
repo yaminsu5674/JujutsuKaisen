@@ -14,6 +14,8 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+struct FDamageEvent;
+class AController;
 
 // 스킬 인덱스 열거형
 enum class ESkillIndex : uint8
@@ -76,7 +78,7 @@ public:
 	// ============================================================================
 	// Character Actions
 	// ============================================================================
-	void TakeDamage(float DamageAmount);
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void Die();
 	void ResetSkillVariables();
 

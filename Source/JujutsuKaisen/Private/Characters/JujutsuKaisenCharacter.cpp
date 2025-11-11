@@ -567,17 +567,25 @@ ECharacterState AJujutsuKaisenCharacter::GetState() const
 // Character Actions
 // ============================================================================
 
-void AJujutsuKaisenCharacter::TakeDamage(float DamageAmount)
+float AJujutsuKaisenCharacter::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	const float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (DamageApplied <= 0.0f)
+	{
+		return 0.0f;
+	}
+
 	if (StateManager && StateManager->IsInState(ECharacterState::Hit))
 	{
-		Health -= DamageAmount;
+		Health -= DamageApplied;
 		if (Health <= 0.0f && !bIsDead)
 		{
 			Die();
 		}
-		
 	}
+
+	return DamageApplied;
 }
 
 void AJujutsuKaisenCharacter::Die()

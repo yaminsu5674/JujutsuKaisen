@@ -80,7 +80,12 @@ void AAkaProjectile::Tick(float DeltaTime)
 		if (ProjectileMovement)
 		{
 
-			Target->TakeDamage(1.0f);
+			UGameplayStatics::ApplyDamage(
+				Target,
+				1.0f,
+				GetInstigatorController(),
+				this,
+				UDamageType::StaticClass());
 			// X, Y는 발사체와 동기화, Z는 점진적 상승 (한 번에 계산)
 			FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 1.0f;
 			DeltaMovement.Z = 50.f * DeltaTime;  // Z축은 초당 5 유닛씩 상승으로 덮어쓰기
@@ -189,7 +194,12 @@ void AAkaProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedCompon
 			);
 			
 			HitCharacter->LaunchCharacter(LaunchVelocity, false, true);
-			HitCharacter->TakeDamage(200.0f);
+			UGameplayStatics::ApplyDamage(
+				HitCharacter,
+				200.0f,
+				GetInstigatorController(),
+				this,
+				UDamageType::StaticClass());
 		}
 		
 		// 발사체 자신을 즉시 파괴

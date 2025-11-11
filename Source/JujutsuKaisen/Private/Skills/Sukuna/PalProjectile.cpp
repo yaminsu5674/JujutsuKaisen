@@ -61,7 +61,12 @@ void APalProjectile::Tick(float DeltaTime)
 	// Pal 전용 Tick 로직
 	if (bIsOverlapping && Target != nullptr)
 	{
-		Target->TakeDamage(5.0f);
+		UGameplayStatics::ApplyDamage(
+			Target,
+			3.0f,
+			GetInstigatorController(),
+			this,
+			UDamageType::StaticClass());
 	}
 
 }
@@ -91,7 +96,12 @@ void APalProjectile::EndPal()
             FVector LaunchDir = GetActorForwardVector();
             FVector ImpulseForce = LaunchDir * 2000.f + FVector(0, 0, 600.f);
             Target->GetCharacterMovement()->AddImpulse(ImpulseForce, true);
-			Target->TakeDamage(200.0f);
+			UGameplayStatics::ApplyDamage(
+				Target,
+				200.0f,
+				GetInstigatorController(),
+				this,
+				UDamageType::StaticClass());
         }
     }
     Destroy();

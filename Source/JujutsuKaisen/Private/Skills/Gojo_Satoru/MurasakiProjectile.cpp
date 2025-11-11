@@ -111,7 +111,12 @@ void AMurasakiProjectile::Tick(float DeltaTime)
 			
 			FVector NewLocation = Target->GetActorLocation() + DeltaMovement;
 			Target->SetActorLocation(NewLocation, true);  // Sweep = false (충돌 무시하고 강제 이동)
-			Target->TakeDamage(700.0f);
+			UGameplayStatics::ApplyDamage(
+				Target,
+				700.0f,
+				GetInstigatorController(),
+				this,
+				UDamageType::StaticClass());
 		}
 	}
 	
