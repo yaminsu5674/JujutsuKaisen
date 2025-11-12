@@ -162,7 +162,13 @@ void AJujutsuKaisenAIController::UpdateAIBehavior(float DeltaTime)
 		return;
 	}
 
-	const float DistanceToTarget = FVector::Dist(TargetCharacter->GetActorLocation(), AICharacter->GetActorLocation());
+	FVector TargetLocation = TargetCharacter->GetActorLocation();
+	TargetLocation.Z = 0.0f;
+
+	FVector AICharacterLocation = AICharacter->GetActorLocation();
+	AICharacterLocation.Z = 0.0f;
+
+	const float DistanceToTarget = FVector::Dist(TargetLocation, AICharacterLocation);
 	const bool bWithinDesiredRange = DistanceToTarget <= DesiredEngageDistance;
 	const float AcceptanceRadius = 150.0f;
 	bool bIsMoving = false;
@@ -177,7 +183,7 @@ void AJujutsuKaisenAIController::UpdateAIBehavior(float DeltaTime)
 
 		if (!bIsMoving)
 		{
-			MoveToActor(TargetCharacter, AcceptanceRadius, true, true, true, nullptr, true);
+			MoveToLocation(TargetLocation, AcceptanceRadius, true, true, true, true);
 			bIsMoving = true;
 		}
 
