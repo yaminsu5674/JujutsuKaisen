@@ -22,7 +22,7 @@ protected:
 	float Speed = 500.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
-	float Lifespan = 5.0f;
+	float Lifespan;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	float Damage = 10.0f;

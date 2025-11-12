@@ -15,6 +15,7 @@ AProjectile::AProjectile()
 	
 	// 수명 설정: Lifespan 초 후 자동 소멸
 	//InitialLifeSpan = Lifespan;  // 5초 후 자동 소멸 (언리얼 내장 시스템)
+	Lifespan = 5.0f;
 	_LifeCountingDown = Lifespan;
 	
 	// CollisionSphere를 Root Component로 생성

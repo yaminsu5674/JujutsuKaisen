@@ -26,7 +26,6 @@ APalProjectile::APalProjectile()
 void APalProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	SetLifeSpan(Lifespan);
 
 	// 스폰 시 ChargingNiagaraEffect 재생
 	if (ChargingNiagaraEffect && ChargingNiagaraComponent)

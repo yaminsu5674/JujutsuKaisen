@@ -116,7 +116,7 @@ void UPal::SpawnProjectile()
 	}
 	
 	// Place 타입 설정: Lifespan 없음
-	PalProjectile->SetLifeSpan(0.0f);
+	//PalProjectile->SetLifeSpan(0.0f);
 }
 
 
