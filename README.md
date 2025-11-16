@@ -6,6 +6,8 @@
 
 ## 📖 게임 소개
 ![Jujutsu Kaisen](Images/JujutsuKaisen.png)
+[프로젝트 영상 보기](https://www.youtube.com/watch?v=Ayzv4Kz-ZpE) 
+
 스팀 3D 액션 대전 게임 『주술회전 전화향명』을 기반으로 한 모작 학습 프로젝트입니다.
 언리얼 엔진 5와 C++을 활용해 전투 시스템의 구조와 구현 방식을 분석하며
 특히 스킬 시스템과 액션 전투 로직을 중심으로 모작 및 개선을 진행하고 있습니다.
