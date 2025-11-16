@@ -6,6 +6,11 @@
 #include "Library/SkillLibrary.h"
 #include "Library/SkillEventHub.h"
 
+UBaseSkill::UBaseSkill()
+{
+	bWantsTick = false;
+}
+
 AJujutsuKaisenCharacter* UBaseSkill::GetOwner() const
 {
 	return USkillLibrary::GetOwnerRecursive(const_cast<UBaseSkill*>(this));

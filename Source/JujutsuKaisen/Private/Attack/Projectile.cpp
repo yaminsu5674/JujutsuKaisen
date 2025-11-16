@@ -13,10 +13,8 @@ AProjectile::AProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	// 수명 설정: Lifespan 초 후 자동 소멸
-	//InitialLifeSpan = Lifespan;  // 5초 후 자동 소멸 (언리얼 내장 시스템)
-	Lifespan = 5.0f;
-	_LifeCountingDown = Lifespan;
+	// 수명 설정: 언리얼 기본 Actor 수명 시스템 사용
+	InitialLifeSpan = 5.0f;  // 5초 후 자동 소멸
 	
 	// CollisionSphere를 Root Component로 생성
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));

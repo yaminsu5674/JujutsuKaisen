@@ -22,8 +22,6 @@ void AMurasakiProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetLifeSpan(Lifespan);
-
 	// 스폰 시 ChargingEffect 파티클 재생 (발사체에 붙어서 함께 움직임)
 	if (ChargingEffect)
 	{

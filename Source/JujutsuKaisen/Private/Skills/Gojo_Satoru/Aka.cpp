@@ -179,11 +179,8 @@ void UAka::LaunchProjectile()
 		if (UCustomProjectileMovement* Movement = AkaProjectile->GetProjectileMovement())
 		{
 			Movement->SetDirection(AkaProjectile->GetTarget(), AkaProjectile->GetSpeed());
-			Movement->ApplyBehaviorSettings(true, true, AkaProjectile->GetLifespan());
+			Movement->ApplyBehaviorSettings(true, true, AkaProjectile->GetLifeSpan());
 		}
-		
-		// Lifespan 설정
-		AkaProjectile->SetLifeSpan(AkaProjectile->GetLifespan());
 		
 		// 중복 호출 제거
 		AkaProjectile = nullptr;
