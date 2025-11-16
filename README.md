@@ -5,10 +5,9 @@
 3D PvP 전투 액션 게임
 
 ## 📖 게임 소개
-
-<img src="https://cdn11.bigcommerce.com/s-7tdfxdbqwx/products/390/images/1348/JUJUTSU_KV_KR_horizontal_WEB__51592.1701068875.1280.1280.jpg?c=1" width="600" />
-이 게임은 **스팀 3D 액션 대전 게임 『주술회전 전화향명』**을 기반으로 한 모작 학습 프로젝트입니다.
-언리얼 엔진 5와 C++을 활용해 전투 시스템의 구조와 구현 방식을 분석하며,
+![Jujutsu Kaisen](Images/JujutsuKaisen.png)
+스팀 3D 액션 대전 게임 『주술회전 전화향명』을 기반으로 한 모작 학습 프로젝트입니다.
+언리얼 엔진 5와 C++을 활용해 전투 시스템의 구조와 구현 방식을 분석하며
 특히 스킬 시스템과 액션 전투 로직을 중심으로 모작 및 개선을 진행하고 있습니다.
 
 플레이어는 주술회전의 다양한 캐릭터 중 하나를 선택해 AI 또는 멀티플레이 전투를 즐길 수 있도록 개발 중이며,
@@ -42,7 +41,7 @@
 UENUM(BlueprintType)
 enum class ECharacterState : uint8
 {
-	Locomotion = 0,     // 로코모션 (최고 우선순위)
+	Locomotion = 0,     // 로코모션
 	Falling = 1,        // 낙하
 	Skill = 2,          // 스킬 사용
 	Hit = 3             // 피격
@@ -146,6 +145,12 @@ UCustomProjectileMovement::HandleBlockingHit(
 void ACustomCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
 {
 	Super::UpdateViewTarget(OutVT, DeltaTime);
+
+	if (CachedCharacter.IsValid())
+	{
+		UpdateCameraForCharacter(CachedCharacter.Get(), DeltaTime);
+		return;
+	}
 
 	if (!PCOwner)
 	{
