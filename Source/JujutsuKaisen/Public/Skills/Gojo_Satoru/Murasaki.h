@@ -13,9 +13,6 @@ class JUJUTSUKAISEN_API UMurasaki : public UBaseSkill
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
-	uint8 state;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* MurasakiMontage;
 

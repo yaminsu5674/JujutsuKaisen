@@ -13,7 +13,6 @@
 
 UPal::UPal()
 {
-	state = 0;
 }
 
 void UPal::TickSkill(float DeltaTime)
@@ -166,7 +165,7 @@ void UPal::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNotifyPa
                     AnimInst->Montage_Resume(PalMontage);
                 }
                 PalProjectile = nullptr;    
-			}, PalProjectile->GetLifespan(), false);
+			}, PalProjectile->GetLifeSpan(), false);
 		}
 	}
     else

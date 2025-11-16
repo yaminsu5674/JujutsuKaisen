@@ -10,7 +10,6 @@ UMurasaki::UMurasaki()
 {
 	bWantsTick = true;
 	MurasakiProjectile = nullptr;
-	state = 0;
 	bIsGrowing = false;
 	GrowthTimer = 0.0f;
 	GrowthDuration = 1.0f;
@@ -40,7 +39,6 @@ void UMurasaki::TickSkill(float DeltaTime)
 
 void UMurasaki::OnPressed()
 {
-	state = 1;
 	GrowthDuration = 1.5f;
 
 	AJujutsuKaisenCharacter* Owner = GetOwner();
@@ -60,7 +58,6 @@ void UMurasaki::OnPressed()
 
 void UMurasaki::ResetSkill()
 {
-	state = 0;
 	bIsGrowing = false;
 	GrowthTimer = 0.0f;
 
@@ -169,11 +166,8 @@ void UMurasaki::LaunchProjectile()
 		if (UCustomProjectileMovement* Movement = MurasakiProjectile->GetProjectileMovement())
 		{
 			Movement->SetDirection(MurasakiProjectile->GetTarget(), MurasakiProjectile->GetSpeed());
-			Movement->ApplyBehaviorSettings(true, true, MurasakiProjectile->GetLifespan());
+			Movement->ApplyBehaviorSettings(true, true, MurasakiProjectile->GetLifeSpan());
 		}
-		
-		// Lifespan 설정
-		MurasakiProjectile->SetLifeSpan(MurasakiProjectile->GetLifespan());
 		
 		// 발사 후 참조 정리 (다음 스킬 사용을 위해)
 		MurasakiProjectile = nullptr;

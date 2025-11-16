@@ -18,7 +18,7 @@ class JUJUTSUKAISEN_API UBaseSkill : public UObject
 	GENERATED_BODY()
 
 protected:
-	bool bWantsTick = false; // 필요시에만 Tick
+	bool bWantsTick; // 필요시에만 Tick
 
 	// TODO: 카메라 애니메이션 기능은 플러그인 활성화 후 재도입 예정
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
@@ -34,6 +34,8 @@ protected:
 	UAnimInstance* GetAnimInstance() const;
 
 public:
+	UBaseSkill();
+
 	bool GetBWantsTick();
 
 	virtual void ResetSkill();

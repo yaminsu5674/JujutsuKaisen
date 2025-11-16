@@ -22,31 +22,25 @@ protected:
 	float Speed = 500.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
-	float Lifespan;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	float Damage = 10.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	float SphereRadius = 50.0f;
 
-	UPROPERTY()
-	float _LifeCountingDown;
-
 	// CollisionSphere를 Root Component로 사용
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	USphereComponent* CollisionSphere;
 
 	// ProjectileMovement (CollisionSphere에 부착됨)
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY()
 	UCustomProjectileMovement* ProjectileMovement;
 
 	// 오버랩 상태 확인 변수
-	UPROPERTY(BlueprintReadOnly, Category = "State")
+	UPROPERTY()
 	bool bIsOverlapping = false;
 
 	// 오버랩된 타겟 캐릭터
-	UPROPERTY(BlueprintReadOnly, Category = "State")
+	UPROPERTY()
 	AJujutsuKaisenCharacter* Target = nullptr;
 	
 
@@ -74,9 +68,6 @@ public:
 	
 	// Speed getter
 	FORCEINLINE float GetSpeed() const { return Speed; }
-	
-	// Lifespan getter
-	FORCEINLINE float GetLifespan() const { return Lifespan; }
 	
 	// CollisionSphere getter
 	FORCEINLINE USphereComponent* GetCollisionSphere() const { return CollisionSphere; }
