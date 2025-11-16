@@ -1,4 +1,4 @@
-# 👻 Jujutsu Kaisen 3D PvP 액션 게임
+# 👻 Jujutsu Kaisen 3D 액션 게임
 
 ## 🎮 게임 장르
 
