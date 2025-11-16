@@ -13,6 +13,7 @@
 
 UPal::UPal()
 {
+	PalProjectile = nullptr;
 }
 
 void UPal::TickSkill(float DeltaTime)
