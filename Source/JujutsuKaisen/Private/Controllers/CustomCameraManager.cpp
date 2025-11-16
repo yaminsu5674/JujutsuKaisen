@@ -29,6 +29,12 @@ void ACustomCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime
 {
 	Super::UpdateViewTarget(OutVT, DeltaTime);
 
+	if (CachedCharacter.IsValid())
+	{
+		UpdateCameraForCharacter(CachedCharacter.Get(), DeltaTime);
+		return;
+	}
+
 	if (!PCOwner)
 	{
 		return;
