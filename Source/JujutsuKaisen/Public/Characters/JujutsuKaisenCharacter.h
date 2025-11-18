@@ -198,37 +198,37 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	float MaxHealth = 1000;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	float Health;
 
 	UPROPERTY()
-	bool bCanMove = true;
+	bool bCanMove;
 
 	UPROPERTY()
-	bool bIsMoving = false;
+	bool bIsMoving;
 
 	UPROPERTY()
-	bool bIsDead = false;
+	bool bIsDead;
 
 	// ============================================================================
 	// Movement Parameters
 	// ============================================================================
 	UPROPERTY()
-	uint8 JumpCount = 0;
+	uint8 JumpCount;
 
 	UPROPERTY()
-	bool bDidSuperJump = false;
+	bool bDidSuperJump;
 
 	UPROPERTY()
-	bool bDidDoubleJump = false;
+	bool bDidDoubleJump;
 
 	UPROPERTY()
-	bool bIsDashing = false;
+	bool bIsDashing;
 
 	UPROPERTY()
-	bool bSprintDashing = false;
+	bool bSprintDashing;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	float Speed;
 
 	UPROPERTY(EditAnywhere, Category = "Character params")

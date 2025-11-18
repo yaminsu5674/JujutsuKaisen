@@ -20,12 +20,21 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 {
+	// 멤버 변수 초기화
+	bCanMove = true;
+	bIsMoving = false;
+	bIsDead = false;
+	JumpCount = 0;
+	bDidSuperJump = false;
+	bDidDoubleJump = false;
+	bIsDashing = false;
+	bSprintDashing = false;
+
 	// 상태 매니저 초기화
 	StateManager = CreateDefaultSubobject<UCharacterStateManager>(TEXT("StateManager"));
 	if (StateManager)
 	{
 		StateManager->SetOwnerCharacter(this);
-		UE_LOG(LogTemp, Log, TEXT("Constructor: StateManager created successfully"));
 	}
 	else
 	{
@@ -58,7 +67,6 @@ AJujutsuKaisenCharacter::AJujutsuKaisenCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 	
-	bIsDashing = false;
 	Speed = DefaultSpeed;
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = DefaultSpeed;
