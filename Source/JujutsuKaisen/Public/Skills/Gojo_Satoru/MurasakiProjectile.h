@@ -33,10 +33,24 @@ public:
 	// Destroyed 오버라이드 (소멸 시 특수 이펙트)
 	virtual void Destroyed() override;
 
+	// HitSphere용 오버랩 함수 (가상함수 아님)
+	UFUNCTION()
+	void OnHitSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 protected:
 	// 메시 컴포넌트 (시각적 표현용)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Visual, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* MeshComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* HitSphere;
+
+	// HitSphere 반지름 (블루프린트에서 수정 가능)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision", meta = (AllowPrivateAccess = "true"))
+	float HitSphereRadius;
 	
 	// 파티클 시스템들
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))

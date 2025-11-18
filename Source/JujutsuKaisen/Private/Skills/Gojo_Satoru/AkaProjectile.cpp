@@ -13,6 +13,9 @@
 
 AAkaProjectile::AAkaProjectile()
 {
+	// HitSphereRadius 초기화
+	HitSphereRadius = 100.0f;
+
 	// 메시 컴포넌트 생성 (CollisionSphere에 부착)
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetupAttachment(CollisionSphere); // Root인 CollisionSphere에 부착
@@ -21,7 +24,7 @@ AAkaProjectile::AAkaProjectile()
 	// HitSphere 생성 및 설정 (Pawn과만 오버랩)
 	HitSphere = CreateDefaultSubobject<USphereComponent>(TEXT("HitSphere"));
 	HitSphere->SetupAttachment(CollisionSphere); // Root인 CollisionSphere에 부착
-	HitSphere->InitSphereRadius(100.0f); // 반지름 50 (CollisionSphere와 비슷하게)
+	HitSphere->InitSphereRadius(HitSphereRadius); // HitSphereRadius 멤버 변수 사용
 	
 	// HitSphere 충돌 설정 - Pawn과만 오버랩
 	HitSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);

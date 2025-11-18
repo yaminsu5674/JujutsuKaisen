@@ -48,6 +48,10 @@ protected:
 	// HitSphere - Pawn과만 오버랩하는 충돌 구체
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* HitSphere;
+
+	// HitSphere 반지름 (블루프린트에서 수정 가능)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision", meta = (AllowPrivateAccess = "true"))
+	float HitSphereRadius;
 	
 	// 파티클 시스템들
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
