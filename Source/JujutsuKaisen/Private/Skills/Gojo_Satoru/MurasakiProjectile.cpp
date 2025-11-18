@@ -77,14 +77,14 @@ void AMurasakiProjectile::Tick(float DeltaTime)
 		if (ProjectileMovement)
 		{
 			// X, Y는 발사체와 동기화, Z는 점진적 상승 (한 번에 계산)
-			FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 0.6f;
+			FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 0.8f;
 			DeltaMovement.Z = 50.f * DeltaTime;  // Z축은 초당 5 유닛씩 상승으로 덮어쓰기
 			
 			FVector NewLocation = Target->GetActorLocation() + DeltaMovement;
 			Target->SetActorLocation(NewLocation, true);  // Sweep = false (충돌 무시하고 강제 이동)
 			UGameplayStatics::ApplyDamage(
 				Target,
-				700.0f,
+				15.0f,
 				GetInstigatorController(),
 				this,
 				UDamageType::StaticClass());
@@ -130,6 +130,8 @@ void AMurasakiProjectile::OnHitSphereOverlapBegin(UPrimitiveComponent* Overlappe
 			HitCharacter->GetStateManager()->SetHitSubState(EHitSubState::Stun, bIsHitFront);
 		}
 	}
+
+	USkillEventHub::OnCameraShakeStartEvent.Broadcast();
 }
 
 void AMurasakiProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -144,7 +146,6 @@ void AMurasakiProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedC
 	AJujutsuKaisenCharacter* HitCharacter = Cast<AJujutsuKaisenCharacter>(OtherActor);
 	if (HitCharacter)
 	{
-		USkillEventHub::OnCameraShakeEndEvent.Broadcast();
 		// 피격 하위 상태를 KnockBack으로 설정
 		if (HitCharacter->GetStateManager() && GetOwner())
 		{
@@ -163,13 +164,13 @@ void AMurasakiProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedC
 			FVector LaunchVelocity = FVector(
 				LaunchDirection.X * 3000.f,  // X축 300
 				LaunchDirection.Y * 3000.f,  // Y축 300
-				1000.0f                         // Z축 0 (수평으로만)
+				2000.0f                         // Z축 0 (수평으로만)
 			);
 			
 			HitCharacter->LaunchCharacter(LaunchVelocity, false, true);
 			UGameplayStatics::ApplyDamage(
 				HitCharacter,
-				200.0f,
+				300.0f,
 				GetInstigatorController(),
 				this,
 				UDamageType::StaticClass());
@@ -178,4 +179,6 @@ void AMurasakiProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedC
 		// 발사체 자신을 즉시 파괴
 		Destroy();
 	}
+
+	USkillEventHub::OnCameraShakeEndEvent.Broadcast();
 }

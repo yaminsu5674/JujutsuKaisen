@@ -25,7 +25,7 @@ void UMurasaki::TickSkill(float DeltaTime)
 		
 		// 크기 증가 (1초 동안 지속적으로 증가)
 		float GrowthProgress = GrowthTimer / GrowthDuration;
-		float CurrentScale = 1.0f + (GrowthRate * GrowthProgress);
+		float CurrentScale = 1.0f + (GrowthRate * GrowthProgress) * 0.5f;
 		
 		MurasakiProjectile->SetActorScale3D(FVector(CurrentScale, CurrentScale, CurrentScale));
 		
