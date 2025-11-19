@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraComponent.h"
 #include "Library/SkillLibrary.h"
 #include "Library/SkillEventHub.h"
 #include "Characters/CharacterStateManager.h"
@@ -28,6 +29,13 @@ AMurasakiProjectile::AMurasakiProjectile()
 	HitSphere->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	HitSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); // 모든 채널 무시
 	HitSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap); // Pawn만 오버랩
+	
+	// 나이아가라 컴포넌트 생성
+	MurasakiNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MurasakiNiagaraComponent"));
+	MurasakiNiagaraComponent->SetupAttachment(RootComponent);
+	MurasakiNiagaraComponent->SetAutoActivate(false);
+	// 부모의 위치, 회전, 스케일을 따라가도록 설정
+	MurasakiNiagaraComponent->SetAbsolute(false, false, false);
 }
 
 void AMurasakiProjectile::BeginPlay()
@@ -47,6 +55,30 @@ void AMurasakiProjectile::BeginPlay()
 		ChargingEffectComponent = UGameplayStatics::SpawnEmitterAttached(ChargingEffect, RootComponent, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
 		ChargingEffectComponent->SetAbsolute(false, false, false); // 위치/회전/스케일 전부 부모 따라감
 		ChargingEffectComponent->SetWorldScale3D(GetActorScale3D());
+	}
+
+		// 나이아가라 이펙트 실행
+		if (MurasakiNiagaraEffect && MurasakiNiagaraComponent)
+		{
+			MurasakiNiagaraComponent->SetAsset(MurasakiNiagaraEffect);
+
+		// 캐릭터 ForwardVector 기준으로 로컬 회전 계산 (Y축 기준)
+		AActor* OwnerActor = GetOwner();
+		if (OwnerActor)
+		{	
+			FVector OwnerForward = OwnerActor->GetActorForwardVector();
+			OwnerForward.Z = 0.0f;
+			OwnerForward.Normalize();
+
+			// Forward Vector를 Y축 기준으로 회전 (90도 추가)
+			FRotator LocalRot = OwnerForward.Rotation();
+			float YawForYAxis = LocalRot.Yaw + 90.0f; // X축 기준에서 Y축 기준으로 변환
+			
+			MurasakiNiagaraComponent->SetWorldRotation(FRotator(0.0f, YawForYAxis, 0.0f));
+		}
+
+		MurasakiNiagaraComponent->Activate();
+		
 	}
 
 	// ProjectileMovement를 Rush 타입으로 설정

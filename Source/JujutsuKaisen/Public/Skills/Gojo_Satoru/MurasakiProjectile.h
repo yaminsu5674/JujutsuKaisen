@@ -6,6 +6,8 @@
 #include "Attack/Projectile.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
 #include "MurasakiProjectile.generated.h"
 
 UCLASS()
@@ -62,4 +64,12 @@ protected:
 	// ChargingEffect 컴포넌트 참조 (제거용)
 	UPROPERTY()
 	UParticleSystemComponent* ChargingEffectComponent;
+	
+	// 나이아가라 이펙트 시스템
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
+	UNiagaraSystem* MurasakiNiagaraEffect;
+	
+	// 나이아가라 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skill", meta = (AllowPrivateAccess = "true"))
+	UNiagaraComponent* MurasakiNiagaraComponent;
 };

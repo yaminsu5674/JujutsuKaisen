@@ -48,6 +48,12 @@ void UMurasaki::OnPressed()
 		USkillLibrary::RotateActorToFaceTarget(Owner, Target);
 	}
 	
+	// 프로젝타일이 없거나 파괴된 상태인지 확인
+	if (!MurasakiProjectile || !IsValid(MurasakiProjectile))
+	{
+		SpawnProjectile();
+	}
+	
 	UAnimInstance* AnimInstance = GetAnimInstance();
 	if (AnimInstance && MurasakiMontage)
 	{
@@ -105,21 +111,9 @@ void UMurasaki::OnMontageNotify1Begin(FName NotifyName, const FBranchingPointNot
 		{
 			AnimInstance->Montage_Pause(MurasakiMontage);
 		}
-		
-		// 프로젝타일이 없거나 파괴된 상태인지 확인
-		if (!MurasakiProjectile || !IsValid(MurasakiProjectile))
+		if (MurasakiProjectile)
 		{
-			SpawnProjectile();
-			
-			// 프로젝타일이 스폰되면 크기 증가 시작
-			if (MurasakiProjectile)
-			{
-				StartGrowth();
-			}
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Murasaki: 프로젝타일이 이미 존재함 - 스폰 건너뜀"));
+			StartGrowth();
 		}
 	}
 }
@@ -198,6 +192,10 @@ void UMurasaki::StopGrowth()
 	// 크기 증가가 완료되면 발사
 	if (MurasakiProjectile)
 	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, TEXT("LaunchProjectile"));
+		}
 		LaunchProjectile();
 	}
 }
