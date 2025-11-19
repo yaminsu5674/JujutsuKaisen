@@ -66,6 +66,14 @@ UCustomProjectileMovement::EHandleBlockingHitResult UCustomProjectileMovement::H
 			{
 				float CurrentSpeed = Velocity.Size();
 				Velocity = GetOwner()->GetActorForwardVector() * CurrentSpeed;
+				
+				// 바닥 충돌 판단: Normal의 Z가 양수이고 충분히 위쪽을 향하는 경우 (약 45도 이상)
+				if (Hit.Normal.Z > 0.7f)
+				{
+					// 바닥 충돌: Z 속도만 0으로 설정
+					Velocity.Z = 0.0f;
+				}
+				
 				ProjectileGravityScale = 0.0f;
 			}
 			
