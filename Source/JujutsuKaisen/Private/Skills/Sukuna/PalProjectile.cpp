@@ -12,11 +12,6 @@
 
 APalProjectile::APalProjectile()
 {
-	// 메시 컴포넌트 생성 (CollisionSphere에 부착)
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	MeshComponent->SetupAttachment(CollisionSphere); // Root인 CollisionSphere에 부착
-	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 충돌 비활성화 (시각적 용도만)
-	
 	// 나이아가라 컴포넌트 생성 (차징 이펙트용)
 	ChargingNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ChargingNiagaraComponent"));
 	ChargingNiagaraComponent->SetupAttachment(RootComponent);

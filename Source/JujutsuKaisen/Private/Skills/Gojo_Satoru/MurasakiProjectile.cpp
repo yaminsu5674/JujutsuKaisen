@@ -14,11 +14,6 @@ AMurasakiProjectile::AMurasakiProjectile()
 	// HitSphereRadius 초기화
 	HitSphereRadius = 100.0f;
 
-	// 메시 컴포넌트 생성 (CollisionSphere에 부착)
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	MeshComponent->SetupAttachment(CollisionSphere); // Root인 CollisionSphere에 부착
-	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 충돌 비활성화 (시각적 용도만)
-	
 	// HitSphere 생성 및 설정 (Pawn과만 오버랩)
 	HitSphere = CreateDefaultSubobject<USphereComponent>(TEXT("HitSphere"));
 	HitSphere->SetupAttachment(CollisionSphere); // Root인 CollisionSphere에 부착
