@@ -77,7 +77,7 @@ void AMurasakiProjectile::Tick(float DeltaTime)
 		if (ProjectileMovement)
 		{
 			// X, Y는 발사체와 동기화, Z는 점진적 상승 (한 번에 계산)
-			FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 1.0f;
+			FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 0.8f;
 			DeltaMovement.Z = 3.0f * DeltaTime;  // Z축은 초당 5 유닛씩 상승으로 덮어쓰기
 			
 			FVector NewLocation = Target->GetActorLocation() + DeltaMovement;
@@ -177,7 +177,7 @@ void AMurasakiProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedC
 		}
 		
 		// 발사체 자신을 즉시 파괴
-		Destroy();
+		//Destroy();
 	}
 
 	USkillEventHub::OnCameraShakeEndEvent.Broadcast();
