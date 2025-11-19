@@ -125,6 +125,10 @@ UCustomProjectileMovement::HandleBlockingHit(
 		{
 			float CurrentSpeed = Velocity.Size();
 			Velocity = GetOwner()->GetActorForwardVector() * CurrentSpeed;
+			if (Hit.Normal.Z > 0.7f)
+			{
+				Velocity.Z = 0.0f;
+			}
 			ProjectileGravityScale = 0.0f;
 		}
 		
