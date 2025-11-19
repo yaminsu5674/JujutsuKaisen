@@ -48,11 +48,19 @@ UCustomProjectileMovement::EHandleBlockingHitResult UCustomProjectileMovement::H
 	{
 	case EProjectileMoveType::Single:
 		// 단발형: 부모 클래스 로직 그대로 (충돌 시 멈춤)
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Red, TEXT("Single"));
+		}
 		return Super::HandleBlockingHit(Hit, TimeTick, MoveDelta, SubTickTimeRemaining);
 		
 	case EProjectileMoveType::Rush:
 		// Rush 타입: 충돌해도 속도 유지하며 계속 진행
 		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Green, TEXT("Rush"));
+			}
 			// 방향과 속도 크기 유지
 			if (GetOwner())
 			{

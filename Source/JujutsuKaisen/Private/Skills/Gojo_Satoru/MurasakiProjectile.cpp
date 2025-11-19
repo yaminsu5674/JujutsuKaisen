@@ -77,14 +77,14 @@ void AMurasakiProjectile::Tick(float DeltaTime)
 		if (ProjectileMovement)
 		{
 			// X, Y는 발사체와 동기화, Z는 점진적 상승 (한 번에 계산)
-			FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 0.8f;
-			DeltaMovement.Z = 50.f * DeltaTime;  // Z축은 초당 5 유닛씩 상승으로 덮어쓰기
+			FVector DeltaMovement = ProjectileMovement->Velocity * DeltaTime * 1.0f;
+			DeltaMovement.Z = 3.0f * DeltaTime;  // Z축은 초당 5 유닛씩 상승으로 덮어쓰기
 			
 			FVector NewLocation = Target->GetActorLocation() + DeltaMovement;
 			Target->SetActorLocation(NewLocation, true);  // Sweep = false (충돌 무시하고 강제 이동)
 			UGameplayStatics::ApplyDamage(
 				Target,
-				15.0f,
+				1.0f,
 				GetInstigatorController(),
 				this,
 				UDamageType::StaticClass());
