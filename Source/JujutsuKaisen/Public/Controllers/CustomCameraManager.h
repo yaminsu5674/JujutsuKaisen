@@ -27,14 +27,21 @@ protected:
 	UFUNCTION()
 	void HandleCameraShakeEnd();
 
-	// TODO: 카메라 애니메이션 기능 재도입 시 복구
-	// UFUNCTION()
-	// void HandleCameraAnimationStart(UCameraAnimationSequence* CameraAnim);
+	UFUNCTION()
+	void HandleCameraAnimationStart(UCameraAnimationSequence* CameraAnim);
+
+	UFUNCTION()
+	void HandleCameraAnimationEnd();
 
 	void UpdateCameraForCharacter(AJujutsuKaisenCharacter* ControlledCharacter, float DeltaTime);
 
+	void SetTargetOn(bool bValue);
+
 	UPROPERTY()
 	TWeakObjectPtr<AJujutsuKaisenCharacter> CachedCharacter;
+
+	UPROPERTY()
+	bool bTargetOn;
 
 	UPROPERTY(EditAnywhere, Category = "Camera|Shake")
 	TSubclassOf<UCameraShakeBase> DefaultCameraShake;

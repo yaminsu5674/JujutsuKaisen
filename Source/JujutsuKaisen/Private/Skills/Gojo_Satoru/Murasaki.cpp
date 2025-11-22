@@ -5,6 +5,7 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Library/SkillLibrary.h"
+#include "Library/SkillEventHub.h"
 #include "Attack/CustomProjectileMovement.h"
 
 UMurasaki::UMurasaki()
@@ -60,6 +61,12 @@ void UMurasaki::OnPressed()
 	{
 		BindMontageNotifies();
 		AnimInstance->Montage_Play(MurasakiMontage);
+	}
+
+	// 카메라 애니메이션 시작
+	if (MurasakiCAS)
+	{
+		USkillEventHub::OnCameraAnimationStartEvent.Broadcast(MurasakiCAS);
 	}
 }
 

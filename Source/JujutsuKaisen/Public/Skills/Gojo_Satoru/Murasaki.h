@@ -6,6 +6,7 @@
 #include "Skills/BaseSkill.h"
 #include "Attack/Projectile.h"
 #include "Animation/AnimMontage.h"
+#include "CameraAnimationSequence.h"
 #include "Murasaki.generated.h"
 
 UCLASS(Blueprintable, BlueprintType, EditInlineNew)
@@ -16,6 +17,8 @@ class JUJUTSUKAISEN_API UMurasaki : public UBaseSkill
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* MurasakiMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
+	UCameraAnimationSequence* MurasakiCAS;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AProjectile> ProjectileClass;
