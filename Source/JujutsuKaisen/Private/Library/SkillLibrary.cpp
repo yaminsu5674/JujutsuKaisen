@@ -4,6 +4,7 @@
 #include "Library/SkillLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Character.h"
+#include "Components/SceneComponent.h"
 
 void USkillLibrary::RotateActorToFaceTarget(AActor* Source, AActor* Target)
 {
@@ -16,6 +17,19 @@ void USkillLibrary::RotateActorToFaceTarget(AActor* Source, AActor* Target)
 	FRotator OnlyYawRotation = FRotator(0.f, LookAtRotation.Yaw, 0.f);
 	Source->SetActorRotation(OnlyYawRotation);
 	
+}
+
+void USkillLibrary::RotateObjectToFaceTarget(USceneComponent* Object, AActor* Target)
+{
+	if (!Object || !Target) return;
+
+	FVector ObjectLocation = Object->GetComponentLocation();
+	FVector TargetLocation = Target->GetActorLocation();
+	FVector Direction = (TargetLocation - ObjectLocation).GetSafeNormal();
+	
+	FRotator LookAtRotation = Direction.Rotation();
+	FRotator OnlyYawRotation = FRotator(0.f, LookAtRotation.Yaw + 90.0f, 0.f);
+	Object->SetWorldRotation(OnlyYawRotation);
 }
 
 bool USkillLibrary::SimpleLineTrace(UObject* WorldContextObject, FVector Start, FVector End, FHitResult& OutHit)

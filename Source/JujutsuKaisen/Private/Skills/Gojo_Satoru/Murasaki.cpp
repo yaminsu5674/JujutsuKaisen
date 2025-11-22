@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Skills/Gojo_Satoru/Murasaki.h"
+#include "Skills/Gojo_Satoru/MurasakiProjectile.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Library/SkillLibrary.h"
@@ -183,6 +184,16 @@ void UMurasaki::StartGrowth()
 {
 	bIsGrowing = true;
 	GrowthTimer = 0.0f;
+
+	// ChargingEffect를 발사체에 붙이기
+	if (MurasakiProjectile)
+	{
+		AMurasakiProjectile* MurasakiProj = Cast<AMurasakiProjectile>(MurasakiProjectile);
+		if (MurasakiProj)
+		{
+			MurasakiProj->AttachChargingEffect();
+		}
+	}
 }
 
 void UMurasaki::StopGrowth()

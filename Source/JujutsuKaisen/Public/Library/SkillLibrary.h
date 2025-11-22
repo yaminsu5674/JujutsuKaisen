@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Characters/JujutsuKaisenCharacter.h"
+#include "Components/SceneComponent.h"
 #include "SkillLibrary.generated.h"
 
 /**
@@ -20,6 +21,10 @@ public:
 	// Ÿ���� �ٶ󺸵��� ȸ��
 	UFUNCTION(BlueprintCallable, Category = "Skill|Utility")
 	static void RotateActorToFaceTarget(AActor* Source, AActor* Target);
+
+	// 오브젝트(컴포넌트)를 타겟을 향해서 회전
+	UFUNCTION(BlueprintCallable, Category = "Skill|Utility")
+	static void RotateObjectToFaceTarget(USceneComponent* Object, AActor* Target);
 
 	// ����Ʈ���̽� ���� ����.
 	UFUNCTION(BlueprintPure, Category = "Skill|Utility")

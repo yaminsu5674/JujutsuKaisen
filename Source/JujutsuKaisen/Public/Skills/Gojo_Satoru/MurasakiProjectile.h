@@ -35,6 +35,9 @@ public:
 	// Destroyed 오버라이드 (소멸 시 특수 이펙트)
 	virtual void Destroyed() override;
 
+	// ChargingEffect를 붙이는 함수
+	void AttachChargingEffect();
+
 	// HitSphere용 오버랩 함수 (가상함수 아님)
 	UFUNCTION()
 	void OnHitSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

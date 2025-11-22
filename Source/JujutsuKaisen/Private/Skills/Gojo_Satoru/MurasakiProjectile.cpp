@@ -43,36 +43,18 @@ void AMurasakiProjectile::BeginPlay()
 		HitSphere->OnComponentEndOverlap.AddDynamic(this, &AMurasakiProjectile::OnHitSphereOverlapEnd);
 	}
 
-	// 스폰 시 ChargingEffect 파티클 재생 (발사체에 붙어서 함께 움직임)
-	if (ChargingEffect)
-	{
-		// RootComponent에 부착하여 발사체와 함께 움직임
-		ChargingEffectComponent = UGameplayStatics::SpawnEmitterAttached(ChargingEffect, RootComponent, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
-		ChargingEffectComponent->SetAbsolute(false, false, false); // 위치/회전/스케일 전부 부모 따라감
-		ChargingEffectComponent->SetWorldScale3D(GetActorScale3D());
-	}
-
-		// 나이아가라 이펙트 실행
+	// 나이아가라 이펙트 실행
 		if (MurasakiNiagaraEffect && MurasakiNiagaraComponent)
 		{
 			MurasakiNiagaraComponent->SetAsset(MurasakiNiagaraEffect);
 
-		// 캐릭터 ForwardVector 기준으로 로컬 회전 계산 (Y축 기준)
-		AActor* OwnerActor = GetOwner();
-		if (OwnerActor)
-		{	
-			FVector OwnerForward = OwnerActor->GetActorForwardVector();
-			OwnerForward.Z = 0.0f;
-			OwnerForward.Normalize();
+			// 타겟을 향해 나이아가라 컴포넌트 회전
+			if (Target)
+			{
+				USkillLibrary::RotateObjectToFaceTarget(MurasakiNiagaraComponent, Target);
+			}
 
-			// Forward Vector를 Y축 기준으로 회전 (90도 추가)
-			FRotator LocalRot = OwnerForward.Rotation();
-			float YawForYAxis = LocalRot.Yaw + 90.0f; // X축 기준에서 Y축 기준으로 변환
-			
-			MurasakiNiagaraComponent->SetWorldRotation(FRotator(0.0f, YawForYAxis, 0.0f));
-		}
-
-		MurasakiNiagaraComponent->Activate();
+			MurasakiNiagaraComponent->Activate();
 		
 	}
 
@@ -128,6 +110,17 @@ void AMurasakiProjectile::Destroyed()
 	Super::Destroyed();
 }
 
+void AMurasakiProjectile::AttachChargingEffect()
+{
+	// ChargingEffect 파티클 재생 (발사체에 붙어서 함께 움직임)
+	if (ChargingEffect)
+	{
+		// RootComponent에 부착하여 발사체와 함께 움직임
+		ChargingEffectComponent = UGameplayStatics::SpawnEmitterAttached(ChargingEffect, RootComponent, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
+		ChargingEffectComponent->SetAbsolute(false, false, false); // 위치/회전/스케일 전부 부모 따라감
+		ChargingEffectComponent->SetWorldScale3D(GetActorScale3D());
+	}
+}
 
 void AMurasakiProjectile::OnHitSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
