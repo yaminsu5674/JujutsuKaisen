@@ -25,7 +25,7 @@ void UMurasaki::TickSkill(float DeltaTime)
 		
 		// 크기 증가 (1초 동안 지속적으로 증가)
 		float GrowthProgress = GrowthTimer / GrowthDuration;
-		float CurrentScale = 1.0f + (GrowthRate * GrowthProgress) * 0.5f;
+		float CurrentScale = 1.0f + (GrowthRate*3.0f * GrowthProgress) * 0.5f;
 		
 		MurasakiProjectile->SetActorScale3D(FVector(CurrentScale, CurrentScale, CurrentScale));
 		
@@ -39,7 +39,7 @@ void UMurasaki::TickSkill(float DeltaTime)
 
 void UMurasaki::OnPressed()
 {
-	GrowthDuration = 1.5f;
+	//GrowthDuration = 1.5f;
 
 	AJujutsuKaisenCharacter* Owner = GetOwner();
 	AJujutsuKaisenCharacter* Target = GetTarget();
