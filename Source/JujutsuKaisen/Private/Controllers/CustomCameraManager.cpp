@@ -4,6 +4,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraShakeBase.h"
 #include "CameraAnimationSequence.h"
+#include "Animations/CameraAnimationCameraModifier.h"
 
 ACustomCameraManager::ACustomCameraManager()
 {
@@ -106,19 +107,64 @@ void ACustomCameraManager::HandleCameraShakeEnd()
 
 void ACustomCameraManager::HandleCameraAnimationStart(UCameraAnimationSequence* CameraAnim)
 {
-	// UCameraAnimationSequence 재생을 위해 GameplayCameras 서브시스템 사용
-	// 헤더 파일 경로 문제로 인해 블루프린트 호출 가능 함수로 구현
-	if (CameraAnim && PCOwner)
+	if (!CameraAnim || !PCOwner)
 	{
-		// 일단 타겟 추적만 비활성화
-		// 실제 카메라 애니메이션 재생은 블루프린트에서 구현하거나
-		// GameplayCameras 플러그인이 활성화되어 있을 때 헤더 경로를 확인해야 함
-		SetTargetOn(false);
+		return;
 	}
+
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (!PlayerController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HandleCameraAnimationStart: PlayerController is null."));
+		return;
+	}
+
+	// UCameraAnimationCameraModifier를 직접 사용 (ENGINECAMERAS_API 매크로가 있어서 정상 링크됨)
+	UCameraAnimationCameraModifier* CameraModifier = UCameraAnimationCameraModifier::GetCameraAnimationCameraModifierFromPlayerController(PlayerController);
+	if (!CameraModifier)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HandleCameraAnimationStart: CameraAnimationCameraModifier is null."));
+		SetTargetOn(false); // 모디파이어가 없어도 타겟 추적은 비활성화
+		return;
+	}
+
+	// 카메라 애니메이션 재생 (기본 파라미터 사용)
+	FCameraAnimationParams Params;
+	CameraModifier->PlayCameraAnimation(CameraAnim, Params);
+	
+	// 타겟 추적 비활성화
+	SetTargetOn(false);
 }
 
 void ACustomCameraManager::HandleCameraAnimationEnd()
 {
+	if (!PCOwner)
+	{
+		SetTargetOn(true);
+		return;
+	}
+
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (!PlayerController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HandleCameraAnimationEnd: PlayerController is null."));
+		SetTargetOn(true); // 컨트롤러가 없어도 타겟 추적은 재활성화
+		return;
+	}
+
+	// UCameraAnimationCameraModifier를 직접 사용하여 모든 카메라 애니메이션 중지
+	UCameraAnimationCameraModifier* CameraModifier = UCameraAnimationCameraModifier::GetCameraAnimationCameraModifierFromPlayerController(PlayerController);
+	if (!CameraModifier)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HandleCameraAnimationEnd: CameraAnimationCameraModifier is null."));
+		SetTargetOn(true); // 모디파이어가 없어도 타겟 추적은 재활성화
+		return;
+	}
+
+	// 모든 카메라 애니메이션 중지
+	CameraModifier->StopAllCameraAnimations(true);
+	
+	// 타겟 추적 재활성화
 	SetTargetOn(true);
 }
 

@@ -7,6 +7,7 @@
 class AJujutsuKaisenCharacter;
 class UCameraAnimationSequence;
 class UCameraShakeBase;
+class UCameraAnimationCameraModifier;
 
 UCLASS()
 class JUJUTSUKAISEN_API ACustomCameraManager : public APlayerCameraManager
