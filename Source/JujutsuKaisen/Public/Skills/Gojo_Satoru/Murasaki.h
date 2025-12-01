@@ -27,16 +27,12 @@ class JUJUTSUKAISEN_API UMurasaki : public UBaseSkill
 	AProjectile* MurasakiProjectile;
 
 	// 크기 증가 관련 변수들
-	UPROPERTY()
 	bool bIsGrowing = false;
 
-	UPROPERTY()
 	float GrowthTimer = 0.0f;
 
-	UPROPERTY()
 	float GrowthDuration = 1.0f;
 
-	UPROPERTY()
 	float GrowthRate = 1.0f;
 
 	UPROPERTY()

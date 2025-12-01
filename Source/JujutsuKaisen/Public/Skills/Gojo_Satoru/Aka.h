@@ -13,7 +13,6 @@ class JUJUTSUKAISEN_API UAka : public UBaseSkill
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
 	uint8 state;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))

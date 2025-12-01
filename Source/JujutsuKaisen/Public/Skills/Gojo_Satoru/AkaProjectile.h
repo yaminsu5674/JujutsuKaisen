@@ -65,7 +65,6 @@ protected:
 	UParticleSystemComponent* ChargingEffectComponent;
 
 	// ShotEffect 생성 간격 타이머
-	UPROPERTY()
 	float ShotEffectTimer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	float ShotEffectInterval;

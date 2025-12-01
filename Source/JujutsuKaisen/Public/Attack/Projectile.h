@@ -36,7 +36,6 @@ protected:
 	UCustomProjectileMovement* ProjectileMovement;
 
 	// 오버랩 상태 확인 변수
-	UPROPERTY()
 	bool bIsOverlapping = false;
 
 	// 오버랩된 타겟 캐릭터

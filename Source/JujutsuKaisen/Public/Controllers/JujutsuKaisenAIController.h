@@ -72,12 +72,9 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<AJujutsuKaisenCharacter> CachedAICharacter;
 
-	UPROPERTY()
 	float DesiredEngageDistance = 600.f;
 
-	UPROPERTY()
 	bool bIsWaiting = false;
 
-	UPROPERTY()
 	float WaitTimer = 0.0f;
 };

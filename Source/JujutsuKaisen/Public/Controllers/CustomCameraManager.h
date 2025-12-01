@@ -41,7 +41,6 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<AJujutsuKaisenCharacter> CachedCharacter;
 
-	UPROPERTY()
 	bool bTargetOn;
 
 	UPROPERTY(EditAnywhere, Category = "Camera|Shake")

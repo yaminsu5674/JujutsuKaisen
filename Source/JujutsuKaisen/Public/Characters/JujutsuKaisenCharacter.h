@@ -198,37 +198,27 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Character params")
 	float MaxHealth = 1000;
 
-	UPROPERTY()
 	float Health;
 
-	UPROPERTY()
 	bool bCanMove;
 
-	UPROPERTY()
 	bool bIsMoving;
 
-	UPROPERTY()
 	bool bIsDead;
 
 	// ============================================================================
 	// Movement Parameters
 	// ============================================================================
-	UPROPERTY()
 	uint8 JumpCount;
 
-	UPROPERTY()
 	bool bDidSuperJump;
 
-	UPROPERTY()
 	bool bDidDoubleJump;
 
-	UPROPERTY()
 	bool bIsDashing;
 
-	UPROPERTY()
 	bool bSprintDashing;
 
-	UPROPERTY()
 	float Speed;
 
 	UPROPERTY(EditAnywhere, Category = "Character params")
