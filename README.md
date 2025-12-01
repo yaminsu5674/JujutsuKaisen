@@ -36,7 +36,6 @@
 
 ## 1. HSFM 기반 캐릭터 상태 관리
 - 다양한 피격 상태를 체계적으로 관리하기 위해 **HSFM(Hierarchical State Machine)** 구조 사용  
-- AnimInstance는 **옵저버 패턴**으로 상태를 감지하여 시퀀스/몽타주 재생을 분리 처리  
 
 ### 상태 enum 정의
 ```cpp
