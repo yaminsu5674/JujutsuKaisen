@@ -34,8 +34,8 @@
 
 # 📌 주요 기능 정리 (Jujutsu Kaisen Combat System)
 
-## 1. HSFM 기반 캐릭터 로직 상태 관리
-- 다양한 피격 상태를 체계적으로 관리하기 위해 캐릭터 로직 상태에 **HSFM(Hierarchical State Machine)** 구조 사용  
+## 1. HSFM 기반 캐릭터 상태 관리
+- 다양한 피격 상태를 체계적으로 관리하기 위해 **HSFM(Hierarchical State Machine)** 구조 사용  
 
 ### 상태 enum 정의
 ```cpp
