@@ -63,10 +63,14 @@ void UMurasaki::OnPressed()
 		AnimInstance->Montage_Play(MurasakiMontage);
 	}
 
-	// 카메라 애니메이션 시작
+	// 카메라 애니메이션 시작 (자신의 SkillManager를 통해 Broadcast)
 	if (MurasakiCAS)
 	{
-		USkillEventHub::OnCameraAnimationStartEvent.Broadcast(MurasakiCAS);
+		AJujutsuKaisenCharacter* SkillOwner = GetOwner();
+		if (SkillOwner && SkillOwner->GetSkillManager())
+		{
+			SkillOwner->GetSkillManager()->OnCameraAnimationStartEvent.Broadcast(MurasakiCAS);
+		}
 	}
 }
 

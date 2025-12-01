@@ -160,7 +160,12 @@ void AAkaProjectile::OnHitSphereOverlapBegin(UPrimitiveComponent* OverlappedComp
 		ChargingEffectComponent = nullptr;
 	}
 
-	USkillEventHub::OnCameraShakeStartEvent.Broadcast();
+	// 자신의 Owner의 SkillManager를 통해 Broadcast
+	AJujutsuKaisenCharacter* SkillOwner = Cast<AJujutsuKaisenCharacter>(GetOwner());
+	if (SkillOwner && SkillOwner->GetSkillManager())
+	{
+		SkillOwner->GetSkillManager()->OnCameraShakeStartEvent.Broadcast();
+	}
 }
 
 void AAkaProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -209,5 +214,10 @@ void AAkaProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedCompon
 		Destroy();
 	}
 
-	USkillEventHub::OnCameraShakeEndEvent.Broadcast();
+	// 자신의 Owner의 SkillManager를 통해 Broadcast
+	AJujutsuKaisenCharacter* SkillOwner = Cast<AJujutsuKaisenCharacter>(GetOwner());
+	if (SkillOwner && SkillOwner->GetSkillManager())
+	{
+		SkillOwner->GetSkillManager()->OnCameraShakeEndEvent.Broadcast();
+	}
 }

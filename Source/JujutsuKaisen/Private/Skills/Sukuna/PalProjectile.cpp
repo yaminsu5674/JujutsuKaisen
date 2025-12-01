@@ -37,7 +37,12 @@ void APalProjectile::OnProjectileOverlapBegin(AActor* OtherActor)
 {	
 	if (Target && Target->GetStateManager() && GetOwner())
 	{
-		USkillEventHub::OnCameraShakeStartEvent.Broadcast();
+		// 자신의 Owner의 SkillManager를 통해 Broadcast
+		AJujutsuKaisenCharacter* SkillOwner = Cast<AJujutsuKaisenCharacter>(GetOwner());
+		if (SkillOwner && SkillOwner->GetSkillManager())
+		{
+			SkillOwner->GetSkillManager()->OnCameraShakeStartEvent.Broadcast();
+		}
 		bool bIsHitFront = USkillLibrary::JudgeHitFront(GetOwner(), Target);
 		Target->GetStateManager()->SetHitSubState(EHitSubState::Stun, bIsHitFront);
 	}
@@ -75,7 +80,12 @@ void APalProjectile::EndPal()
 	}
     if (bIsOverlapping)
     {
-		USkillEventHub::OnCameraShakeEndEvent.Broadcast();
+		// 자신의 Owner의 SkillManager를 통해 Broadcast
+		AJujutsuKaisenCharacter* SkillOwner = Cast<AJujutsuKaisenCharacter>(GetOwner());
+		if (SkillOwner && SkillOwner->GetSkillManager())
+		{
+			SkillOwner->GetSkillManager()->OnCameraShakeEndEvent.Broadcast();
+		}
         // 캐릭터에게 데미지 적용
 		if (Target->GetStateManager() && GetOwner())
 		{

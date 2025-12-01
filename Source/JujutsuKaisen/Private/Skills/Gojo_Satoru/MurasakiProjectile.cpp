@@ -6,7 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
 #include "Library/SkillLibrary.h"
-#include "Library/SkillEventHub.h"
+#include "Characters/JujutsuKaisenCharacter.h"
 #include "Characters/CharacterStateManager.h"
 
 AMurasakiProjectile::AMurasakiProjectile()
@@ -151,7 +151,12 @@ void AMurasakiProjectile::OnHitSphereOverlapBegin(UPrimitiveComponent* Overlappe
 		}
 	}
 
-	USkillEventHub::OnCameraShakeStartEvent.Broadcast();
+	// 자신의 Owner의 SkillManager를 통해 Broadcast
+	AJujutsuKaisenCharacter* SkillOwner = Cast<AJujutsuKaisenCharacter>(GetOwner());
+	if (SkillOwner && SkillOwner->GetSkillManager())
+	{
+		SkillOwner->GetSkillManager()->OnCameraShakeStartEvent.Broadcast();
+	}
 }
 
 void AMurasakiProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -200,5 +205,10 @@ void AMurasakiProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedC
 		//Destroy();
 	}
 
-	USkillEventHub::OnCameraShakeEndEvent.Broadcast();
+	// 자신의 Owner의 SkillManager를 통해 Broadcast
+	AJujutsuKaisenCharacter* SkillOwner = Cast<AJujutsuKaisenCharacter>(GetOwner());
+	if (SkillOwner && SkillOwner->GetSkillManager())
+	{
+		SkillOwner->GetSkillManager()->OnCameraShakeEndEvent.Broadcast();
+	}
 }
