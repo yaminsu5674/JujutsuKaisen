@@ -36,7 +36,6 @@
 
 ## 1. HSFM 기반 캐릭터 상태 관리
 - 다양한 피격 상태를 체계적으로 관리하기 위해 **HSFM(Hierarchical State Machine)** 구조 사용  
-- AnimInstance는 **옵저버 패턴**으로 상태를 감지하여 시퀀스/몽타주 재생을 분리 처리  
 
 ### 상태 enum 정의
 ```cpp
@@ -71,30 +70,35 @@ enum class EHitSubState : uint8
 ```cpp
 void AJujutsuKaisenCharacter::R_Pressed()
 {
-	if (IsOtherSkillInUse(ESkillIndex::R))
-	{
-		return;
-	}
-
-	SetSkillInUse(ESkillIndex::R, true);
-	
-	if (StateManager && StateManager->SetState(ECharacterState::Skill))
-	{
-		if (SkillManager)
-		{
-			SkillManager->HandlePressed("R");
-		}
-	}
+    if (SkillManager)
+    {
+        SkillManager->TryUseSkill("R");
+    }
 }
 ```
 
 ### SkillManager 처리 예시
 ```cpp
-void USkillManager::HandlePressed(FName Key)
+void USkillManager::TryUseSkill(FName Key)
 {
-    if (auto* Skill = BoundSkills.FindRef(Key))
+    ESkillIndex SkillIndex = ConvertKeyToSkillIndex(Key);
+
+    if (IsOtherSkillInUse(SkillIndex))
     {
-        Skill->OnPressed();
+        return;
+    }
+
+    if (!CachedCharacter || !CachedCharacter->GetStateManager())
+        return;
+
+    if (CachedCharacter->GetStateManager()->SetState(ECharacterState::Skill))
+    {
+        SetSkillInUse(SkillIndex, true);
+
+        if (auto* Skill = BoundSkills.FindRef(Key))
+        {
+            Skill->OnPressed();
+        }
     }
 }
 ```
@@ -146,35 +150,36 @@ UCustomProjectileMovement::HandleBlockingHit(
 카메라 액션, 시네마틱, 타겟 추적을 하나의 클래스로 통합 관리하기 위해  
 **CustomCameraManager** 제작.
 
-### 타겟 포커스 시점 유지 예시
+### 클래스 헤더 내용 일부
 ```cpp
-void ACustomCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
-{
-	Super::UpdateViewTarget(OutVT, DeltaTime);
+public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCameraShakeStart);
+	UPROPERTY()
+	FOnCameraShakeStart OnCameraShakeStartEvent;
 
-	if (CachedCharacter.IsValid())
-	{
-		UpdateCameraForCharacter(CachedCharacter.Get(), DeltaTime);
-		return;
-	}
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCameraAnimationStart, UCameraAnimationSequence*, CameraAnim);
+	UPROPERTY()
+	FOnCameraAnimationStart OnCameraAnimationStartEvent;
 
-	if (!PCOwner)
-	{
-		return;
-	}
+protected:
+	UFUNCTION()
+	void HandleCameraShakeStart();
 
-	APawn* ControlledPawn = PCOwner->GetPawn();
-	AJujutsuKaisenCharacter* ControlledCharacter = Cast<AJujutsuKaisenCharacter>(ControlledPawn);
+	UFUNCTION()
+	void HandleCameraAnimationStart(UCameraAnimationSequence* CameraAnim);
 
-	if (!ControlledCharacter)
-	{
-		CachedCharacter.Reset();
-		return;
-	}
+	void UpdateCameraForCharacter(AJujutsuKaisenCharacter* ControlledCharacter, float DeltaTime);
 
-	CachedCharacter = ControlledCharacter;
-	UpdateCameraForCharacter(ControlledCharacter, DeltaTime);
-}
+	void SetTargetOn(bool bValue);
+
+	UPROPERTY()
+	TWeakObjectPtr<AJujutsuKaisenCharacter> CachedCharacter;
+
+	bool bTargetOn;
+
+	UPROPERTY(EditAnywhere, Category = "Camera|Shake")
+	TSubclassOf<UCameraShakeBase> DefaultCameraShake;
+};
 ```
 
 ---
