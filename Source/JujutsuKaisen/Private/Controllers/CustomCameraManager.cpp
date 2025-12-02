@@ -1,8 +1,8 @@
 #include "Controllers/CustomCameraManager.h"
 #include "Library/SkillEventHub.h"
 #include "Characters/JujutsuKaisenCharacter.h"
-#include "Skills/SkillManager.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "Camera/CameraShakeBase.h"
 #include "CameraAnimationSequence.h"
 #include "Animations/CameraAnimationCameraModifier.h"
@@ -16,44 +16,20 @@ void ACustomCameraManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 제어하는 캐릭터의 SkillManager에 바인딩
-	APlayerController* PlayerController = GetOwningPlayerController();
-	if (PlayerController)
-	{
-		APawn* ControlledPawn = PlayerController->GetPawn();
-		AJujutsuKaisenCharacter* ControlledCharacter = Cast<AJujutsuKaisenCharacter>(ControlledPawn);
-		
-		if (ControlledCharacter && ControlledCharacter->GetSkillManager())
-		{
-			USkillManager* SkillManager = ControlledCharacter->GetSkillManager();
-			
-			// SkillManager의 델리게이트에 바인딩
-			SkillManager->OnCameraShakeStartEvent.AddDynamic(this, &ACustomCameraManager::HandleCameraShakeStart);
-			SkillManager->OnCameraShakeEndEvent.AddDynamic(this, &ACustomCameraManager::HandleCameraShakeEnd);
-			SkillManager->OnCameraAnimationStartEvent.AddDynamic(this, &ACustomCameraManager::HandleCameraAnimationStart);
-			SkillManager->OnCameraAnimationEndEvent.AddDynamic(this, &ACustomCameraManager::HandleCameraAnimationEnd);
-		}
-	}
+	// 자신의 델리게이트에 핸들러 바인딩
+	OnCameraShakeStartEvent.AddDynamic(this, &ACustomCameraManager::HandleCameraShakeStart);
+	OnCameraShakeEndEvent.AddDynamic(this, &ACustomCameraManager::HandleCameraShakeEnd);
+	OnCameraAnimationStartEvent.AddDynamic(this, &ACustomCameraManager::HandleCameraAnimationStart);
+	OnCameraAnimationEndEvent.AddDynamic(this, &ACustomCameraManager::HandleCameraAnimationEnd);
 }
 
 void ACustomCameraManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	// SkillManager의 델리게이트에서 언바인딩
-	APlayerController* PlayerController = GetOwningPlayerController();
-	if (PlayerController)
-	{
-		APawn* ControlledPawn = PlayerController->GetPawn();
-		AJujutsuKaisenCharacter* ControlledCharacter = Cast<AJujutsuKaisenCharacter>(ControlledPawn);
-		
-		if (ControlledCharacter && ControlledCharacter->GetSkillManager())
-		{
-			USkillManager* SkillManager = ControlledCharacter->GetSkillManager();
-			SkillManager->OnCameraShakeStartEvent.RemoveDynamic(this, &ACustomCameraManager::HandleCameraShakeStart);
-			SkillManager->OnCameraShakeEndEvent.RemoveDynamic(this, &ACustomCameraManager::HandleCameraShakeEnd);
-			SkillManager->OnCameraAnimationStartEvent.RemoveDynamic(this, &ACustomCameraManager::HandleCameraAnimationStart);
-			SkillManager->OnCameraAnimationEndEvent.RemoveDynamic(this, &ACustomCameraManager::HandleCameraAnimationEnd);
-		}
-	}
+	// 자신의 델리게이트에서 언바인딩
+	OnCameraShakeStartEvent.RemoveDynamic(this, &ACustomCameraManager::HandleCameraShakeStart);
+	OnCameraShakeEndEvent.RemoveDynamic(this, &ACustomCameraManager::HandleCameraShakeEnd);
+	OnCameraAnimationStartEvent.RemoveDynamic(this, &ACustomCameraManager::HandleCameraAnimationStart);
+	OnCameraAnimationEndEvent.RemoveDynamic(this, &ACustomCameraManager::HandleCameraAnimationEnd);
 
 	Super::EndPlay(EndPlayReason);
 }
@@ -198,5 +174,27 @@ void ACustomCameraManager::HandleCameraAnimationEnd()
 void ACustomCameraManager::SetTargetOn(bool bValue)
 {
 	bTargetOn = bValue;
+}
+
+ACustomCameraManager* ACustomCameraManager::GetCustomCameraManagerFromCharacter(AJujutsuKaisenCharacter* Character)
+{
+	if (!Character)
+	{
+		return nullptr;
+	}
+
+	AController* Controller = Character->GetController();
+	if (!Controller)
+	{
+		return nullptr;
+	}
+
+	APlayerController* PlayerController = Cast<APlayerController>(Controller);
+	if (!PlayerController)
+	{
+		return nullptr;
+	}
+
+	return Cast<ACustomCameraManager>(PlayerController->PlayerCameraManager);
 }
 

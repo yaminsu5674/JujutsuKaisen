@@ -7,6 +7,7 @@
 #include "Library/SkillLibrary.h"
 #include "Library/SkillEventHub.h"
 #include "Attack/CustomProjectileMovement.h"
+#include "Controllers/CustomCameraManager.h"
 
 UMurasaki::UMurasaki()
 {
@@ -63,13 +64,16 @@ void UMurasaki::OnPressed()
 		AnimInstance->Montage_Play(MurasakiMontage);
 	}
 
-	// 카메라 애니메이션 시작 (자신의 SkillManager를 통해 Broadcast)
+	// 카메라 애니메이션 시작 (자신의 CustomCameraManager를 통해 Broadcast)
 	if (MurasakiCAS)
 	{
 		AJujutsuKaisenCharacter* SkillOwner = GetOwner();
-		if (SkillOwner && SkillOwner->GetSkillManager())
+		if (SkillOwner)
 		{
-			SkillOwner->GetSkillManager()->OnCameraAnimationStartEvent.Broadcast(MurasakiCAS);
+			if (ACustomCameraManager* CameraManager = ACustomCameraManager::GetCustomCameraManagerFromCharacter(SkillOwner))
+			{
+				CameraManager->OnCameraAnimationStartEvent.Broadcast(MurasakiCAS);
+			}
 		}
 	}
 }

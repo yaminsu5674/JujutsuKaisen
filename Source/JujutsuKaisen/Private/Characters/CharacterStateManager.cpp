@@ -31,10 +31,22 @@ bool UCharacterStateManager::SetState(ECharacterState NewState)
 
 bool UCharacterStateManager::SetHitSubState(EHitSubState NewSubState, bool bIsHitFront)
 {
+	// 이전 상태 저장
+	ECharacterState PreviousState = CurrentState;
+	
 	SetState(ECharacterState::Hit);
 	
 	if (CurrentState == ECharacterState::Hit)
 	{
+		// 이전 상태가 Skill이었다면 스킬 리셋
+		if (PreviousState == ECharacterState::Skill)
+		{
+			if (OwnerCharacter && OwnerCharacter->GetSkillManager())
+			{
+				OwnerCharacter->GetSkillManager()->ResetActiveSkills();
+			}
+		}
+		
 		if (OwnerCharacter)
 		{
 			OwnerCharacter->SetCanMove(false);

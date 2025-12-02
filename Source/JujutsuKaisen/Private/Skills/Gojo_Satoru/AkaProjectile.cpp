@@ -10,6 +10,7 @@
 #include "Library/SkillEventHub.h"
 #include "Characters/JujutsuKaisenCharacter.h"
 #include "Characters/CharacterStateManager.h"
+#include "Controllers/CustomCameraManager.h"
 
 AAkaProjectile::AAkaProjectile()
 {
@@ -160,11 +161,14 @@ void AAkaProjectile::OnHitSphereOverlapBegin(UPrimitiveComponent* OverlappedComp
 		ChargingEffectComponent = nullptr;
 	}
 
-	// 자신의 Owner의 SkillManager를 통해 Broadcast
+	// 자신의 Owner의 CustomCameraManager를 통해 Broadcast
 	AJujutsuKaisenCharacter* SkillOwner = Cast<AJujutsuKaisenCharacter>(GetOwner());
-	if (SkillOwner && SkillOwner->GetSkillManager())
+	if (SkillOwner)
 	{
-		SkillOwner->GetSkillManager()->OnCameraShakeStartEvent.Broadcast();
+		if (ACustomCameraManager* CameraManager = ACustomCameraManager::GetCustomCameraManagerFromCharacter(SkillOwner))
+		{
+			CameraManager->OnCameraShakeStartEvent.Broadcast();
+		}
 	}
 }
 
@@ -214,10 +218,13 @@ void AAkaProjectile::OnHitSphereOverlapEnd(UPrimitiveComponent* OverlappedCompon
 		Destroy();
 	}
 
-	// 자신의 Owner의 SkillManager를 통해 Broadcast
+	// 자신의 Owner의 CustomCameraManager를 통해 Broadcast
 	AJujutsuKaisenCharacter* SkillOwner = Cast<AJujutsuKaisenCharacter>(GetOwner());
-	if (SkillOwner && SkillOwner->GetSkillManager())
+	if (SkillOwner)
 	{
-		SkillOwner->GetSkillManager()->OnCameraShakeEndEvent.Broadcast();
+		if (ACustomCameraManager* CameraManager = ACustomCameraManager::GetCustomCameraManagerFromCharacter(SkillOwner))
+		{
+			CameraManager->OnCameraShakeEndEvent.Broadcast();
+		}
 	}
 }
