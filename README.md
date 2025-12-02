@@ -150,35 +150,36 @@ UCustomProjectileMovement::HandleBlockingHit(
 카메라 액션, 시네마틱, 타겟 추적을 하나의 클래스로 통합 관리하기 위해  
 **CustomCameraManager** 제작.
 
-### 타겟 포커스 시점 유지 예시
+### 클래스 헤더 내용 일부
 ```cpp
-void ACustomCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
-{
-	Super::UpdateViewTarget(OutVT, DeltaTime);
+public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCameraShakeStart);
+	UPROPERTY()
+	FOnCameraShakeStart OnCameraShakeStartEvent;
 
-	if (CachedCharacter.IsValid())
-	{
-		UpdateCameraForCharacter(CachedCharacter.Get(), DeltaTime);
-		return;
-	}
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCameraAnimationStart, UCameraAnimationSequence*, CameraAnim);
+	UPROPERTY()
+	FOnCameraAnimationStart OnCameraAnimationStartEvent;
 
-	if (!PCOwner)
-	{
-		return;
-	}
+protected:
+	UFUNCTION()
+	void HandleCameraShakeStart();
 
-	APawn* ControlledPawn = PCOwner->GetPawn();
-	AJujutsuKaisenCharacter* ControlledCharacter = Cast<AJujutsuKaisenCharacter>(ControlledPawn);
+	UFUNCTION()
+	void HandleCameraAnimationStart(UCameraAnimationSequence* CameraAnim);
 
-	if (!ControlledCharacter)
-	{
-		CachedCharacter.Reset();
-		return;
-	}
+	void UpdateCameraForCharacter(AJujutsuKaisenCharacter* ControlledCharacter, float DeltaTime);
 
-	CachedCharacter = ControlledCharacter;
-	UpdateCameraForCharacter(ControlledCharacter, DeltaTime);
-}
+	void SetTargetOn(bool bValue);
+
+	UPROPERTY()
+	TWeakObjectPtr<AJujutsuKaisenCharacter> CachedCharacter;
+
+	bool bTargetOn;
+
+	UPROPERTY(EditAnywhere, Category = "Camera|Shake")
+	TSubclassOf<UCameraShakeBase> DefaultCameraShake;
+};
 ```
 
 ---
