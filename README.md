@@ -81,16 +81,19 @@ void AJujutsuKaisenCharacter::R_Pressed()
 ```cpp
 void USkillManager::TryUseSkill(FName Key)
 {
-	if (IsOtherSkillInUse(ESkillIndex::R))
+    ESkillIndex SkillIndex = ConvertKeyToSkillIndex(Key);
+
+    if (IsOtherSkillInUse(SkillIndex))
     {
         return;
     }
+
     if (!CachedCharacter || !CachedCharacter->GetStateManager())
         return;
 
     if (CachedCharacter->GetStateManager()->SetState(ECharacterState::Skill))
     {
-        SetSkillInUse(ESkillIndex::R, true);
+        SetSkillInUse(SkillIndex, true);
 
         if (auto* Skill = BoundSkills.FindRef(Key))
         {
