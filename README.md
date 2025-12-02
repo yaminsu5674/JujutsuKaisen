@@ -70,30 +70,32 @@ enum class EHitSubState : uint8
 ```cpp
 void AJujutsuKaisenCharacter::R_Pressed()
 {
-	if (IsOtherSkillInUse(ESkillIndex::R))
-	{
-		return;
-	}
-
-	SetSkillInUse(ESkillIndex::R, true);
-	
-	if (StateManager && StateManager->SetState(ECharacterState::Skill))
-	{
-		if (SkillManager)
-		{
-			SkillManager->HandlePressed("R");
-		}
-	}
+    if (SkillManager)
+    {
+        SkillManager->TryUseSkill("R");
+    }
 }
 ```
 
 ### SkillManager 처리 예시
 ```cpp
-void USkillManager::HandlePressed(FName Key)
+void USkillManager::TryUseSkill(FName Key)
 {
-    if (auto* Skill = BoundSkills.FindRef(Key))
+	if (IsOtherSkillInUse(ESkillIndex::R))
     {
-        Skill->OnPressed();
+        return;
+    }
+    if (!CachedCharacter || !CachedCharacter->GetStateManager())
+        return;
+
+    if (CachedCharacter->GetStateManager()->SetState(ECharacterState::Skill))
+    {
+        SetSkillInUse(ESkillIndex::R, true);
+
+        if (auto* Skill = BoundSkills.FindRef(Key))
+        {
+            Skill->OnPressed();
+        }
     }
 }
 ```
