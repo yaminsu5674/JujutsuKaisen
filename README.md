@@ -133,7 +133,6 @@ UCustomProjectileMovement::HandleBlockingHit(
 			{
 				Velocity.Z = 0.0f;
 			}
-			ProjectileGravityScale = 0.0f;
 		}
 		
 		return EHandleBlockingHitResult::AdvanceNextSubstep;
