@@ -79,7 +79,7 @@ void AJujutsuKaisenCharacter::R_Pressed()
 
 ### SkillManager 처리 예시
 ```cpp
-void USkillManager::TryUseSkill(FName Key)
+void USkillManager::TryUseSkill(FString Key)
 {
     ESkillIndex SkillIndex = ConvertKeyToSkillIndex(Key);
 
