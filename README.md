@@ -151,20 +151,9 @@ UCustomProjectileMovement::HandleBlockingHit(
 
 ### 클래스 헤더 내용 일부
 ```cpp
-public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCameraShakeStart);
-	UPROPERTY()
-	FOnCameraShakeStart OnCameraShakeStartEvent;
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCameraAnimationStart, UCameraAnimationSequence*, CameraAnim);
-	UPROPERTY()
-	FOnCameraAnimationStart OnCameraAnimationStartEvent;
-
-protected:
-	UFUNCTION()
+private:
 	void HandleCameraShakeStart();
 
-	UFUNCTION()
 	void HandleCameraAnimationStart(UCameraAnimationSequence* CameraAnim);
 
 	void UpdateCameraForCharacter(AJujutsuKaisenCharacter* ControlledCharacter, float DeltaTime);
@@ -175,7 +164,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Camera|Shake")
 	TSubclassOf<UCameraShakeBase> DefaultCameraShake;
-};
 ```
 
 ---
